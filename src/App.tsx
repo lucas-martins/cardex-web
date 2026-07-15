@@ -1,7 +1,7 @@
+import { AppRouter } from "./router/AppRouter";
+
 function App() {
-  return (
-    <h1>CardDex</h1>
-  );
+  return <AppRouter />;
 }
 
 export default App;
