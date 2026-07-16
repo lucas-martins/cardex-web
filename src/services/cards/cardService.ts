@@ -14,6 +14,7 @@ export interface FindCardsParams {
   name?: string;
   language?: CardLanguage;
   condition?: CardCondition;
+  sort?: string;
 }
 
 export interface CreateCardRequest {
@@ -42,6 +43,7 @@ export async function findCards(
       name: params.name || undefined,
       language: params.language || undefined,
       condition: params.condition || undefined,
+      sort: params.sort || undefined,
     },
   });
 
