@@ -11,8 +11,8 @@ export interface FindCardsParams {
   page?: number;
   size?: number;
   name?: string;
-  language?: string;
-  condition?: string;
+  language?: CardLanguage;
+  condition?: CardCondition;
 }
 
 export interface CreateCardRequest {
