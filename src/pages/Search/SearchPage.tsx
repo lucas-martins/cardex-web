@@ -1,8 +1,11 @@
 import { type FormEvent, useState } from "react";
 import { searchPokemonCards } from "../../services/pokemon/pokemonCardService";
 import type { PokemonCardSearchResult } from "../../types/pokemonCard";
+import { AddCardForm } from "../../components/cards/AddCardForm";
+import { Modal } from "../../components/ui/Modal";
 import "./SearchPage.css";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const PAGE_SIZE = 20;
 
@@ -17,6 +20,7 @@ export function SearchPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCard, setSelectedCard] = useState<PokemonCardSearchResult | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,6 +33,8 @@ export function SearchPage() {
       setSearched(false);
       return;
     }
+
+    setSelectedCard(null);
 
     try {
       setLoading(true);
@@ -46,12 +52,15 @@ export function SearchPage() {
       setTotalElements(response.totalElements);
       setLastPage(response.last);
       setSearched(true);
-    } catch {
+    } catch (requestError) {
       setCards([]);
       setTotalElements(0);
       setLastPage(true);
       setSearched(true);
-      if (axios.isAxiosError(error) && error.code === "ECONNABORTED") {
+        if (
+            axios.isAxiosError(requestError) &&
+            requestError.code === "ECONNABORTED"
+        ) {
         setError("The search took too long. Please try again.");
       } else {
         setError("Could not search for cards.");
@@ -84,12 +93,15 @@ export function SearchPage() {
       setCurrentPage(response.page);
       setLastPage(response.last);
       setTotalElements(response.totalElements);
-    } catch {
-      if (axios.isAxiosError(error) && error.code === "ECONNABORTED") {
-        setError("Loading more cards took too long. Please try again.");
-      } else {
-        setError("Could not load more cards.");
-      }
+    } catch (requestError) {
+        if (
+            axios.isAxiosError(requestError) &&
+            requestError.code === "ECONNABORTED"
+        ) {
+            setError("Loading more cards took too long. Please try again.");
+        } else {
+            setError("Could not load more cards.");
+        }
     } finally {
       setLoadingMore(false);
     }
@@ -149,7 +161,10 @@ export function SearchPage() {
               <p>#{card.cardNumber}</p>
               <p>{card.rarity ?? "Rarity not available"}</p>
 
-              <button type="button" disabled>
+              <button
+                type="button"
+                onClick={() => setSelectedCard(card)}
+              >
                 Add to collection
               </button>
             </div>
@@ -168,7 +183,26 @@ export function SearchPage() {
             {loadingMore ? "Loading..." : "Load more"}
           </button>
         </div>
-      )}
+    )}
+
+    {selectedCard && (
+        <Modal
+            title={`Add ${selectedCard.name}`}
+            onClose={() => setSelectedCard(null)}
+        >
+            <AddCardForm
+            externalId={selectedCard.externalId}
+            onCancel={() => setSelectedCard(null)}
+            onSuccess={() => {
+                toast.success(
+                `${selectedCard.name} was added to your collection.`,
+                );
+
+                setSelectedCard(null);
+            }}
+            />
+        </Modal>
+    )}
     </section>
   );
 }

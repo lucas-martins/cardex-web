@@ -1,6 +1,11 @@
 import { apiClient } from "../api/apiClient";
-import type { Card } from "../../types/card";
+import type {
+  Card,
+  CardCondition,
+  CardLanguage,
+} from "../../types/card";
 import type { PageResponse } from "../../types/page";
+
 
 export interface FindCardsParams {
   page?: number;
@@ -9,6 +14,15 @@ export interface FindCardsParams {
   language?: string;
   condition?: string;
 }
+
+export interface CreateCardRequest {
+  externalId: string;
+  quantity: number;
+  language: CardLanguage;
+  condition: CardCondition;
+  notes?: string;
+}
+
 
 export async function findCards(
   params: FindCardsParams = {},
@@ -22,6 +36,14 @@ export async function findCards(
       condition: params.condition || undefined,
     },
   });
+
+  return response.data;
+}
+
+export async function createCard(
+  request: CreateCardRequest,
+): Promise<Card> {
+  const response = await apiClient.post<Card>("/cards", request);
 
   return response.data;
 }

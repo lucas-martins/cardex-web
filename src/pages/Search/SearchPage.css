@@ -145,6 +145,10 @@
   opacity: 0.55;
 }
 
+.search-message.success {
+  color: #15803d;
+}
+
 @media (max-width: 600px) {
   .search-form {
     flex-direction: column;
