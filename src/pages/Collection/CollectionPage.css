@@ -242,6 +242,39 @@
   gap: 16px;
 }
 
+.favorite-button {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+
+  cursor: pointer;
+
+  font-size: 24px;
+
+  transition: all 0.2s ease;
+}
+
+.favorite-button:hover {
+  transform: scale(1.08);
+}
+
+.favorite-button:active {
+  transform: scale(0.95);
+}
+
 @media (max-width: 500px) {
   .collection-pagination {
     gap: 10px;

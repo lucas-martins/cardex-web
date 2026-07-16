@@ -1,9 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 
-import type {
-  CardCondition,
-  CardLanguage,
-} from "../../types/card";
+import type { CardCondition, CardLanguage } from "../../types/card";
 import "./CardCollectionFilters.css";
 
 export type CardCollectionSort =
@@ -18,6 +15,7 @@ export interface CardCollectionFilterValues {
   name: string;
   language: CardLanguage | "";
   condition: CardCondition | "";
+  favorite: boolean;
   sort: CardCollectionSort;
 }
 
@@ -35,18 +33,21 @@ export function CardCollectionFilters({
   onClear,
 }: CardCollectionFiltersProps) {
   const [name, setName] = useState(initialValues.name);
-  const [language, setLanguage] =
-    useState<CardLanguage | "">(initialValues.language);
-  const [condition, setCondition] =
-    useState<CardCondition | "">(initialValues.condition);
-  const [sort, setSort] =
-    useState<CardCollectionSort>(initialValues.sort);
+  const [language, setLanguage] = useState<CardLanguage | "">(
+    initialValues.language,
+  );
+  const [condition, setCondition] = useState<CardCondition | "">(
+    initialValues.condition,
+  );
+  const [sort, setSort] = useState<CardCollectionSort>(initialValues.sort);
+  const [favorite, setFavorite] = useState(initialValues.favorite);
 
   useEffect(() => {
     setName(initialValues.name);
     setLanguage(initialValues.language);
     setCondition(initialValues.condition);
     setSort(initialValues.sort);
+    setFavorite(initialValues.favorite);
   }, [initialValues]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -56,6 +57,7 @@ export function CardCollectionFilters({
       name: name.trim(),
       language,
       condition,
+      favorite,
       sort,
     });
   }
@@ -65,15 +67,13 @@ export function CardCollectionFilters({
     setLanguage("");
     setCondition("");
     setSort("name,asc");
+    setFavorite(false);
 
     onClear();
   }
 
   return (
-    <form
-      className="collection-filters"
-      onSubmit={handleSubmit}
-    >
+    <form className="collection-filters" onSubmit={handleSubmit}>
       <label>
         Card name
         <input
@@ -89,9 +89,7 @@ export function CardCollectionFilters({
         <select
           value={language}
           onChange={(event) =>
-            setLanguage(
-              event.target.value as CardLanguage | "",
-            )
+            setLanguage(event.target.value as CardLanguage | "")
           }
         >
           <option value="">All languages</option>
@@ -112,9 +110,7 @@ export function CardCollectionFilters({
         <select
           value={condition}
           onChange={(event) =>
-            setCondition(
-              event.target.value as CardCondition | "",
-            )
+            setCondition(event.target.value as CardCondition | "")
           }
         >
           <option value="">All conditions</option>
@@ -122,12 +118,19 @@ export function CardCollectionFilters({
           <option value="NEAR_MINT">Near Mint</option>
           <option value="EXCELLENT">Excellent</option>
           <option value="GOOD">Good</option>
-          <option value="LIGHTLY_PLAYED">
-            Lightly Played
-          </option>
+          <option value="LIGHTLY_PLAYED">Lightly Played</option>
           <option value="PLAYED">Played</option>
           <option value="POOR">Poor</option>
         </select>
+      </label>
+
+      <label className="favorite-filter">
+        <input
+          type="checkbox"
+          checked={favorite}
+          onChange={(event) => setFavorite(event.target.checked)}
+        />
+        Only favorites
       </label>
 
       <label>
@@ -142,12 +145,8 @@ export function CardCollectionFilters({
           <option value="name,desc">Name: Z–A</option>
           <option value="createdAt,desc">Recently added</option>
           <option value="createdAt,asc">Oldest added</option>
-          <option value="quantity,desc">
-            Quantity: highest
-          </option>
-          <option value="quantity,asc">
-            Quantity: lowest
-          </option>
+          <option value="quantity,desc">Quantity: highest</option>
+          <option value="quantity,asc">Quantity: lowest</option>
         </select>
       </label>
 
@@ -156,11 +155,7 @@ export function CardCollectionFilters({
           {loading ? "Searching..." : "Search"}
         </button>
 
-        <button
-          type="button"
-          onClick={handleClear}
-          disabled={loading}
-        >
+        <button type="button" onClick={handleClear} disabled={loading}>
           Clear
         </button>
       </div>

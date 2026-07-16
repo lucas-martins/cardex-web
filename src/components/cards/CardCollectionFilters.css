@@ -68,6 +68,20 @@
   opacity: 0.55;
 }
 
+.favorite-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 26px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.favorite-filter input {
+  width: 18px;
+  height: 18px;
+}
+
 @media (max-width: 950px) {
   .collection-filters {
     grid-template-columns: repeat(2, minmax(0, 1fr));

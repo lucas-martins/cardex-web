@@ -14,6 +14,7 @@ export interface FindCardsParams {
   name?: string;
   language?: CardLanguage;
   condition?: CardCondition;
+  favorite?: boolean;
   sort?: string;
 }
 
@@ -32,6 +33,9 @@ export interface UpdateCardRequest {
   notes?: string;
 }
 
+export interface UpdateFavoriteRequest {
+  favorite: boolean;
+}
 
 export async function findCards(
   params: FindCardsParams = {},
@@ -43,6 +47,7 @@ export async function findCards(
       name: params.name || undefined,
       language: params.language || undefined,
       condition: params.condition || undefined,
+      favorite: params.favorite,
       sort: params.sort || undefined,
     },
   });
@@ -76,6 +81,18 @@ export async function updateCard(
 
 export async function getCollectionSummary(): Promise<CollectionSummary> {
   const response = await apiClient.get<CollectionSummary>("/cards/summary");
+
+  return response.data;
+}
+
+export async function updateFavorite(
+  id: number,
+  request: UpdateFavoriteRequest,
+): Promise<Card> {
+  const response = await apiClient.patch<Card>(
+    `/cards/${id}/favorite`,
+    request,
+  );
 
   return response.data;
 }

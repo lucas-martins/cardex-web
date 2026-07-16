@@ -14,6 +14,7 @@ export function HomePage() {
   const [recentCards, setRecentCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [favoriteCards, setFavoriteCards] = useState<Card[]>([]);
 
   useEffect(() => {
     async function loadHomeData() {
@@ -21,16 +22,24 @@ export function HomePage() {
         setLoading(true);
         setError(null);
 
-        const [summaryResponse, recentCardsResponse] = await Promise.all([
-          getCollectionSummary(),
-          findCards({
-            page: 0,
-            size: 4,
-            sort: "createdAt,desc",
-          }),
-        ]);
+        const [summaryResponse, favoriteCardsResponse, recentCardsResponse] =
+          await Promise.all([
+            getCollectionSummary(),
+            findCards({
+              page: 0,
+              size: 4,
+              favorite: true,
+              sort: "updatedAt,desc",
+            }),
+            findCards({
+              page: 0,
+              size: 4,
+              sort: "createdAt,desc",
+            }),
+          ]);
 
         setSummary(summaryResponse);
+        setFavoriteCards(favoriteCardsResponse.content);
         setRecentCards(recentCardsResponse.content);
       } catch {
         setError("Could not load the home page information.");
@@ -137,6 +146,56 @@ export function HomePage() {
             </div>
           )}
 
+          {favoriteCards.length > 0 && (
+            <div className="home-recent">
+              <div className="home-section-header">
+                <div>
+                  <h2>Favorite cards</h2>
+                  <p>Your favorite cards from the collection.</p>
+                </div>
+
+                <Link to="/collection">View collection</Link>
+              </div>
+
+              <div className="home-recent-grid">
+                {favoriteCards.map((card) => (
+                  <article className="home-recent-card" key={card.id}>
+                    <div className="home-recent-image-wrapper">
+                      <span
+                        className="home-favorite-indicator"
+                        aria-label="Favorite card"
+                      >
+                        ★
+                      </span>
+
+                      {card.imageUrl ? (
+                        <img
+                          src={card.imageUrl}
+                          alt={card.name}
+                          className="home-recent-image"
+                        />
+                      ) : (
+                        <div className="home-recent-image-placeholder">
+                          No image
+                        </div>
+                      )}
+
+                      <span className="home-recent-quantity">
+                        ×{card.quantity}
+                      </span>
+                    </div>
+
+                    <div className="home-recent-card-content">
+                      <h3>{card.name}</h3>
+                      <p>{card.collectionName}</p>
+                      <span>#{card.cardNumber}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="home-recent">
             <div className="home-section-header">
               <div>
@@ -164,7 +223,7 @@ export function HomePage() {
                   <article className="home-recent-card" key={card.id}>
                     <div className="home-recent-image-wrapper">
                       <img
-                        src={card.imageUrl}
+                        src={card.imageUrl ?? undefined}
                         alt={card.name}
                         className="home-recent-image"
                       />

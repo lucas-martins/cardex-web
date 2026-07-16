@@ -32,4 +32,5 @@ export interface Card {
   notes: string | null;
   createdAt: string;
   updatedAt: string;
+  favorite: boolean;
 }
