@@ -5,6 +5,7 @@ import type {
   CardLanguage,
 } from "../../types/card";
 import type { PageResponse } from "../../types/page";
+import type { CollectionSummary } from "../../types/collectionSummary";
 
 
 export interface FindCardsParams {
@@ -67,6 +68,12 @@ export async function updateCard(
     `/cards/${id}`,
     request,
   );
+
+  return response.data;
+}
+
+export async function getCollectionSummary(): Promise<CollectionSummary> {
+  const response = await apiClient.get<CollectionSummary>("/cards/summary");
 
   return response.data;
 }
