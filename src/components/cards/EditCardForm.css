@@ -1,14 +1,9 @@
-.edit-card-quantity-form {
+.edit-card-form {
   display: grid;
-  gap: 20px;
+  gap: 16px;
 }
 
-.edit-card-quantity-form p {
-  color: #4b5563;
-  line-height: 1.5;
-}
-
-.edit-card-quantity-form label {
+.edit-card-form label {
   display: grid;
   gap: 7px;
   color: #374151;
@@ -16,10 +11,11 @@
   font-weight: 600;
 }
 
-.edit-card-quantity-form input {
+.edit-card-form input,
+.edit-card-form select,
+.edit-card-form textarea {
   width: 100%;
-  min-height: 42px;
-  padding: 0 12px;
+  padding: 10px 12px;
   font: inherit;
   color: #111827;
   background: #ffffff;
@@ -27,13 +23,17 @@
   border-radius: 8px;
 }
 
-.edit-card-quantity-actions {
+.edit-card-form textarea {
+  resize: vertical;
+}
+
+.edit-card-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.edit-card-quantity-actions button {
+.edit-card-actions button {
   min-height: 40px;
   padding: 0 16px;
   font: inherit;
@@ -42,19 +42,19 @@
   border-radius: 8px;
 }
 
-.edit-card-quantity-actions button:first-child {
+.edit-card-actions button:first-child {
   color: #374151;
   background: #ffffff;
   border: 1px solid #d1d5db;
 }
 
-.edit-card-quantity-actions button:last-child {
+.edit-card-actions button:last-child {
   color: #ffffff;
   background: #2563eb;
   border: 0;
 }
 
-.edit-card-quantity-actions button:disabled {
+.edit-card-actions button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }

@@ -23,6 +23,13 @@ export interface CreateCardRequest {
   notes?: string;
 }
 
+export interface UpdateCardRequest {
+  quantity: number;
+  language: CardLanguage;
+  condition: CardCondition;
+  notes?: string;
+}
+
 
 export async function findCards(
   params: FindCardsParams = {},
@@ -52,16 +59,12 @@ export async function deleteCard(id: number): Promise<void> {
   await apiClient.delete(`/cards/${id}`);
 }
 
-export interface UpdateCardQuantityRequest {
-  quantity: number;
-}
-
-export async function updateCardQuantity(
+export async function updateCard(
   id: number,
-  request: UpdateCardQuantityRequest,
+  request: UpdateCardRequest,
 ): Promise<Card> {
-  const response = await apiClient.patch<Card>(
-    `/cards/${id}/quantity`,
+  const response = await apiClient.put<Card>(
+    `/cards/${id}`,
     request,
   );
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { findCards, deleteCard, updateCardQuantity } from "../../services/cards/cardService";
+import { findCards, deleteCard, updateCard } from "../../services/cards/cardService";
 import type {
   Card,
   CardCondition,
@@ -8,7 +8,7 @@ import type {
 import "./CollectionPage.css";
 import toast from "react-hot-toast";
 import { DeleteCardConfirmation } from "../../components/cards/DeleteCardConfirmation";
-import { EditCardQuantityForm } from "../../components/cards/EditCardQuantityForm";
+import { EditCardForm } from "../../components/cards/EditCardForm";
 import { Modal } from "../../components/ui/Modal";
 import {
   CardCollectionFilters,
@@ -128,9 +128,14 @@ export function CollectionPage() {
         } finally {
             setDeleting(false);
         }
-  }
+    }
 
-    async function handleUpdateQuantity(quantity: number) {
+    async function handleUpdateCard(values: {
+        quantity: number;
+        language: CardLanguage;
+        condition: CardCondition;
+        notes?: string;
+    }) {
         if (!cardToEdit) {
             return;
         }
@@ -138,9 +143,9 @@ export function CollectionPage() {
         try {
             setSavingQuantity(true);
 
-            const updatedCard = await updateCardQuantity(
+            const updatedCard = await updateCard(
             cardToEdit.id,
-            { quantity },
+            values,
             );
 
             setCards((currentCards) =>
@@ -149,13 +154,11 @@ export function CollectionPage() {
             ),
             );
 
-            toast.success(
-            `${updatedCard.name} quantity was updated.`,
-            );
+            toast.success(`${updatedCard.name} was updated.`);
 
             setCardToEdit(null);
         } catch {
-            toast.error("Could not update the card quantity.");
+            toast.error("Could not update the card.");
         } finally {
             setSavingQuantity(false);
         }
@@ -325,12 +328,12 @@ export function CollectionPage() {
                 }
                 }}
             >
-                <EditCardQuantityForm
+                <EditCardForm
                 card={cardToEdit}
                 saving={savingQuantity}
                 onCancel={() => setCardToEdit(null)}
-                onSubmit={(quantity) => {
-                    void handleUpdateQuantity(quantity);
+                onSubmit={(values) => {
+                    void handleUpdateCard(values);
                 }}
                 />
             </Modal>
