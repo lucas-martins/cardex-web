@@ -46,15 +46,13 @@ export function HomePage() {
     <section className="home-page">
       <div className="home-hero">
         <div>
-          <span className="home-eyebrow">
-            Pokémon TCG collection manager
-          </span>
+          <span className="home-eyebrow">Pokémon TCG collection manager</span>
 
           <h1>Welcome to CardDex</h1>
 
           <p>
-            Search for Pokémon cards, organize your collection and keep track
-            of every copy you own.
+            Search for Pokémon cards, organize your collection and keep track of
+            every copy you own.
           </p>
 
           <div className="home-actions">
@@ -91,7 +89,51 @@ export function HomePage() {
                   <strong>{summary.totalCards}</strong>
                   <p>All copies combined</p>
                 </article>
+
+                <article className="home-summary-card">
+                  <span>Languages</span>
+                  <strong>{summary.differentLanguages}</strong>
+                  <p>Different card languages owned</p>
+                </article>
+
+                <article className="home-summary-card">
+                  <span>Collections</span>
+                  <strong>{summary.differentCollections}</strong>
+                  <p>Different sets represented</p>
+                </article>
               </div>
+
+              <article className="home-most-owned-card">
+                <div>
+                  <span>Most owned card</span>
+
+                  {summary.mostOwnedCard ? (
+                    <>
+                      <strong>{summary.mostOwnedCard.name}</strong>
+                      <p>
+                        You currently own {summary.mostOwnedCard.quantity}{" "}
+                        {summary.mostOwnedCard.quantity === 1
+                          ? "copy"
+                          : "copies"}
+                        .
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <strong>No card yet</strong>
+                      <p>
+                        Add your first card to start tracking your collection.
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {summary.mostOwnedCard && (
+                  <span className="home-most-owned-quantity">
+                    ×{summary.mostOwnedCard.quantity}
+                  </span>
+                )}
+              </article>
             </div>
           )}
 
@@ -102,9 +144,7 @@ export function HomePage() {
                 <p>The latest cards added to your collection.</p>
               </div>
 
-              {recentCards.length > 0 && (
-                <Link to="/collection">View all</Link>
-              )}
+              {recentCards.length > 0 && <Link to="/collection">View all</Link>}
             </div>
 
             {recentCards.length === 0 ? (

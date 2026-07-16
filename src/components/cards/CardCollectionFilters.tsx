@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 
 import type {
   CardCondition,
@@ -6,10 +6,19 @@ import type {
 } from "../../types/card";
 import "./CardCollectionFilters.css";
 
+export type CardCollectionSort =
+  | "name,asc"
+  | "name,desc"
+  | "createdAt,desc"
+  | "createdAt,asc"
+  | "quantity,desc"
+  | "quantity,asc";
+
 export interface CardCollectionFilterValues {
   name: string;
   language: CardLanguage | "";
   condition: CardCondition | "";
+  sort: CardCollectionSort;
 }
 
 interface CardCollectionFiltersProps {
@@ -30,6 +39,15 @@ export function CardCollectionFilters({
     useState<CardLanguage | "">(initialValues.language);
   const [condition, setCondition] =
     useState<CardCondition | "">(initialValues.condition);
+  const [sort, setSort] =
+    useState<CardCollectionSort>(initialValues.sort);
+
+  useEffect(() => {
+    setName(initialValues.name);
+    setLanguage(initialValues.language);
+    setCondition(initialValues.condition);
+    setSort(initialValues.sort);
+  }, [initialValues]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,6 +56,7 @@ export function CardCollectionFilters({
       name: name.trim(),
       language,
       condition,
+      sort,
     });
   }
 
@@ -45,6 +64,8 @@ export function CardCollectionFilters({
     setName("");
     setLanguage("");
     setCondition("");
+    setSort("name,asc");
+
     onClear();
   }
 
@@ -106,6 +127,27 @@ export function CardCollectionFilters({
           </option>
           <option value="PLAYED">Played</option>
           <option value="POOR">Poor</option>
+        </select>
+      </label>
+
+      <label>
+        Sort by
+        <select
+          value={sort}
+          onChange={(event) =>
+            setSort(event.target.value as CardCollectionSort)
+          }
+        >
+          <option value="name,asc">Name: A–Z</option>
+          <option value="name,desc">Name: Z–A</option>
+          <option value="createdAt,desc">Recently added</option>
+          <option value="createdAt,asc">Oldest added</option>
+          <option value="quantity,desc">
+            Quantity: highest
+          </option>
+          <option value="quantity,asc">
+            Quantity: lowest
+          </option>
         </select>
       </label>
 

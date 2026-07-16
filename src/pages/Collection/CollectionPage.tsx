@@ -19,6 +19,7 @@ const INITIAL_FILTERS: CardCollectionFilterValues = {
   name: "",
   language: "",
   condition: "",
+  sort: "name,asc",
 };
 
 function formatLanguage(language: CardLanguage) {
@@ -76,11 +77,12 @@ export function CollectionPage() {
             setError(null);
 
             const response = await findCards({
-            page,
-            size: 20,
-            name: currentFilters.name || undefined,
-            language: currentFilters.language || undefined,
-            condition: currentFilters.condition || undefined,
+                page,
+                size: 20,
+                name: currentFilters.name || undefined,
+                language: currentFilters.language || undefined,
+                condition: currentFilters.condition || undefined,
+                sort: currentFilters.sort,
             });
 
             setCards(response.content);
