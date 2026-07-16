@@ -1,5 +1,5 @@
 .collection-header {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .collection-header h1 {
@@ -11,48 +11,187 @@
   color: #6b7280;
 }
 
+.collection-message.error {
+  color: #b91c1c;
+}
+
+.collection-empty {
+  padding: 56px 24px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+}
+
+.collection-empty h2 {
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.collection-empty p {
+  color: #6b7280;
+}
+
 .collection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 24px;
 }
 
-.card-item {
+.collection-card {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 6%);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 6%);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.card-image {
-  display: block;
-  width: 100%;
-  aspect-ratio: 2.5 / 3.5;
-  object-fit: contain;
+.collection-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 10%);
+}
+
+.collection-card-image-wrapper {
+  position: relative;
+  padding: 16px;
   background: #f3f4f6;
 }
 
-.card-image-placeholder {
+.collection-card-image,
+.collection-card-image-placeholder {
   width: 100%;
   aspect-ratio: 2.5 / 3.5;
+  border-radius: 8px;
+}
+
+.collection-card-image {
+  display: block;
+  object-fit: contain;
+}
+
+.collection-card-image-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
   color: #6b7280;
-  background: #f3f4f6;
 }
 
-.card-content {
-  padding: 16px;
+.quantity-badge {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  min-width: 36px;
+  min-height: 30px;
+  padding: 4px 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  background: #111827;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 24%);
 }
 
-.card-content h2 {
-  margin-bottom: 8px;
-  font-size: 18px;
+.collection-card-content {
+  flex: 1;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
 }
 
-.card-content p {
-  margin-top: 4px;
+.collection-card-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.collection-card-title h2 {
+  margin-bottom: 4px;
+  color: #111827;
+  font-size: 19px;
+}
+
+.collection-card-title p {
   color: #6b7280;
+  font-size: 14px;
+}
+
+.card-number {
+  color: #6b7280;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.collection-card-badges {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.collection-card-badges span {
+  padding: 5px 9px;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f3f4f6;
+  border-radius: 999px;
+}
+
+.collection-card-notes {
+  margin-top: 16px;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.collection-card-actions {
+  margin-top: auto;
+  padding-top: 18px;
+  display: flex;
+  gap: 10px;
+}
+
+.collection-card-actions button {
+  flex: 1;
+  min-height: 40px;
+  padding: 0 14px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.collection-card-actions button:first-child {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.collection-card-actions button:first-child:hover {
+  background: #dbeafe;
+}
+
+.collection-card-actions button:last-child {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.collection-card-actions button:last-child:hover {
+  background: #fee2e2;
+}
+
+@media (max-width: 600px) {
+  .collection-grid {
+    grid-template-columns: 1fr;
+  }
 }

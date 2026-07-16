@@ -1,0 +1,60 @@
+.edit-card-quantity-form {
+  display: grid;
+  gap: 20px;
+}
+
+.edit-card-quantity-form p {
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.edit-card-quantity-form label {
+  display: grid;
+  gap: 7px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.edit-card-quantity-form input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  font: inherit;
+  color: #111827;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.edit-card-quantity-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.edit-card-quantity-actions button {
+  min-height: 40px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.edit-card-quantity-actions button:first-child {
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+}
+
+.edit-card-quantity-actions button:last-child {
+  color: #ffffff;
+  background: #2563eb;
+  border: 0;
+}
+
+.edit-card-quantity-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

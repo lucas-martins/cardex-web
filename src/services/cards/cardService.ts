@@ -47,3 +47,23 @@ export async function createCard(
 
   return response.data;
 }
+
+export async function deleteCard(id: number): Promise<void> {
+  await apiClient.delete(`/cards/${id}`);
+}
+
+export interface UpdateCardQuantityRequest {
+  quantity: number;
+}
+
+export async function updateCardQuantity(
+  id: number,
+  request: UpdateCardQuantityRequest,
+): Promise<Card> {
+  const response = await apiClient.patch<Card>(
+    `/cards/${id}/quantity`,
+    request,
+  );
+
+  return response.data;
+}

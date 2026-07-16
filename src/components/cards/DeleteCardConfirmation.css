@@ -1,0 +1,32 @@
+.delete-card-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.delete-card-actions button {
+  min-height: 40px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.delete-card-actions button:first-child {
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+}
+
+.delete-card-actions button:last-child {
+  color: #ffffff;
+  background: #dc2626;
+  border: 0;
+}
+
+.delete-card-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
