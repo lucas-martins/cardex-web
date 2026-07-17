@@ -275,6 +275,23 @@
   transform: scale(0.95);
 }
 
+.collection-card-view-details {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 14px;
+  color: #111827;
+  background: #f3f4f6;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.collection-card-view-details:hover {
+  background: #e5e7eb;
+}
+
 @media (max-width: 500px) {
   .collection-pagination {
     gap: 10px;

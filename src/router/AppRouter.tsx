@@ -3,6 +3,7 @@ import { MainLayout } from "../layouts/MainLayout";
 import { CollectionPage } from "../pages/Collection/CollectionPage";
 import { HomePage } from "../pages/Home/HomePage";
 import { SearchPage } from "../pages/Search/SearchPage";
+import { CardDetailsPage } from "../pages/CardDetails/CardDetailsPage";
 
 export function AppRouter() {
   return (
@@ -11,6 +12,7 @@ export function AppRouter() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/collection" element={<CollectionPage />} />
+          <Route path="/collection/:id" element={<CardDetailsPage />} />
           <Route path="/search" element={<SearchPage />} />
         </Route>
 

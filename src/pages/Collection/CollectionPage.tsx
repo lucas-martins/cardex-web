@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   findCards,
   deleteCard,
@@ -222,67 +223,74 @@ export function CollectionPage() {
       ) : (
         <div className="collection-grid">
           {cards.map((card) => (
-            <article className="collection-card" key={card.id}>
-              <div className="collection-card-image-wrapper">
-                <button
-                  type="button"
-                  className="favorite-button"
-                  onClick={() => {
-                    void handleToggleFavorite(card);
-                  }}
-                  title={
-                    card.favorite ? "Remove from favorites" : "Add to favorites"
-                  }
-                >
-                  {card.favorite ? "★" : "☆"}
-                </button>
-                {card.imageUrl ? (
-                  <img
-                    className="collection-card-image"
-                    src={card.imageUrl}
-                    alt={card.name}
-                  />
-                ) : (
-                  <div className="collection-card-image-placeholder">
-                    No image
-                  </div>
-                )}
-
-                <span className="quantity-badge">×{card.quantity}</span>
-              </div>
-
-              <div className="collection-card-content">
-                <div className="collection-card-title">
-                  <div>
-                    <h2>{card.name}</h2>
-                    <p>{card.collectionName}</p>
-                  </div>
-
-                  <span className="card-number">#{card.cardNumber}</span>
-                </div>
-
-                <div className="collection-card-badges">
-                  <span>{formatLanguage(card.language)}</span>
-                  <span>{formatCondition(card.condition)}</span>
-
-                  {card.rarity && <span>{card.rarity}</span>}
-                </div>
-
-                {card.notes && (
-                  <p className="collection-card-notes">{card.notes}</p>
-                )}
-
-                <div className="collection-card-actions">
-                  <button type="button" onClick={() => setCardToEdit(card)}>
-                    Edit
+            <Link
+              className="collection-card-details-link"
+              to={`/collection/${card.id}`}
+            >
+              <article className="collection-card" key={card.id}>
+                <div className="collection-card-image-wrapper">
+                  <button
+                    type="button"
+                    className="favorite-button"
+                    onClick={() => {
+                      void handleToggleFavorite(card);
+                    }}
+                    title={
+                      card.favorite
+                        ? "Remove from favorites"
+                        : "Add to favorites"
+                    }
+                  >
+                    {card.favorite ? "★" : "☆"}
                   </button>
+                  {card.imageUrl ? (
+                    <img
+                      className="collection-card-image"
+                      src={card.imageUrl}
+                      alt={card.name}
+                    />
+                  ) : (
+                    <div className="collection-card-image-placeholder">
+                      No image
+                    </div>
+                  )}
 
-                  <button type="button" onClick={() => setCardToDelete(card)}>
-                    Remove
-                  </button>
+                  <span className="quantity-badge">×{card.quantity}</span>
                 </div>
-              </div>
-            </article>
+
+                <div className="collection-card-content">
+                  <div className="collection-card-title">
+                    <div>
+                      <h2>{card.name}</h2>
+                      <p>{card.collectionName}</p>
+                    </div>
+
+                    <span className="card-number">#{card.cardNumber}</span>
+                  </div>
+
+                  <div className="collection-card-badges">
+                    <span>{formatLanguage(card.language)}</span>
+                    <span>{formatCondition(card.condition)}</span>
+
+                    {card.rarity && <span>{card.rarity}</span>}
+                  </div>
+
+                  {card.notes && (
+                    <p className="collection-card-notes">{card.notes}</p>
+                  )}
+
+                  <div className="collection-card-actions">
+                    <button type="button" onClick={() => setCardToEdit(card)}>
+                      Edit
+                    </button>
+
+                    <button type="button" onClick={() => setCardToDelete(card)}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </Link>
           ))}
         </div>
       )}

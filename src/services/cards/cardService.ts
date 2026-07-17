@@ -96,3 +96,9 @@ export async function updateFavorite(
 
   return response.data;
 }
+
+export async function findCardById(id: number): Promise<Card> {
+  const response = await apiClient.get<Card>(`/cards/${id}`);
+
+  return response.data;
+}
