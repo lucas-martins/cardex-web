@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import {
   findCards,
   getCollectionSummary,
+  getCollectionAnalytics,
 } from "../../services/cards/cardService";
 import type { Card } from "../../types/card";
 import type { CollectionSummary } from "../../types/collectionSummary";
 import "./HomePage.css";
+import type { CollectionAnalytics } from "../../types/collectionAnalytics";
 
 export function HomePage() {
   const [summary, setSummary] = useState<CollectionSummary | null>(null);
@@ -15,6 +17,7 @@ export function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [favoriteCards, setFavoriteCards] = useState<Card[]>([]);
+  const [analytics, setAnalytics] = useState<CollectionAnalytics | null>(null);
 
   useEffect(() => {
     async function loadHomeData() {
@@ -22,23 +25,29 @@ export function HomePage() {
         setLoading(true);
         setError(null);
 
-        const [summaryResponse, favoriteCardsResponse, recentCardsResponse] =
-          await Promise.all([
-            getCollectionSummary(),
-            findCards({
-              page: 0,
-              size: 4,
-              favorite: true,
-              sort: "updatedAt,desc",
-            }),
-            findCards({
-              page: 0,
-              size: 4,
-              sort: "createdAt,desc",
-            }),
-          ]);
+        const [
+          summaryResponse,
+          analyticsResponse,
+          favoriteCardsResponse,
+          recentCardsResponse,
+        ] = await Promise.all([
+          getCollectionSummary(),
+          getCollectionAnalytics(),
+          findCards({
+            page: 0,
+            size: 4,
+            favorite: true,
+            sort: "updatedAt,desc",
+          }),
+          findCards({
+            page: 0,
+            size: 4,
+            sort: "createdAt,desc",
+          }),
+        ]);
 
         setSummary(summaryResponse);
+        setAnalytics(analyticsResponse);
         setFavoriteCards(favoriteCardsResponse.content);
         setRecentCards(recentCardsResponse.content);
       } catch {
@@ -50,6 +59,18 @@ export function HomePage() {
 
     void loadHomeData();
   }, []);
+
+  function formatAnalyticsName(name: string) {
+    return name
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  function getMaxQuantity(items: CollectionAnalytics["collections"]) {
+    return Math.max(...items.map((item) => item.quantity), 1);
+  }
 
   return (
     <section className="home-page">
@@ -144,6 +165,105 @@ export function HomePage() {
                 )}
               </article>
             </div>
+          )}
+
+          {analytics && (
+            <section className="home-analytics">
+              <div className="home-section-header">
+                <div>
+                  <h2>Collection analytics</h2>
+                  <p>See how your collection is distributed.</p>
+                </div>
+              </div>
+
+              <div className="home-analytics-grid">
+                <article className="home-analytics-card">
+                  <h3>Top collections</h3>
+
+                  {analytics.collections.length === 0 ? (
+                    <p className="home-analytics-empty">No data available.</p>
+                  ) : (
+                    <div className="home-analytics-list">
+                      {analytics.collections.slice(0, 5).map((item) => {
+                        const maxQuantity = getMaxQuantity(
+                          analytics.collections,
+                        );
+
+                        return (
+                          <div className="home-analytics-item" key={item.name}>
+                            <div className="home-analytics-item-header">
+                              <span>{item.name}</span>
+                              <strong>{item.quantity}</strong>
+                            </div>
+
+                            <div className="home-analytics-bar">
+                              <span
+                                style={{
+                                  width: `${
+                                    (item.quantity / maxQuantity) * 100
+                                  }%`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </article>
+
+                <article className="home-analytics-card">
+                  <h3>Languages</h3>
+
+                  {analytics.languages.length === 0 ? (
+                    <p className="home-analytics-empty">No data available.</p>
+                  ) : (
+                    <div className="home-analytics-stat-list">
+                      {analytics.languages.map((item) => (
+                        <div key={item.name}>
+                          <span>{formatAnalyticsName(item.name)}</span>
+                          <strong>{item.quantity}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </article>
+
+                <article className="home-analytics-card">
+                  <h3>Conditions</h3>
+
+                  {analytics.conditions.length === 0 ? (
+                    <p className="home-analytics-empty">No data available.</p>
+                  ) : (
+                    <div className="home-analytics-stat-list">
+                      {analytics.conditions.map((item) => (
+                        <div key={item.name}>
+                          <span>{formatAnalyticsName(item.name)}</span>
+                          <strong>{item.quantity}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </article>
+
+                <article className="home-analytics-card">
+                  <h3>Rarities</h3>
+
+                  {analytics.rarities.length === 0 ? (
+                    <p className="home-analytics-empty">No data available.</p>
+                  ) : (
+                    <div className="home-analytics-stat-list">
+                      {analytics.rarities.slice(0, 6).map((item) => (
+                        <div key={item.name}>
+                          <span>{item.name}</span>
+                          <strong>{item.quantity}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              </div>
+            </section>
           )}
 
           {favoriteCards.length > 0 && (

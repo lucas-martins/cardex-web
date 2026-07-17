@@ -6,6 +6,7 @@ import type {
 } from "../../types/card";
 import type { PageResponse } from "../../types/page";
 import type { CollectionSummary } from "../../types/collectionSummary";
+import type { CollectionAnalytics } from "../../types/collectionAnalytics";
 
 
 export interface FindCardsParams {
@@ -99,6 +100,13 @@ export async function updateFavorite(
 
 export async function findCardById(id: number): Promise<Card> {
   const response = await apiClient.get<Card>(`/cards/${id}`);
+
+  return response.data;
+}
+
+export async function getCollectionAnalytics(): Promise<CollectionAnalytics> {
+  const response =
+    await apiClient.get<CollectionAnalytics>("/cards/analytics");
 
   return response.data;
 }
