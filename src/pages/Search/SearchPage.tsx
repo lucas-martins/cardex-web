@@ -6,6 +6,7 @@ import { Modal } from "../../components/ui/Modal";
 import "./SearchPage.css";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { createWishlistCard } from "../../services/wishlist/wishlistService";
 
 const PAGE_SIZE = 20;
 
@@ -20,7 +21,11 @@ export function SearchPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCard, setSelectedCard] = useState<PokemonCardSearchResult | null>(null);
+  const [selectedCard, setSelectedCard] =
+    useState<PokemonCardSearchResult | null>(null);
+  const [addingToWishlistId, setAddingToWishlistId] = useState<string | null>(
+    null,
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,10 +62,10 @@ export function SearchPage() {
       setTotalElements(0);
       setLastPage(true);
       setSearched(true);
-        if (
-            axios.isAxiosError(requestError) &&
-            requestError.code === "ECONNABORTED"
-        ) {
+      if (
+        axios.isAxiosError(requestError) &&
+        requestError.code === "ECONNABORTED"
+      ) {
         setError("The search took too long. Please try again.");
       } else {
         setError("Could not search for cards.");
@@ -85,25 +90,40 @@ export function SearchPage() {
         size: PAGE_SIZE,
       });
 
-      setCards((currentCards) => [
-        ...currentCards,
-        ...response.content,
-      ]);
+      setCards((currentCards) => [...currentCards, ...response.content]);
 
       setCurrentPage(response.page);
       setLastPage(response.last);
       setTotalElements(response.totalElements);
     } catch (requestError) {
-        if (
-            axios.isAxiosError(requestError) &&
-            requestError.code === "ECONNABORTED"
-        ) {
-            setError("Loading more cards took too long. Please try again.");
-        } else {
-            setError("Could not load more cards.");
-        }
+      if (
+        axios.isAxiosError(requestError) &&
+        requestError.code === "ECONNABORTED"
+      ) {
+        setError("Loading more cards took too long. Please try again.");
+      } else {
+        setError("Could not load more cards.");
+      }
     } finally {
       setLoadingMore(false);
+    }
+  }
+
+  async function handleAddToWishlist(externalId: string) {
+    if (addingToWishlistId) {
+      return;
+    }
+
+    try {
+      setAddingToWishlistId(externalId);
+
+      await createWishlistCard({ externalId });
+
+      toast.success("Card added to wishlist.");
+    } catch {
+      toast.error("Could not add card to wishlist.");
+    } finally {
+      setAddingToWishlistId(null);
     }
   }
 
@@ -150,9 +170,7 @@ export function SearchPage() {
                 alt={card.name}
               />
             ) : (
-              <div className="search-card-image-placeholder">
-                No image
-              </div>
+              <div className="search-card-image-placeholder">No image</div>
             )}
 
             <div className="search-card-content">
@@ -161,11 +179,21 @@ export function SearchPage() {
               <p>#{card.cardNumber}</p>
               <p>{card.rarity ?? "Rarity not available"}</p>
 
+              <button type="button" onClick={() => setSelectedCard(card)}>
+                Add to collection
+              </button>
+
               <button
                 type="button"
-                onClick={() => setSelectedCard(card)}
+                className="search-card-wishlist-button"
+                disabled={addingToWishlistId === card.externalId}
+                onClick={() => {
+                  void handleAddToWishlist(card.externalId);
+                }}
               >
-                Add to collection
+                {addingToWishlistId === card.externalId
+                  ? "Adding..."
+                  : "Add to wishlist"}
               </button>
             </div>
           </article>
@@ -183,26 +211,26 @@ export function SearchPage() {
             {loadingMore ? "Loading..." : "Load more"}
           </button>
         </div>
-    )}
+      )}
 
-    {selectedCard && (
+      {selectedCard && (
         <Modal
-            title={`Add ${selectedCard.name}`}
-            onClose={() => setSelectedCard(null)}
+          title={`Add ${selectedCard.name}`}
+          onClose={() => setSelectedCard(null)}
         >
-            <AddCardForm
+          <AddCardForm
             externalId={selectedCard.externalId}
             onCancel={() => setSelectedCard(null)}
             onSuccess={() => {
-                toast.success(
+              toast.success(
                 `${selectedCard.name} was added to your collection.`,
-                );
+              );
 
-                setSelectedCard(null);
+              setSelectedCard(null);
             }}
-            />
+          />
         </Modal>
-    )}
+      )}
     </section>
   );
 }

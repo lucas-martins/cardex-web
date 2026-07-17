@@ -36,6 +36,15 @@ export function MainLayout() {
           >
             Search Cards
           </NavLink>
+
+          <NavLink
+            className={({ isActive }) =>
+              isActive ? "navigation-link active" : "navigation-link"
+            }
+            to="/wishlist"
+          >
+            Wishlist
+          </NavLink>
         </nav>
       </header>
 

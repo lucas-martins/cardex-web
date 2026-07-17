@@ -149,6 +149,45 @@
   color: #15803d;
 }
 
+.search-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.search-card-actions button {
+  flex: 1;
+}
+
+.search-card-wishlist-button {
+  padding: 10px 14px;
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.search-card-wishlist-button:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.search-card-wishlist-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (max-width: 520px) {
+  .search-card-actions {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 600px) {
   .search-form {
     flex-direction: column;

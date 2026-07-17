@@ -1,16 +1,13 @@
 import { type FormEvent, useState } from "react";
 import { createCard } from "../../services/cards/cardService";
-import type {
-  CardCondition,
-  CardLanguage,
-} from "../../types/card";
+import type { CardCondition, CardLanguage } from "../../types/card";
 import "./AddCardForm.css";
 import toast from "react-hot-toast";
 
 interface AddCardFormProps {
   externalId: string;
   onCancel: () => void;
-  onSuccess: () => void;
+  onSuccess: () => void | Promise<void>;
 }
 
 export function AddCardForm({
@@ -19,10 +16,8 @@ export function AddCardForm({
   onSuccess,
 }: AddCardFormProps) {
   const [quantity, setQuantity] = useState(1);
-  const [language, setLanguage] =
-    useState<CardLanguage>("ENGLISH");
-  const [condition, setCondition] =
-    useState<CardCondition>("NEAR_MINT");
+  const [language, setLanguage] = useState<CardLanguage>("ENGLISH");
+  const [condition, setCondition] = useState<CardCondition>("NEAR_MINT");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -40,7 +35,7 @@ export function AddCardForm({
         notes: notes.trim() || undefined,
       });
 
-      onSuccess();
+      await onSuccess();
     } catch {
       toast.error("Could not add the card to your collection.");
     } finally {
@@ -56,9 +51,7 @@ export function AddCardForm({
           type="number"
           min={1}
           value={quantity}
-          onChange={(event) =>
-            setQuantity(Number(event.target.value))
-          }
+          onChange={(event) => setQuantity(Number(event.target.value))}
           required
         />
       </label>
@@ -67,9 +60,7 @@ export function AddCardForm({
         Language
         <select
           value={language}
-          onChange={(event) =>
-            setLanguage(event.target.value as CardLanguage)
-          }
+          onChange={(event) => setLanguage(event.target.value as CardLanguage)}
         >
           <option value="ENGLISH">English</option>
           <option value="PORTUGUESE">Portuguese</option>
