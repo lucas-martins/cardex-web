@@ -241,9 +241,10 @@ export function HomePage() {
 
               <div className="home-progress-grid">
                 {collectionProgress.slice(0, 6).map((progress) => (
-                  <article
+                  <Link
                     className="home-progress-card"
                     key={progress.collectionId}
+                    to={`/collections/${progress.collectionId}`}
                   >
                     <div className="home-progress-card-header">
                       <div>
@@ -270,7 +271,7 @@ export function HomePage() {
                     <p>
                       {progress.ownedCards} of {progress.totalCards} cards
                     </p>
-                  </article>
+                  </Link>
                 ))}
               </div>
             </section>

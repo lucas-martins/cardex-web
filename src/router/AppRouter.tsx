@@ -5,6 +5,7 @@ import { HomePage } from "../pages/Home/HomePage";
 import { SearchPage } from "../pages/Search/SearchPage";
 import { CardDetailsPage } from "../pages/CardDetails/CardDetailsPage";
 import { WishlistPage } from "../pages/Wishlist/WishlistPage";
+import { CollectionDetailsPage } from "../pages/CollectionDetails/CollectionDetailsPage";
 
 export function AppRouter() {
   return (
@@ -16,6 +17,10 @@ export function AppRouter() {
           <Route path="/collection/:id" element={<CardDetailsPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
+          <Route
+            path="/collections/:collectionId"
+            element={<CollectionDetailsPage />}
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

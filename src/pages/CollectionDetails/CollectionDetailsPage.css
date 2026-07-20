@@ -1,0 +1,221 @@
+.collection-details-page {
+  display: grid;
+  gap: 28px;
+}
+
+.collection-details-back {
+  width: fit-content;
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.collection-details-back:hover {
+  text-decoration: underline;
+}
+
+.collection-details-header {
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    #1d4ed8,
+    #4f46e5
+  );
+  border-radius: 18px;
+}
+
+.collection-details-header span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.collection-details-header h1 {
+  margin: 0 0 10px;
+  font-size: clamp(30px, 5vw, 46px);
+}
+
+.collection-details-header p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.collection-details-header > strong {
+  flex-shrink: 0;
+  font-size: 34px;
+}
+
+.collection-details-progress {
+  height: 12px;
+  overflow: hidden;
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+.collection-details-progress span {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+  border-radius: inherit;
+}
+
+.collection-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.collection-details-card {
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 5%);
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.collection-details-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 10%);
+}
+
+.collection-details-image-wrapper {
+  position: relative;
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+  background: #f9fafb;
+}
+
+.collection-details-image-wrapper img,
+.collection-details-placeholder {
+  width: 100%;
+  max-width: 190px;
+  aspect-ratio: 2.5 / 3.5;
+}
+
+.collection-details-image-wrapper img {
+  display: block;
+  object-fit: contain;
+}
+
+.collection-details-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.collection-details-image-wrapper > span {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-width: 34px;
+  padding: 5px 9px;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.collection-details-favorite {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f59e0b;
+  background: rgb(255 255 255 / 92%);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+  font-size: 21px;
+}
+
+.collection-details-card-content {
+  padding: 16px;
+}
+
+.collection-details-card-content > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.collection-details-card-content h2 {
+  margin: 0;
+  overflow: hidden;
+  color: #111827;
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-details-card-content > div:first-child > span {
+  flex-shrink: 0;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.collection-details-card-content > p {
+  margin: 10px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.collection-details-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.collection-details-badges span {
+  padding: 5px 8px;
+  color: #374151;
+  background: #f3f4f6;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.collection-details-error {
+  color: #b91c1c;
+}
+
+@media (max-width: 1000px) {
+  .collection-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .collection-details-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .collection-details-grid {
+    grid-template-columns: 1fr;
+  }
+}

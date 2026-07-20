@@ -9,6 +9,7 @@ import type { CollectionSummary } from "../../types/collectionSummary";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
 import type { CollectionGoals } from "../../types/collectionGoals";
 import type { CollectionProgress } from "../../types/collectionProgress";
+import type { CollectionDetails } from "../../types/collectionDetails";
 
 
 export interface FindCardsParams {
@@ -125,6 +126,16 @@ export async function getCollectionProgress(): Promise<CollectionProgress[]> {
     await apiClient.get<CollectionProgress[]>(
       "/cards/collection-progress",
     );
+
+  return response.data;
+}
+
+export async function getCollectionDetails(
+  collectionId: string,
+): Promise<CollectionDetails> {
+  const response = await apiClient.get<CollectionDetails>(
+    `/cards/collections/${collectionId}`,
+  );
 
   return response.data;
 }
