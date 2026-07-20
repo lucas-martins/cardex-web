@@ -5,11 +5,13 @@ import {
   findCards,
   getCollectionSummary,
   getCollectionAnalytics,
+  getCollectionGoals,
 } from "../../services/cards/cardService";
 import type { Card } from "../../types/card";
 import type { CollectionSummary } from "../../types/collectionSummary";
 import "./HomePage.css";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
+import type { CollectionGoals } from "../../types/collectionGoals";
 
 export function HomePage() {
   const [summary, setSummary] = useState<CollectionSummary | null>(null);
@@ -18,6 +20,7 @@ export function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [favoriteCards, setFavoriteCards] = useState<Card[]>([]);
   const [analytics, setAnalytics] = useState<CollectionAnalytics | null>(null);
+  const [goals, setGoals] = useState<CollectionGoals | null>(null);
 
   useEffect(() => {
     async function loadHomeData() {
@@ -28,11 +31,13 @@ export function HomePage() {
         const [
           summaryResponse,
           analyticsResponse,
+          goalsResponse,
           favoriteCardsResponse,
           recentCardsResponse,
         ] = await Promise.all([
           getCollectionSummary(),
           getCollectionAnalytics(),
+          getCollectionGoals(),
           findCards({
             page: 0,
             size: 4,
@@ -50,6 +55,7 @@ export function HomePage() {
         setAnalytics(analyticsResponse);
         setFavoriteCards(favoriteCardsResponse.content);
         setRecentCards(recentCardsResponse.content);
+        setGoals(goalsResponse);
       } catch {
         setError("Could not load the home page information.");
       } finally {
@@ -165,6 +171,55 @@ export function HomePage() {
                 )}
               </article>
             </div>
+          )}
+
+          {goals && (
+            <section className="home-goals">
+              <div className="home-section-header">
+                <div>
+                  <h2>Collection goals</h2>
+                  <p>
+                    {goals.completedGoals} of {goals.totalGoals} goals
+                    completed.
+                  </p>
+                </div>
+              </div>
+
+              <div className="home-goals-grid">
+                {goals.goals.map((goal) => (
+                  <article
+                    key={goal.code}
+                    className={`home-goal-card ${
+                      goal.completed ? "completed" : ""
+                    }`}
+                  >
+                    <div className="home-goal-status">
+                      {goal.completed ? "🏆" : "🎯"}
+                    </div>
+
+                    <div className="home-goal-content">
+                      <h3>{goal.title}</h3>
+
+                      <p>{goal.description}</p>
+
+                      <strong>
+                        {goal.currentValue} / {goal.targetValue}
+                      </strong>
+
+                      <div className="home-goal-progress">
+                        <span
+                          style={{
+                            width: `${
+                              (goal.currentValue / goal.targetValue) * 100
+                            }%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
           )}
 
           {analytics && (

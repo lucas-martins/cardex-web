@@ -7,6 +7,7 @@ import type {
 import type { PageResponse } from "../../types/page";
 import type { CollectionSummary } from "../../types/collectionSummary";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
+import type { CollectionGoals } from "../../types/collectionGoals";
 
 
 export interface FindCardsParams {
@@ -107,6 +108,13 @@ export async function findCardById(id: number): Promise<Card> {
 export async function getCollectionAnalytics(): Promise<CollectionAnalytics> {
   const response =
     await apiClient.get<CollectionAnalytics>("/cards/analytics");
+
+  return response.data;
+}
+
+export async function getCollectionGoals(): Promise<CollectionGoals> {
+  const response =
+    await apiClient.get<CollectionGoals>("/cards/goals");
 
   return response.data;
 }
