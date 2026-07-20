@@ -6,12 +6,14 @@ import {
   getCollectionSummary,
   getCollectionAnalytics,
   getCollectionGoals,
+  getCollectionProgress,
 } from "../../services/cards/cardService";
 import type { Card } from "../../types/card";
 import type { CollectionSummary } from "../../types/collectionSummary";
 import "./HomePage.css";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
 import type { CollectionGoals } from "../../types/collectionGoals";
+import type { CollectionProgress } from "../../types/collectionProgress";
 
 export function HomePage() {
   const [summary, setSummary] = useState<CollectionSummary | null>(null);
@@ -21,6 +23,9 @@ export function HomePage() {
   const [favoriteCards, setFavoriteCards] = useState<Card[]>([]);
   const [analytics, setAnalytics] = useState<CollectionAnalytics | null>(null);
   const [goals, setGoals] = useState<CollectionGoals | null>(null);
+  const [collectionProgress, setCollectionProgress] = useState<
+    CollectionProgress[]
+  >([]);
 
   useEffect(() => {
     async function loadHomeData() {
@@ -32,12 +37,14 @@ export function HomePage() {
           summaryResponse,
           analyticsResponse,
           goalsResponse,
+          collectionProgressResponse,
           favoriteCardsResponse,
           recentCardsResponse,
         ] = await Promise.all([
           getCollectionSummary(),
           getCollectionAnalytics(),
           getCollectionGoals(),
+          getCollectionProgress(),
           findCards({
             page: 0,
             size: 4,
@@ -56,6 +63,7 @@ export function HomePage() {
         setFavoriteCards(favoriteCardsResponse.content);
         setRecentCards(recentCardsResponse.content);
         setGoals(goalsResponse);
+        setCollectionProgress(collectionProgressResponse);
       } catch {
         setError("Could not load the home page information.");
       } finally {
@@ -216,6 +224,52 @@ export function HomePage() {
                         />
                       </div>
                     </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {collectionProgress.length > 0 && (
+            <section className="home-progress">
+              <div className="home-section-header">
+                <div>
+                  <h2>Collection progress</h2>
+                  <p>Track your completion by collection.</p>
+                </div>
+              </div>
+
+              <div className="home-progress-grid">
+                {collectionProgress.slice(0, 6).map((progress) => (
+                  <article
+                    className="home-progress-card"
+                    key={progress.collectionId}
+                  >
+                    <div className="home-progress-card-header">
+                      <div>
+                        <h3>{progress.collectionName}</h3>
+                        <span>{progress.collectionId}</span>
+                      </div>
+
+                      <strong>
+                        {progress.completionPercentage.toFixed(2)}%
+                      </strong>
+                    </div>
+
+                    <div className="home-progress-bar">
+                      <span
+                        style={{
+                          width: `${Math.min(
+                            progress.completionPercentage,
+                            100,
+                          )}%`,
+                        }}
+                      />
+                    </div>
+
+                    <p>
+                      {progress.ownedCards} of {progress.totalCards} cards
+                    </p>
                   </article>
                 ))}
               </div>

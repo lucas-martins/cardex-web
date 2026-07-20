@@ -224,15 +224,19 @@ export function CollectionPage() {
         <div className="collection-grid">
           {cards.map((card) => (
             <Link
+              key={card.id}
               className="collection-card-details-link"
               to={`/collection/${card.id}`}
             >
-              <article className="collection-card" key={card.id}>
+              <article className="collection-card">
                 <div className="collection-card-image-wrapper">
                   <button
                     type="button"
                     className="favorite-button"
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+
                       void handleToggleFavorite(card);
                     }}
                     title={
@@ -280,11 +284,27 @@ export function CollectionPage() {
                   )}
 
                   <div className="collection-card-actions">
-                    <button type="button" onClick={() => setCardToEdit(card)}>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        setCardToEdit(card);
+                      }}
+                    >
                       Edit
                     </button>
 
-                    <button type="button" onClick={() => setCardToDelete(card)}>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        setCardToDelete(card);
+                      }}
+                    >
                       Remove
                     </button>
                   </div>

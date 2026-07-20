@@ -496,6 +496,80 @@
   background: #16a34a;
 }
 
+.home-progress {
+  margin-top: 42px;
+}
+
+.home-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.home-progress-card {
+  padding: 20px;
+  background: #181a1b;
+  border: 1px solid #343739;
+  border-radius: 12px;
+}
+
+.home-progress-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.home-progress-card-header h3 {
+  margin: 0 0 5px;
+  color: #f3f4f6;
+  font-size: 18px;
+}
+
+.home-progress-card-header span {
+  color: #8f8982;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.home-progress-card-header strong {
+  color: #60a5fa;
+  font-size: 18px;
+}
+
+.home-progress-bar {
+  height: 9px;
+  margin: 18px 0 12px;
+  overflow: hidden;
+  background: #2b2e30;
+  border-radius: 999px;
+}
+
+.home-progress-bar span {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+  border-radius: inherit;
+}
+
+.home-progress-card p {
+  margin: 0;
+  color: #a8a29e;
+  font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+  .home-progress-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .home-progress-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 760px) {
   .home-goals-grid {
     grid-template-columns: 1fr;
