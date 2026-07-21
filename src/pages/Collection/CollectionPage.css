@@ -1,5 +1,53 @@
 .collection-header {
   margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.collection-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.collection-header-actions button {
+  min-height: 42px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.collection-header-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.collection-import-button {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.collection-import-button:hover:not(:disabled) {
+  background: #dbeafe;
+}
+
+.collection-export-button {
+  color: #ffffff;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.collection-export-button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.collection-import-input {
+  display: none;
 }
 
 .collection-header h1 {
@@ -290,6 +338,200 @@
 
 .collection-card-view-details:hover {
   background: #e5e7eb;
+}
+
+.collection-import-preview {
+  width: min(760px, 80vw);
+  max-width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.collection-import-filename {
+  margin: 0;
+  color: #4b5563;
+  word-break: break-word;
+}
+
+.collection-import-summary {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.collection-import-summary > div {
+  padding: 16px;
+  display: grid;
+  gap: 6px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  min-width: 0;
+}
+
+.collection-import-summary span {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.collection-import-summary strong {
+  color: #111827;
+  font-size: 24px;
+}
+
+.collection-import-summary .valid {
+  background: #f0fdf4;
+}
+
+.collection-import-summary .valid strong {
+  color: #15803d;
+}
+
+.collection-import-summary .invalid {
+  background: #fef2f2;
+}
+
+.collection-import-summary .invalid strong {
+  color: #b91c1c;
+}
+
+.collection-import-items {
+  width: 100%;
+  min-width: 0;
+  max-height: 360px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: grid;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.collection-import-item {
+  width: 100%;
+  min-width: 0;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 240px);
+  align-items: start;
+  gap: 18px;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.collection-import-item.valid {
+  border-left: 4px solid #16a34a;
+}
+
+.collection-import-item.invalid {
+  border-left: 4px solid #dc2626;
+}
+
+.collection-import-item > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.collection-import-item > div:first-child strong {
+  color: #111827;
+}
+
+.collection-import-item > div:first-child span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.collection-import-item-status {
+  min-width: 0;
+  max-width: none;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.collection-import-item-status .valid {
+  color: #15803d;
+}
+
+.collection-import-item-status .invalid {
+  color: #b91c1c;
+}
+
+.collection-import-result {
+  padding: 16px;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+}
+
+.collection-import-result p {
+  margin: 5px 0 0;
+}
+
+.collection-import-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.collection-import-actions button {
+  min-height: 42px;
+  padding: 0 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.collection-import-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.collection-import-actions .secondary {
+  color: #374151;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+}
+
+.collection-import-actions .primary {
+  color: #ffffff;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+@media (max-width: 700px) {
+  .collection-import-preview {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .collection-import-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-import-item {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-import-item-status {
+    text-align: left;
+  }
+
+  .collection-import-actions {
+    flex-direction: column-reverse;
+  }
+
+  .collection-import-actions button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 500px) {

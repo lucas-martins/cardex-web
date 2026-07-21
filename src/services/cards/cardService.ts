@@ -10,6 +10,7 @@ import type { CollectionAnalytics } from "../../types/collectionAnalytics";
 import type { CollectionGoals } from "../../types/collectionGoals";
 import type { CollectionProgress } from "../../types/collectionProgress";
 import type { CollectionDetails } from "../../types/collectionDetails";
+import type { CardImportPreview, CardImportResult } from "../../types/cardImport";
 
 
 export interface FindCardsParams {
@@ -135,6 +136,47 @@ export async function getCollectionDetails(
 ): Promise<CollectionDetails> {
   const response = await apiClient.get<CollectionDetails>(
     `/cards/collections/${collectionId}`,
+  );
+
+  return response.data;
+}
+
+export async function exportCollectionCsv(): Promise<Blob> {
+  const response = await apiClient.get<Blob>(
+    "/cards/export/csv",
+    {
+      responseType: "blob",
+    },
+  );
+
+  return response.data;
+}
+
+export async function previewCollectionCsv(
+  file: File,
+): Promise<CardImportPreview> {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await apiClient.post<CardImportPreview>(
+    "/cards/import/csv/preview",
+    formData,
+  );
+
+  return response.data;
+}
+
+export async function importCollectionCsv(
+  file: File,
+): Promise<CardImportResult> {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await apiClient.post<CardImportResult>(
+    "/cards/import/csv",
+    formData,
   );
 
   return response.data;
