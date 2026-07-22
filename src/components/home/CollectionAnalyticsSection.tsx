@@ -15,14 +15,9 @@ function formatAnalyticsName(name: string) {
     .join(" ");
 }
 
-function getMaxQuantity(items: CollectionAnalytics["collections"]) {
-  return Math.max(...items.map((item) => item.quantity), 1);
-}
-
 export function CollectionAnalyticsSection({
   analytics,
 }: CollectionAnalyticsSectionProps) {
-  const maxCollectionQuantity = getMaxQuantity(analytics.collections);
 
   return (
     <section className="home-analytics">
