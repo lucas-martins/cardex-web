@@ -1,4 +1,7 @@
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
+import { TopCollectionsChart } from "./TopCollectionsChart";
+import { DistributionDonutChart } from "./DistributionDonutChart";
+import { RaritiesChart } from "./RaritiesChart";
 
 interface CollectionAnalyticsSectionProps {
   analytics: CollectionAnalytics;
@@ -34,81 +37,31 @@ export function CollectionAnalyticsSection({
         <article className="home-analytics-card">
           <h3>Top collections</h3>
 
-          {analytics.collections.length === 0 ? (
-            <p className="home-analytics-empty">No data available.</p>
-          ) : (
-            <div className="home-analytics-list">
-              {analytics.collections.slice(0, 5).map((item) => (
-                <div className="home-analytics-item" key={item.name}>
-                  <div className="home-analytics-item-header">
-                    <span>{item.name}</span>
-                    <strong>{item.quantity}</strong>
-                  </div>
-
-                  <div className="home-analytics-bar">
-                    <span
-                      style={{
-                        width: `${
-                          (item.quantity / maxCollectionQuantity) * 100
-                        }%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <TopCollectionsChart collections={analytics.collections} />
         </article>
 
         <article className="home-analytics-card">
           <h3>Languages</h3>
 
-          {analytics.languages.length === 0 ? (
-            <p className="home-analytics-empty">No data available.</p>
-          ) : (
-            <div className="home-analytics-stat-list">
-              {analytics.languages.map((item) => (
-                <div key={item.name}>
-                  <span>{formatAnalyticsName(item.name)}</span>
-                  <strong>{item.quantity}</strong>
-                </div>
-              ))}
-            </div>
-          )}
+          <DistributionDonutChart
+            items={analytics.languages}
+            formatName={formatAnalyticsName}
+          />
         </article>
 
         <article className="home-analytics-card">
           <h3>Conditions</h3>
 
-          {analytics.conditions.length === 0 ? (
-            <p className="home-analytics-empty">No data available.</p>
-          ) : (
-            <div className="home-analytics-stat-list">
-              {analytics.conditions.map((item) => (
-                <div key={item.name}>
-                  <span>{formatAnalyticsName(item.name)}</span>
-                  <strong>{item.quantity}</strong>
-                </div>
-              ))}
-            </div>
-          )}
+          <DistributionDonutChart
+            items={analytics.conditions}
+            formatName={formatAnalyticsName}
+          />
         </article>
 
         <article className="home-analytics-card">
           <h3>Rarities</h3>
 
-          {analytics.rarities.length === 0 ? (
-            <p className="home-analytics-empty">No data available.</p>
-          ) : (
-            <div className="home-analytics-stat-list">
-              {analytics.rarities.slice(0, 6).map((item) => (
-                <div key={item.name}>
-                  <span>{item.name}</span>
-                  <strong>{item.quantity}</strong>
-                </div>
-              ))}
-            </div>
-          )}
+          <RaritiesChart rarities={analytics.rarities} />
         </article>
       </div>
     </section>
