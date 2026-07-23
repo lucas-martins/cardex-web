@@ -1,7 +1,22 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../context/AuthContext";
+
 import "./MainLayout.css";
 
 export function MainLayout() {
+  const navigate = useNavigate();
+
+  const { user, logout } = useAuth();
+
+  function handleLogout() {
+    logout();
+
+    navigate("/login", {
+      replace: true,
+    });
+  }
+
   return (
     <div className="main-layout">
       <header className="main-header">
@@ -46,6 +61,18 @@ export function MainLayout() {
             Wishlist
           </NavLink>
         </nav>
+
+        <div className="header-user">
+          <span className="header-username">{user?.name}</span>
+
+          <button
+            className="logout-button"
+            type="button"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       <main className="main-content">

@@ -51,6 +51,48 @@
   padding: 32px;
 }
 
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.header-username {
+  max-width: 180px;
+  overflow: hidden;
+  color: #c7ccd3;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-button {
+  padding: 8px 14px;
+  border: 1px solid #454a50;
+  border-radius: 8px;
+  background: transparent;
+  color: #f3f4f6;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.logout-button:hover {
+  border-color: #6f96ff;
+  background: rgba(111, 150, 255, 0.1);
+}
+
+.logout-button:focus-visible {
+  outline: 2px solid #6f96ff;
+  outline-offset: 2px;
+}
+
 @media (max-width: 700px) {
   .main-header {
     padding: 16px 20px;
