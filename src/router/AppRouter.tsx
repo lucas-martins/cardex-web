@@ -4,6 +4,7 @@ import { ProtectedRoute } from "../components/ProtectedRoute";
 import { MainLayout } from "../layouts/MainLayout";
 
 import { LoginPage } from "../pages/Login/LoginPage";
+import { RegisterPage } from "../pages/Register/RegisterPage";
 import { HomePage } from "../pages/Home/HomePage";
 import { CollectionPage } from "../pages/Collection/CollectionPage";
 import { CardDetailsPage } from "../pages/CardDetails/CardDetailsPage";
@@ -15,11 +16,9 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<LoginPage />} />
 
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
+        <Route path="/register" element={<RegisterPage />} />
 
         <Route
           element={
@@ -39,11 +38,7 @@ export function AppRouter() {
           />
         </Route>
 
-        <Route
-          path="*"
-          element={<Navigate to="/" replace />}
-        />
-
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

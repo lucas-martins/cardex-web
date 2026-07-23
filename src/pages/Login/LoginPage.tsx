@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import { useAuth } from "../../context/AuthContext";
@@ -88,6 +88,10 @@ export function LoginPage() {
             {submitting ? "Signing in..." : "Sign in"}
           </button>
         </form>
+
+        <p className="login-footer">
+          Don't have an account? <Link to="/register">Create account</Link>
+        </p>
       </section>
     </main>
   );
