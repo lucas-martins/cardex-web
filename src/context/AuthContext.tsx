@@ -14,8 +14,7 @@ interface AuthContextData {
   user: UserResponse | null;
   authenticated: boolean;
   loading: boolean;
-
-  login(username: string, password: string): Promise<void>;
+  login(email: string, password: string): Promise<void>;
   logout(): void;
 }
 
@@ -30,15 +29,18 @@ export function AuthProvider({ children }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadUser() {
-      if (!authStorage.hasToken()) {
+    async function restoreSession() {
+      const token = authStorage.getToken();
+
+      if (!token) {
         setLoading(false);
         return;
       }
 
       try {
-        const me = await authService.me();
-        setUser(me);
+        const authenticatedUser = await authService.me();
+
+        setUser(authenticatedUser);
       } catch {
         authStorage.removeToken();
         setUser(null);
@@ -47,7 +49,7 @@ export function AuthProvider({ children }: Props) {
       }
     }
 
-    loadUser();
+    void restoreSession();
   }, []);
 
   async function login(email: string, password: string) {
@@ -58,23 +60,28 @@ export function AuthProvider({ children }: Props) {
 
     authStorage.saveToken(response.accessToken);
 
-    const me = await authService.me();
+    try {
+      const authenticatedUser = await authService.me();
 
-    setUser(me);
-    setLoading(false);
+      setUser(authenticatedUser);
+    } catch (error) {
+      authStorage.removeToken();
+      setUser(null);
+
+      throw error;
+    }
   }
 
   function logout() {
     authStorage.removeToken();
     setUser(null);
-    setLoading(false);
   }
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        authenticated: !!user,
+        authenticated: Boolean(user),
         loading,
         login,
         logout,

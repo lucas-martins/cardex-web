@@ -7,15 +7,21 @@ import { useAuth } from "../../context/AuthContext";
 
 import "./LoginPage.css";
 import axios from "axios";
+import { AuthCard } from "../../components/authCard/AuthCard";
+import { FullPageLoader } from "../../components/fullPageLoader/FullPageLoader";
 
 export function LoginPage() {
   const navigate = useNavigate();
 
-  const { login, authenticated } = useAuth();
+  const { login, authenticated, loading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  if (loading) {
+    return <FullPageLoader />;
+  }
 
   if (authenticated) {
     return <Navigate to="/" replace />;
@@ -49,50 +55,44 @@ export function LoginPage() {
   }
 
   return (
-    <main className="login-page">
-      <section className="login-card">
-        <div className="login-header">
-          <span className="login-brand">CardDex</span>
-
-          <h1>Welcome back</h1>
-
-          <p>Sign in to manage your Pokémon TCG collection.</p>
-        </div>
-
-        <form className="login-form" onSubmit={handleSubmit}>
-          <label htmlFor="email">Email</label>
-
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            autoComplete="email"
-            disabled={submitting}
-          />
-
-          <label htmlFor="password">Password</label>
-
-          <input
-            id="password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="current-password"
-            disabled={submitting}
-          />
-
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
-
-        <p className="login-footer">
+    <AuthCard
+      title="Welcome back"
+      description="Sign in to manage your Pokémon TCG collection."
+      footer={
+        <p>
           Don't have an account? <Link to="/register">Create account</Link>
         </p>
-      </section>
-    </main>
+      }
+    >
+      <form className="login-form" onSubmit={handleSubmit}>
+        <label htmlFor="email">Email</label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          autoComplete="email"
+          disabled={submitting}
+        />
+
+        <label htmlFor="password">Password</label>
+
+        <input
+          id="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          autoComplete="current-password"
+          disabled={submitting}
+        />
+
+        <button type="submit" disabled={submitting}>
+          {submitting ? "Signing in..." : "Sign in"}
+        </button>
+      </form>
+    </AuthCard>
   );
 }

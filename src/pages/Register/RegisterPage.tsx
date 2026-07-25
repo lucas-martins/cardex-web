@@ -8,16 +8,22 @@ import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/auth/authService";
 
 import "./RegisterPage.css";
+import { AuthCard } from "../../components/authCard/AuthCard";
+import { FullPageLoader } from "../../components/fullPageLoader/FullPageLoader";
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { authenticated } = useAuth();
+  const { authenticated, loading } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  if (loading) {
+    return <FullPageLoader />;
+  }
 
   if (authenticated) {
     return <Navigate to="/" replace />;
@@ -72,74 +78,68 @@ export function RegisterPage() {
   }
 
   return (
-    <main className="register-page">
-      <section className="register-card">
-        <div className="register-header">
-          <span className="register-brand">CardDex</span>
-
-          <h1>Create your account</h1>
-
-          <p>Start organizing your Pokémon TCG collection.</p>
-        </div>
-
-        <form className="register-form" onSubmit={handleSubmit}>
-          <label htmlFor="name">Name</label>
-
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            autoComplete="name"
-            disabled={submitting}
-          />
-
-          <label htmlFor="email">Email</label>
-
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            autoComplete="email"
-            disabled={submitting}
-          />
-
-          <label htmlFor="password">Password</label>
-
-          <input
-            id="password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="new-password"
-            disabled={submitting}
-          />
-
-          <label htmlFor="passwordConfirmation">Confirm password</label>
-
-          <input
-            id="passwordConfirmation"
-            name="passwordConfirmation"
-            type="password"
-            value={passwordConfirmation}
-            onChange={(event) => setPasswordConfirmation(event.target.value)}
-            autoComplete="new-password"
-            disabled={submitting}
-          />
-
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Creating account..." : "Create account"}
-          </button>
-        </form>
-
-        <p className="register-footer">
+    <AuthCard
+      title="Create your account"
+      description="Start organizing your Pokémon TCG collection."
+      footer={
+        <p>
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
-      </section>
-    </main>
+      }
+    >
+      <form className="register-form" onSubmit={handleSubmit}>
+        <label htmlFor="name">Name</label>
+
+        <input
+          id="name"
+          name="name"
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          autoComplete="name"
+          disabled={submitting}
+        />
+
+        <label htmlFor="email">Email</label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          autoComplete="email"
+          disabled={submitting}
+        />
+
+        <label htmlFor="password">Password</label>
+
+        <input
+          id="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          autoComplete="new-password"
+          disabled={submitting}
+        />
+
+        <label htmlFor="passwordConfirmation">Confirm password</label>
+
+        <input
+          id="passwordConfirmation"
+          name="passwordConfirmation"
+          type="password"
+          value={passwordConfirmation}
+          onChange={(event) => setPasswordConfirmation(event.target.value)}
+          autoComplete="new-password"
+          disabled={submitting}
+        />
+
+        <button type="submit" disabled={submitting}>
+          {submitting ? "Creating account..." : "Create account"}
+        </button>
+      </form>
+    </AuthCard>
   );
 }
