@@ -61,11 +61,16 @@
 .header-username {
   max-width: 180px;
   overflow: hidden;
-  color: #c7ccd3;
   font-size: 14px;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+}
+
+.header-username:hover {
+  text-decoration: underline;
 }
 
 .logout-button {

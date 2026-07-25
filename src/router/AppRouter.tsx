@@ -11,6 +11,7 @@ import { CardDetailsPage } from "../pages/CardDetails/CardDetailsPage";
 import { SearchPage } from "../pages/Search/SearchPage";
 import { WishlistPage } from "../pages/Wishlist/WishlistPage";
 import { CollectionDetailsPage } from "../pages/CollectionDetails/CollectionDetailsPage";
+import { ProfilePage } from "../pages/Profile/ProfilePage";
 
 export function AppRouter() {
   return (
@@ -36,6 +37,7 @@ export function AppRouter() {
             path="/collections/:collectionId"
             element={<CollectionDetailsPage />}
           />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

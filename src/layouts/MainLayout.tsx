@@ -63,8 +63,9 @@ export function MainLayout() {
         </nav>
 
         <div className="header-user">
-          <span className="header-username">{user?.name}</span>
-
+          <NavLink className="header-username" to="/profile">
+            {user?.name}
+          </NavLink>
           <button
             className="logout-button"
             type="button"
