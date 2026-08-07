@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -7,6 +7,9 @@ import { ProfilePage } from "./ProfilePage";
 const mockUseAuth = vi.hoisted(() => vi.fn());
 const mockLogout = vi.hoisted(() => vi.fn());
 const mockNavigate = vi.hoisted(() => vi.fn());
+const mockChangePassword = vi.hoisted(() => vi.fn());
+const mockToastError = vi.hoisted(() => vi.fn());
+const mockToastSuccess = vi.hoisted(() => vi.fn());
 
 vi.mock("../../context/useAuth", () => ({
   useAuth: mockUseAuth,
@@ -23,6 +26,19 @@ vi.mock("react-router-dom", async () => {
     useNavigate: () => mockNavigate,
   };
 });
+
+vi.mock("../../services/auth/authService", () => ({
+  authService: {
+    changePassword: mockChangePassword,
+  },
+}));
+
+vi.mock("react-hot-toast", () => ({
+  default: {
+    error: mockToastError,
+    success: mockToastSuccess,
+  },
+}));
 
 describe("ProfilePage", () => {
   beforeEach(() => {
@@ -49,17 +65,11 @@ describe("ProfilePage", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByText("Lucas Martins"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Lucas Martins")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("lucas@example.com"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("lucas@example.com")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("User"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("User")).toBeInTheDocument();
   });
 
   it("should render administrator role label", () => {
@@ -82,9 +92,7 @@ describe("ProfilePage", () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByText("Administrator"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Administrator")).toBeInTheDocument();
   });
 
   it("should return nothing when there is no user", () => {
@@ -118,15 +126,157 @@ describe("ProfilePage", () => {
       }),
     );
 
-    expect(mockLogout)
-      .toHaveBeenCalledOnce();
+    expect(mockLogout).toHaveBeenCalledOnce();
 
-    expect(mockNavigate)
-      .toHaveBeenCalledWith(
-        "/login",
-        {
-          replace: true,
-        },
+    expect(mockNavigate).toHaveBeenCalledWith("/login", {
+      replace: true,
+    });
+  });
+
+  it("should change password successfully", async () => {
+    mockChangePassword.mockResolvedValue(undefined);
+
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: {
+        value: "12345678",
+      },
+    });
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: {
+        value: "new-password",
+      },
+    });
+
+    fireEvent.change(screen.getByLabelText("Confirm new password"), {
+      target: {
+        value: "new-password",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Change password",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockChangePassword).toHaveBeenCalledWith(
+        "12345678",
+        "new-password",
       );
+    });
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Password changed successfully.",
+    );
+  });
+
+  it("should not change password when fields are empty", async () => {
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Change password",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Fill in all password fields.",
+      );
+    });
+
+    expect(mockChangePassword).not.toHaveBeenCalled();
+  });
+
+  it("should not change password when confirmation does not match", async () => {
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: {
+        value: "12345678",
+      },
+    });
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: {
+        value: "new-password",
+      },
+    });
+
+    fireEvent.change(screen.getByLabelText("Confirm new password"), {
+      target: {
+        value: "different-password",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Change password",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "New passwords do not match.",
+      );
+    });
+
+    expect(mockChangePassword).not.toHaveBeenCalled();
+  });
+
+  it("should reject a new password shorter than eight characters", async () => {
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText("Current password"), {
+      target: {
+        value: "12345678",
+      },
+    });
+
+    fireEvent.change(screen.getByLabelText("New password"), {
+      target: {
+        value: "1234567",
+      },
+    });
+
+    fireEvent.change(screen.getByLabelText("Confirm new password"), {
+      target: {
+        value: "1234567",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Change password",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "New password must have at least 8 characters.",
+      );
+    });
+
+    expect(mockChangePassword).not.toHaveBeenCalled();
   });
 });
