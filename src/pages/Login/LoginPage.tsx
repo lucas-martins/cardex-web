@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { Navigate, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 
 import "./LoginPage.css";
 import axios from "axios";

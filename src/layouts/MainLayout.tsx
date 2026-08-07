@@ -1,8 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
-import { useAuth } from "../context/AuthContext";
-
 import "./MainLayout.css";
+import { useAuth } from "../context/useAuth";
 
 export function MainLayout() {
   const navigate = useNavigate();

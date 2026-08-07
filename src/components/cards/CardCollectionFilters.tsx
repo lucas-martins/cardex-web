@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 
 import type { CardCondition, CardLanguage } from "../../types/card";
 import "./CardCollectionFilters.css";
@@ -41,14 +41,6 @@ export function CardCollectionFilters({
   );
   const [sort, setSort] = useState<CardCollectionSort>(initialValues.sort);
   const [favorite, setFavorite] = useState(initialValues.favorite);
-
-  useEffect(() => {
-    setName(initialValues.name);
-    setLanguage(initialValues.language);
-    setCondition(initialValues.condition);
-    setSort(initialValues.sort);
-    setFavorite(initialValues.favorite);
-  }, [initialValues]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

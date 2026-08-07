@@ -1,6 +1,4 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useState,
   type ReactNode,
@@ -9,24 +7,18 @@ import {
 import { authService } from "../services/auth/authService";
 import { authStorage } from "../utils/authStorage";
 import type { UserResponse } from "../types/auth/userResponse";
-
-interface AuthContextData {
-  user: UserResponse | null;
-  authenticated: boolean;
-  loading: boolean;
-  login(email: string, password: string): Promise<void>;
-  logout(): void;
-}
-
-const AuthContext = createContext<AuthContextData | null>(null);
+import { AuthContext } from "./AuthContext";
 
 interface Props {
   children: ReactNode;
 }
 
 export function AuthProvider({ children }: Props) {
-  const [user, setUser] = useState<UserResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] =
+    useState<UserResponse | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
 
   useEffect(() => {
     async function restoreSession() {
@@ -38,7 +30,8 @@ export function AuthProvider({ children }: Props) {
       }
 
       try {
-        const authenticatedUser = await authService.me();
+        const authenticatedUser =
+          await authService.me();
 
         setUser(authenticatedUser);
       } catch {
@@ -52,7 +45,10 @@ export function AuthProvider({ children }: Props) {
     void restoreSession();
   }, []);
 
-  async function login(email: string, password: string) {
+  async function login(
+    email: string,
+    password: string,
+  ) {
     const response = await authService.login({
       email,
       password,
@@ -61,7 +57,8 @@ export function AuthProvider({ children }: Props) {
     authStorage.saveToken(response.accessToken);
 
     try {
-      const authenticatedUser = await authService.me();
+      const authenticatedUser =
+        await authService.me();
 
       setUser(authenticatedUser);
     } catch (error) {
@@ -90,14 +87,4 @@ export function AuthProvider({ children }: Props) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used inside AuthProvider");
-  }
-
-  return context;
 }

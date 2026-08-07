@@ -96,9 +96,6 @@ export function CollectionPage() {
     page = 0,
   ) {
     try {
-      setLoading(true);
-      setError(null);
-
       const response = await findCards({
         page,
         size: 20,
@@ -122,10 +119,51 @@ export function CollectionPage() {
     }
   }
 
-  useEffect(() => {
-    void loadCards(INITIAL_FILTERS, 0);
-  }, []);
+  function reloadCards(currentFilters: CardCollectionFilterValues, page = 0) {
+    setLoading(true);
+    setError(null);
 
+    void loadCards(currentFilters, page);
+  }
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadInitialCards() {
+      try {
+        const response = await findCards({
+          page: 0,
+          size: 20,
+          sort: INITIAL_FILTERS.sort,
+        });
+
+        if (!active) {
+          return;
+        }
+
+        setCards(response.content);
+        setTotalElements(response.totalElements);
+        setCurrentPage(response.number);
+        setTotalPages(response.totalPages);
+        setFirstPage(response.first);
+        setLastPage(response.last);
+      } catch {
+        if (active) {
+          setError("Could not load your collection.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadInitialCards();
+
+    return () => {
+      active = false;
+    };
+  }, []);
   async function handleDeleteCard() {
     if (!cardToDelete) {
       return;
@@ -278,6 +316,9 @@ export function CollectionPage() {
           } imported.`,
         );
 
+        setLoading(true);
+        setError(null);
+
         await loadCards(filters, 0);
       } else {
         toast.error("No cards were imported.");
@@ -352,11 +393,11 @@ export function CollectionPage() {
         loading={loading}
         onSearch={(newFilters) => {
           setFilters(newFilters);
-          void loadCards(newFilters, 0);
+          reloadCards(newFilters, 0);
         }}
         onClear={() => {
           setFilters(INITIAL_FILTERS);
-          void loadCards(INITIAL_FILTERS, 0);
+          reloadCards(INITIAL_FILTERS, 0);
         }}
       />
 
@@ -468,7 +509,7 @@ export function CollectionPage() {
             type="button"
             disabled={firstPage || loading}
             onClick={() => {
-              void loadCards(filters, currentPage - 1);
+              reloadCards(filters, currentPage - 1);
             }}
           >
             Previous
@@ -482,7 +523,7 @@ export function CollectionPage() {
             type="button"
             disabled={lastPage || loading}
             onClick={() => {
-              void loadCards(filters, currentPage + 1);
+              reloadCards(filters, currentPage + 1);
             }}
           >
             Next
