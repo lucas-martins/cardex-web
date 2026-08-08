@@ -10,6 +10,7 @@ const mockNavigate = vi.hoisted(() => vi.fn());
 const mockChangePassword = vi.hoisted(() => vi.fn());
 const mockToastError = vi.hoisted(() => vi.fn());
 const mockToastSuccess = vi.hoisted(() => vi.fn());
+const mockUpdateUser = vi.hoisted(() => vi.fn());
 
 vi.mock("../../context/useAuth", () => ({
   useAuth: mockUseAuth,
@@ -30,6 +31,7 @@ vi.mock("react-router-dom", async () => {
 vi.mock("../../services/auth/authService", () => ({
   authService: {
     changePassword: mockChangePassword,
+    updateProfile: mockUpdateUser,
   },
 }));
 
@@ -55,6 +57,21 @@ describe("ProfilePage", () => {
       loading: false,
       login: vi.fn(),
       logout: mockLogout,
+      updateUser: mockUpdateUser,
+    });
+
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: 1,
+        name: "Lucas Martins",
+        email: "lucas@example.com",
+        role: "USER",
+      },
+      authenticated: true,
+      loading: false,
+      login: vi.fn(),
+      logout: mockLogout,
+      updateUser: mockUpdateUser,
     });
   });
 
@@ -65,7 +82,7 @@ describe("ProfilePage", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("Lucas Martins")).toBeInTheDocument();
+    expect(screen.getByLabelText("Name")).toHaveValue("Lucas Martins");
 
     expect(screen.getByText("lucas@example.com")).toBeInTheDocument();
 
@@ -278,5 +295,97 @@ describe("ProfilePage", () => {
     });
 
     expect(mockChangePassword).not.toHaveBeenCalled();
+  });
+
+  it("should update profile name successfully", async () => {
+    const updatedUser = {
+      id: 1,
+      name: "Lucas Updated",
+      email: "lucas@example.com",
+      role: "USER",
+    };
+
+    mockUpdateUser.mockResolvedValue(updatedUser);
+
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: {
+        value: "  Lucas Updated  ",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Save changes",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockUpdateUser).toHaveBeenCalledWith("Lucas Updated");
+    });
+
+    expect(mockUpdateUser).toHaveBeenCalledWith(updatedUser);
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Profile updated successfully.",
+    );
+  });
+
+  it("should not update profile when name is empty", async () => {
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: {
+        value: "   ",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Save changes",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith("Name is required.");
+    });
+
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+  });
+  it("should show error when profile update fails", async () => {
+    mockUpdateUser.mockRejectedValue(new Error("Update failed"));
+
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText("Name"), {
+      target: {
+        value: "New Name",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Save changes",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith("Could not update profile.");
+    });
   });
 });

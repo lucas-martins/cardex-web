@@ -192,4 +192,32 @@ describe("AuthProvider", () => {
     expect(result.current.user)
       .toBeNull();
   });
+
+  it("should update the current user", async () => {
+  vi.mocked(authStorage.getToken)
+    .mockReturnValue(null);
+
+  const { result } = renderHook(
+    () => useAuth(),
+    { wrapper },
+  );
+
+  await waitFor(() => {
+    expect(result.current.loading).toBe(false);
+  });
+
+  const updatedUser = {
+    id: 1,
+    name: "Updated Name",
+    email: "lucas@example.com",
+    role: "USER",
+  };
+
+  act(() => {
+    result.current.updateUser(updatedUser);
+  });
+
+  expect(result.current.user).toEqual(updatedUser);
+  expect(result.current.authenticated).toBe(true);
+});
 });

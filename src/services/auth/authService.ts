@@ -33,4 +33,12 @@ export const authService = {
       newPassword,
     });
   },
+
+  async updateProfile(name: string): Promise<UserResponse> {
+    const response = await apiClient.put<UserResponse>("/auth/me", {
+      name,
+    });
+
+    return response.data;
+  },
 };

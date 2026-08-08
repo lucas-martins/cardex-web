@@ -8,6 +8,7 @@ export interface AuthContextData {
   loading: boolean;
   login(email: string, password: string): Promise<void>;
   logout(): void;
+  updateUser(user: UserResponse): void;
 }
 
 export const AuthContext =

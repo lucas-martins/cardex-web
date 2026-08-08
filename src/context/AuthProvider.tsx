@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { authService } from "../services/auth/authService";
 import { authStorage } from "../utils/authStorage";
@@ -14,11 +10,9 @@ interface Props {
 }
 
 export function AuthProvider({ children }: Props) {
-  const [user, setUser] =
-    useState<UserResponse | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function restoreSession() {
@@ -30,8 +24,7 @@ export function AuthProvider({ children }: Props) {
       }
 
       try {
-        const authenticatedUser =
-          await authService.me();
+        const authenticatedUser = await authService.me();
 
         setUser(authenticatedUser);
       } catch {
@@ -45,10 +38,7 @@ export function AuthProvider({ children }: Props) {
     void restoreSession();
   }, []);
 
-  async function login(
-    email: string,
-    password: string,
-  ) {
+  async function login(email: string, password: string) {
     const response = await authService.login({
       email,
       password,
@@ -57,8 +47,7 @@ export function AuthProvider({ children }: Props) {
     authStorage.saveToken(response.accessToken);
 
     try {
-      const authenticatedUser =
-        await authService.me();
+      const authenticatedUser = await authService.me();
 
       setUser(authenticatedUser);
     } catch (error) {
@@ -74,6 +63,10 @@ export function AuthProvider({ children }: Props) {
     setUser(null);
   }
 
+  function updateUser(updatedUser: UserResponse) {
+    setUser(updatedUser);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -82,6 +75,7 @@ export function AuthProvider({ children }: Props) {
         loading,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}
