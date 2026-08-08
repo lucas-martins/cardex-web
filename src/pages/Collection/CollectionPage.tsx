@@ -36,6 +36,46 @@ const INITIAL_FILTERS: CardCollectionFilterValues = {
   sort: "name,asc",
 };
 
+interface CollectionPageState {
+  filters: CardCollectionFilterValues;
+  page: number;
+}
+
+const COLLECTION_STATE_KEY = "cardex-collection-state";
+
+function loadCollectionState(): CollectionPageState {
+  const savedState = sessionStorage.getItem(COLLECTION_STATE_KEY);
+
+  if (!savedState) {
+    return {
+      filters: INITIAL_FILTERS,
+      page: 0,
+    };
+  }
+
+  try {
+    return JSON.parse(savedState) as CollectionPageState;
+  } catch {
+    return {
+      filters: INITIAL_FILTERS,
+      page: 0,
+    };
+  }
+}
+
+function saveCollectionState(
+  filters: CardCollectionFilterValues,
+  page: number,
+) {
+  sessionStorage.setItem(
+    COLLECTION_STATE_KEY,
+    JSON.stringify({
+      filters,
+      page,
+    }),
+  );
+}
+
 function formatLanguage(language: CardLanguage) {
   const labels: Record<CardLanguage, string> = {
     ENGLISH: "English",
@@ -67,6 +107,8 @@ function formatCondition(condition: CardCondition) {
 }
 
 export function CollectionPage() {
+  const [initialState] = useState(() => loadCollectionState());
+
   const [cards, setCards] = useState<Card[]>([]);
   const [totalElements, setTotalElements] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -75,9 +117,11 @@ export function CollectionPage() {
   const [deleting, setDeleting] = useState(false);
   const [cardToEdit, setCardToEdit] = useState<Card | null>(null);
   const [savingQuantity, setSavingQuantity] = useState(false);
-  const [filters, setFilters] =
-    useState<CardCollectionFilterValues>(INITIAL_FILTERS);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [filters, setFilters] = useState<CardCollectionFilterValues>(
+    initialState.filters,
+  );
+
+  const [currentPage, setCurrentPage] = useState(initialState.page);
   const [totalPages, setTotalPages] = useState(0);
   const [firstPage, setFirstPage] = useState(true);
   const [lastPage, setLastPage] = useState(true);
@@ -138,9 +182,16 @@ export function CollectionPage() {
     async function loadInitialCards() {
       try {
         const response = await findCards({
-          page: 0,
+          page: initialState.page,
           size: 20,
-          sort: INITIAL_FILTERS.sort,
+          name: initialState.filters.name || undefined,
+          number: initialState.filters.number || undefined,
+          collection: initialState.filters.collection || undefined,
+          rarity: initialState.filters.rarity || undefined,
+          language: initialState.filters.language || undefined,
+          condition: initialState.filters.condition || undefined,
+          favorite: initialState.filters.favorite ? true : undefined,
+          sort: initialState.filters.sort,
         });
 
         if (!active) {
@@ -169,7 +220,8 @@ export function CollectionPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [initialState]);
+
   async function handleDeleteCard() {
     if (!cardToDelete) {
       return;
@@ -399,10 +451,16 @@ export function CollectionPage() {
         loading={loading}
         onSearch={(newFilters) => {
           setFilters(newFilters);
+
+          saveCollectionState(newFilters, 0);
+
           reloadCards(newFilters, 0);
         }}
         onClear={() => {
           setFilters(INITIAL_FILTERS);
+
+          saveCollectionState(INITIAL_FILTERS, 0);
+
           reloadCards(INITIAL_FILTERS, 0);
         }}
       />
@@ -515,7 +573,11 @@ export function CollectionPage() {
             type="button"
             disabled={firstPage || loading}
             onClick={() => {
-              reloadCards(filters, currentPage - 1);
+              const page = currentPage - 1;
+
+              saveCollectionState(filters, page);
+
+              reloadCards(filters, page);
             }}
           >
             Previous
@@ -529,7 +591,11 @@ export function CollectionPage() {
             type="button"
             disabled={lastPage || loading}
             onClick={() => {
-              reloadCards(filters, currentPage + 1);
+              const page = currentPage + 1;
+
+              saveCollectionState(filters, page);
+
+              reloadCards(filters, page);
             }}
           >
             Next
