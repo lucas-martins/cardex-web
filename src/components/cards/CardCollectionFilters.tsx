@@ -13,6 +13,7 @@ export type CardCollectionSort =
 
 export interface CardCollectionFilterValues {
   name: string;
+  number: string;
   collection: string;
   rarity: string;
   language: CardLanguage | "";
@@ -46,11 +47,13 @@ export function CardCollectionFilters({
   const [collection, setCollection] = useState(initialValues.collection);
 
   const [rarity, setRarity] = useState(initialValues.rarity);
+  const [number, setNumber] = useState(initialValues.number);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onSearch({
       name: name.trim(),
+      number: number.trim(),
       collection: collection.trim(),
       rarity: rarity.trim(),
       language,
@@ -62,6 +65,7 @@ export function CardCollectionFilters({
 
   function handleClear() {
     setName("");
+    setNumber("");
     setCollection("");
     setRarity("");
     setLanguage("");
@@ -81,6 +85,16 @@ export function CardCollectionFilters({
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Example: Charizard"
+        />
+      </label>
+
+      <label>
+        Card number
+        <input
+          type="search"
+          value={number}
+          onChange={(event) => setNumber(event.target.value)}
+          placeholder="Example: 12"
         />
       </label>
 

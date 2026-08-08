@@ -8,6 +8,7 @@ import {
 
 const INITIAL_VALUES: CardCollectionFilterValues = {
   name: "",
+  number: "",
   collection: "",
   rarity: "",
   language: "",
@@ -27,33 +28,21 @@ describe("CardCollectionFilters", () => {
       />,
     );
 
-    expect(
-      screen.getByText("Card name"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Card name")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Collection"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Card number")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Rarity"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Collection")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Language"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Rarity")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Condition"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Language")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Only favorites"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Condition")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Sort by"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Only favorites")).toBeInTheDocument();
+
+    expect(screen.getByText("Sort by")).toBeInTheDocument();
   });
 
   it("should submit all filter values", () => {
@@ -68,63 +57,49 @@ describe("CardCollectionFilters", () => {
       />,
     );
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Example: Charizard"),
-      {
-        target: {
-          value: " Pikachu ",
-        },
+    fireEvent.change(screen.getByPlaceholderText("Example: Charizard"), {
+      target: {
+        value: " Pikachu ",
       },
-    );
+    });
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Example: Sun & Moon"),
-      {
-        target: {
-          value: " Sun ",
-        },
+    fireEvent.change(screen.getByPlaceholderText("Example: 12"), {
+      target: {
+        value: " 12 ",
       },
-    );
+    });
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Example: Rare Holo"),
-      {
-        target: {
-          value: " Holo ",
-        },
+    fireEvent.change(screen.getByPlaceholderText("Example: Sun & Moon"), {
+      target: {
+        value: " Sun ",
       },
-    );
+    });
 
-    fireEvent.change(
-      screen.getByLabelText("Language"),
-      {
-        target: {
-          value: "ENGLISH",
-        },
+    fireEvent.change(screen.getByPlaceholderText("Example: Rare Holo"), {
+      target: {
+        value: " Holo ",
       },
-    );
+    });
 
-    fireEvent.change(
-      screen.getByLabelText("Condition"),
-      {
-        target: {
-          value: "NEAR_MINT",
-        },
+    fireEvent.change(screen.getByLabelText("Language"), {
+      target: {
+        value: "ENGLISH",
       },
-    );
+    });
 
-    fireEvent.click(
-      screen.getByLabelText("Only favorites"),
-    );
-
-    fireEvent.change(
-      screen.getByLabelText("Sort by"),
-      {
-        target: {
-          value: "quantity,desc",
-        },
+    fireEvent.change(screen.getByLabelText("Condition"), {
+      target: {
+        value: "NEAR_MINT",
       },
-    );
+    });
+
+    fireEvent.click(screen.getByLabelText("Only favorites"));
+
+    fireEvent.change(screen.getByLabelText("Sort by"), {
+      target: {
+        value: "quantity,desc",
+      },
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -132,16 +107,16 @@ describe("CardCollectionFilters", () => {
       }),
     );
 
-    expect(onSearch)
-      .toHaveBeenCalledWith({
-        name: "Pikachu",
-        collection: "Sun",
-        rarity: "Holo",
-        language: "ENGLISH",
-        condition: "NEAR_MINT",
-        favorite: true,
-        sort: "quantity,desc",
-      });
+    expect(onSearch).toHaveBeenCalledWith({
+      name: "Pikachu",
+      number: "12",
+      collection: "Sun",
+      rarity: "Holo",
+      language: "ENGLISH",
+      condition: "NEAR_MINT",
+      favorite: true,
+      sort: "quantity,desc",
+    });
   });
 
   it("should clear all filters", () => {
@@ -149,6 +124,7 @@ describe("CardCollectionFilters", () => {
 
     const values: CardCollectionFilterValues = {
       name: "Pikachu",
+      number: "12",
       collection: "Sun & Moon",
       rarity: "Rare Holo",
       language: "ENGLISH",
@@ -172,35 +148,22 @@ describe("CardCollectionFilters", () => {
       }),
     );
 
-    expect(
-      screen.getByPlaceholderText("Example: Charizard"),
-    ).toHaveValue("");
+    expect(screen.getByPlaceholderText("Example: Charizard")).toHaveValue("");
 
-    expect(
-      screen.getByPlaceholderText("Example: Sun & Moon"),
-    ).toHaveValue("");
+    expect(screen.getByPlaceholderText("Example: 12")).toHaveValue("");
 
-    expect(
-      screen.getByPlaceholderText("Example: Rare Holo"),
-    ).toHaveValue("");
+    expect(screen.getByPlaceholderText("Example: Sun & Moon")).toHaveValue("");
 
-    expect(
-      screen.getByLabelText("Language"),
-    ).toHaveValue("");
+    expect(screen.getByPlaceholderText("Example: Rare Holo")).toHaveValue("");
 
-    expect(
-      screen.getByLabelText("Condition"),
-    ).toHaveValue("");
+    expect(screen.getByLabelText("Language")).toHaveValue("");
 
-    expect(
-      screen.getByLabelText("Only favorites"),
-    ).not.toBeChecked();
+    expect(screen.getByLabelText("Condition")).toHaveValue("");
 
-    expect(
-      screen.getByLabelText("Sort by"),
-    ).toHaveValue("name,asc");
+    expect(screen.getByLabelText("Only favorites")).not.toBeChecked();
 
-    expect(onClear)
-      .toHaveBeenCalledOnce();
+    expect(screen.getByLabelText("Sort by")).toHaveValue("name,asc");
+
+    expect(onClear).toHaveBeenCalledOnce();
   });
 });

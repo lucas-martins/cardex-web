@@ -15,6 +15,7 @@ export interface FindCardsParams {
   page?: number;
   size?: number;
   name?: string;
+  number?: string;
   collection?: string;
   rarity?: string;
   language?: CardLanguage;
@@ -50,6 +51,7 @@ export async function findCards(
       page: params.page ?? 0,
       size: params.size ?? 20,
       name: params.name || undefined,
+      number: params.number || undefined,
       collection: params.collection || undefined,
       rarity: params.rarity || undefined,
       language: params.language || undefined,
