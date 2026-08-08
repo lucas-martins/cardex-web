@@ -27,6 +27,8 @@ import type {
 
 const INITIAL_FILTERS: CardCollectionFilterValues = {
   name: "",
+  collection: "",
+  rarity: "",
   language: "",
   condition: "",
   favorite: false,
@@ -100,6 +102,8 @@ export function CollectionPage() {
         page,
         size: 20,
         name: currentFilters.name || undefined,
+        collection: currentFilters.collection || undefined,
+        rarity: currentFilters.rarity || undefined,
         language: currentFilters.language || undefined,
         condition: currentFilters.condition || undefined,
         favorite: currentFilters.favorite ? true : undefined,

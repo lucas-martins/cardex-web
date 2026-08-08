@@ -1,22 +1,22 @@
 import { apiClient } from "../api/apiClient";
-import type {
-  Card,
-  CardCondition,
-  CardLanguage,
-} from "../../types/card";
+import type { Card, CardCondition, CardLanguage } from "../../types/card";
 import type { PageResponse } from "../../types/page";
 import type { CollectionSummary } from "../../types/collectionSummary";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
 import type { CollectionGoals } from "../../types/collectionGoals";
 import type { CollectionProgress } from "../../types/collectionProgress";
 import type { CollectionDetails } from "../../types/collectionDetails";
-import type { CardImportPreview, CardImportResult } from "../../types/cardImport";
-
+import type {
+  CardImportPreview,
+  CardImportResult,
+} from "../../types/cardImport";
 
 export interface FindCardsParams {
   page?: number;
   size?: number;
   name?: string;
+  collection?: string;
+  rarity?: string;
   language?: CardLanguage;
   condition?: CardCondition;
   favorite?: boolean;
@@ -50,6 +50,8 @@ export async function findCards(
       page: params.page ?? 0,
       size: params.size ?? 20,
       name: params.name || undefined,
+      collection: params.collection || undefined,
+      rarity: params.rarity || undefined,
       language: params.language || undefined,
       condition: params.condition || undefined,
       favorite: params.favorite,
@@ -60,9 +62,7 @@ export async function findCards(
   return response.data;
 }
 
-export async function createCard(
-  request: CreateCardRequest,
-): Promise<Card> {
+export async function createCard(request: CreateCardRequest): Promise<Card> {
   const response = await apiClient.post<Card>("/cards", request);
 
   return response.data;
@@ -76,10 +76,7 @@ export async function updateCard(
   id: number,
   request: UpdateCardRequest,
 ): Promise<Card> {
-  const response = await apiClient.put<Card>(
-    `/cards/${id}`,
-    request,
-  );
+  const response = await apiClient.put<Card>(`/cards/${id}`, request);
 
   return response.data;
 }
@@ -109,24 +106,21 @@ export async function findCardById(id: number): Promise<Card> {
 }
 
 export async function getCollectionAnalytics(): Promise<CollectionAnalytics> {
-  const response =
-    await apiClient.get<CollectionAnalytics>("/cards/analytics");
+  const response = await apiClient.get<CollectionAnalytics>("/cards/analytics");
 
   return response.data;
 }
 
 export async function getCollectionGoals(): Promise<CollectionGoals> {
-  const response =
-    await apiClient.get<CollectionGoals>("/cards/goals");
+  const response = await apiClient.get<CollectionGoals>("/cards/goals");
 
   return response.data;
 }
 
 export async function getCollectionProgress(): Promise<CollectionProgress[]> {
-  const response =
-    await apiClient.get<CollectionProgress[]>(
-      "/cards/collection-progress",
-    );
+  const response = await apiClient.get<CollectionProgress[]>(
+    "/cards/collection-progress",
+  );
 
   return response.data;
 }
@@ -142,12 +136,9 @@ export async function getCollectionDetails(
 }
 
 export async function exportCollectionCsv(): Promise<Blob> {
-  const response = await apiClient.get<Blob>(
-    "/cards/export/csv",
-    {
-      responseType: "blob",
-    },
-  );
+  const response = await apiClient.get<Blob>("/cards/export/csv", {
+    responseType: "blob",
+  });
 
   return response.data;
 }

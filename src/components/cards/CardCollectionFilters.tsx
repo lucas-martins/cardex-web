@@ -13,6 +13,8 @@ export type CardCollectionSort =
 
 export interface CardCollectionFilterValues {
   name: string;
+  collection: string;
+  rarity: string;
   language: CardLanguage | "";
   condition: CardCondition | "";
   favorite: boolean;
@@ -41,12 +43,16 @@ export function CardCollectionFilters({
   );
   const [sort, setSort] = useState<CardCollectionSort>(initialValues.sort);
   const [favorite, setFavorite] = useState(initialValues.favorite);
+  const [collection, setCollection] = useState(initialValues.collection);
+
+  const [rarity, setRarity] = useState(initialValues.rarity);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     onSearch({
       name: name.trim(),
+      collection: collection.trim(),
+      rarity: rarity.trim(),
       language,
       condition,
       favorite,
@@ -56,6 +62,8 @@ export function CardCollectionFilters({
 
   function handleClear() {
     setName("");
+    setCollection("");
+    setRarity("");
     setLanguage("");
     setCondition("");
     setSort("name,asc");
@@ -73,6 +81,26 @@ export function CardCollectionFilters({
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Example: Charizard"
+        />
+      </label>
+
+      <label>
+        Collection
+        <input
+          type="search"
+          value={collection}
+          onChange={(event) => setCollection(event.target.value)}
+          placeholder="Example: Sun & Moon"
+        />
+      </label>
+
+      <label>
+        Rarity
+        <input
+          type="search"
+          value={rarity}
+          onChange={(event) => setRarity(event.target.value)}
+          placeholder="Example: Rare Holo"
         />
       </label>
 

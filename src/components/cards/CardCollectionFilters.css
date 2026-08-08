@@ -1,13 +1,26 @@
 .collection-filters {
   margin-bottom: 28px;
   padding: 20px;
+
   display: grid;
-  grid-template-columns: minmax(220px, 2fr) repeat(2, minmax(180px, 1fr)) auto;
+  grid-template-columns:
+    minmax(220px, 2fr)
+    repeat(3, minmax(170px, 1fr));
+
   align-items: end;
   gap: 16px;
+
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
+}
+
+.collection-filter-actions {
+  grid-column: 4 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: end;
+  gap: 10px;
 }
 
 .collection-filters label {
@@ -69,10 +82,11 @@
 }
 
 .favorite-filter {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 10px;
-  margin-top: 26px;
+  min-height: 42px;
+  margin-top: 25px;
   font-weight: 600;
   cursor: pointer;
 }
