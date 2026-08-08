@@ -16,6 +16,7 @@ export function WishlistPage() {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [selectedCard, setSelectedCard] = useState<WishlistCard | null>(null);
+  const [cardToRemove, setCardToRemove] = useState<WishlistCard | null>(null);
 
   useEffect(() => {
     async function loadWishlist() {
@@ -35,23 +36,25 @@ export function WishlistPage() {
     void loadWishlist();
   }, []);
 
-  async function handleDelete(card: WishlistCard) {
-    const confirmed = window.confirm(`Remove ${card.name} from your wishlist?`);
-
-    if (!confirmed || deletingId !== null) {
+  async function handleDelete() {
+    if (!cardToRemove || deletingId !== null) {
       return;
     }
 
     try {
-      setDeletingId(card.id);
+      setDeletingId(cardToRemove.id);
 
-      await deleteWishlistCard(card.id);
+      await deleteWishlistCard(cardToRemove.id);
 
       setCards((currentCards) =>
-        currentCards.filter((currentCard) => currentCard.id !== card.id),
+        currentCards.filter(
+          (currentCard) => currentCard.id !== cardToRemove.id,
+        ),
       );
 
       toast.success("Card removed from wishlist.");
+
+      setCardToRemove(null);
     } catch {
       toast.error("Could not remove card from wishlist.");
     } finally {
@@ -150,7 +153,7 @@ export function WishlistPage() {
                     className="wishlist-remove-button"
                     disabled={deletingId === card.id}
                     onClick={() => {
-                      void handleDelete(card);
+                      setCardToRemove(card);
                     }}
                   >
                     {deletingId === card.id
@@ -174,6 +177,46 @@ export function WishlistPage() {
             onCancel={() => setSelectedCard(null)}
             onSuccess={() => handleAddedToCollection(selectedCard)}
           />
+        </Modal>
+      )}
+
+      {cardToRemove && (
+        <Modal
+          title="Remove from wishlist"
+          onClose={() => {
+            if (deletingId === null) {
+              setCardToRemove(null);
+            }
+          }}
+        >
+          <div className="wishlist-remove-confirmation">
+            <p>
+              Are you sure you want to remove{" "}
+              <strong>{cardToRemove.name}</strong> from your wishlist?
+            </p>
+
+            <div className="wishlist-remove-actions">
+              <button
+                type="button"
+                className="secondary"
+                disabled={deletingId !== null}
+                onClick={() => setCardToRemove(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="danger"
+                disabled={deletingId !== null}
+                onClick={() => {
+                  void handleDelete();
+                }}
+              >
+                {deletingId !== null ? "Removing..." : "Remove"}
+              </button>
+            </div>
+          </div>
         </Modal>
       )}
     </main>

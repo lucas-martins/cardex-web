@@ -169,6 +169,64 @@
   border-color: #1d4ed8;
 }
 
+.wishlist-remove-confirmation {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.wishlist-remove-confirmation p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.wishlist-remove-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.wishlist-remove-actions button {
+  min-width: 100px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.wishlist-remove-actions .secondary {
+  color: #d6d3d1;
+  background: transparent;
+  border: 1px solid #57534e;
+}
+
+.wishlist-remove-actions .secondary:hover:not(:disabled) {
+  background: #292524;
+  border-color: #78716c;
+}
+
+.wishlist-remove-actions .danger {
+  color: #ffffff;
+  background: #b91c1c;
+  border: 1px solid #b91c1c;
+}
+
+.wishlist-remove-actions .danger:hover:not(:disabled) {
+  background: #991b1b;
+  border-color: #991b1b;
+}
+
+.wishlist-remove-actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 @media (max-width: 1000px) {
   .wishlist-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
