@@ -128,6 +128,17 @@ export function CardDetailsPage() {
     }
   }
 
+  function formatDateTime(value?: string) {
+    if (!value) {
+      return "-";
+    }
+
+    return new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(value));
+  }
+
   if (loading) {
     return (
       <main className="card-details-page">
@@ -217,6 +228,18 @@ export function CardDetailsPage() {
             <h2>Notes</h2>
 
             <p>{card.notes?.trim() || "No notes added."}</p>
+          </div>
+
+          <div className="card-details-history">
+            <div>
+              <span>Added to collection</span>
+              <strong>{formatDateTime(card.createdAt)}</strong>
+            </div>
+
+            <div>
+              <span>Last updated</span>
+              <strong>{formatDateTime(card.updatedAt)}</strong>
+            </div>
           </div>
 
           <div className="card-details-actions">
