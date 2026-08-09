@@ -59,6 +59,15 @@ export function MainLayout() {
           >
             Wishlist
           </NavLink>
+
+          <NavLink
+            className={({ isActive }) =>
+              isActive ? "navigation-link active" : "navigation-link"
+            }
+            to="/history"
+          >
+            History
+          </NavLink>
         </nav>
 
         <div className="header-user">
