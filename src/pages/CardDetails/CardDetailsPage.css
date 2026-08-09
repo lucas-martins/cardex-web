@@ -162,6 +162,55 @@
   text-align: center;
 }
 
+.card-details-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.card-details-actions button {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.card-details-edit-button {
+  color: #ffffff;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.card-details-edit-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.card-details-remove-button {
+  color: #b91c1c;
+  background: transparent;
+  border: 1px solid #b91c1c;
+}
+
+.card-details-remove-button:hover {
+  color: #ffffff;
+  background: #b91c1c;
+}
+
+@media (max-width: 520px) {
+  .card-details-actions {
+    flex-direction: column;
+  }
+
+  .card-details-actions button {
+    width: 100%;
+  }
+}
+
 @media (max-width: 760px) {
   .card-details-page {
     width: min(100% - 28px, 1180px);

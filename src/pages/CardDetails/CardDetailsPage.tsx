@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import type { Card } from "../../types/card";
+import type { Card, CardCondition, CardLanguage } from "../../types/card";
 import {
+  deleteCard,
   findCardById,
+  updateCard,
   updateFavorite,
 } from "../../services/cards/cardService";
+import { EditCardForm } from "../../components/cards/EditCardForm";
+import { DeleteCardConfirmation } from "../../components/cards/DeleteCardConfirmation";
+import { Modal } from "../../components/ui/Modal";
 
 import "./CardDetailsPage.css";
 
@@ -17,6 +22,10 @@ export function CardDetailsPage() {
   const [card, setCard] = useState<Card | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function loadCard() {
@@ -44,6 +53,54 @@ export function CardDetailsPage() {
 
     void loadCard();
   }, [id, navigate]);
+
+  async function handleUpdateCard(values: {
+    quantity: number;
+    language: CardLanguage;
+    condition: CardCondition;
+    notes?: string;
+  }) {
+    if (!card) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const updatedCard = await updateCard(card.id, values);
+
+      setCard(updatedCard);
+      setEditing(false);
+
+      toast.success(`${updatedCard.name} was updated.`);
+    } catch {
+      toast.error("Could not update the card.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDeleteCard() {
+    if (!card) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+
+      await deleteCard(card.id);
+
+      toast.success(`${card.name} was removed from your collection.`);
+
+      navigate("/collection", {
+        replace: true,
+      });
+    } catch {
+      toast.error("Could not remove the card from your collection.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   async function handleToggleFavorite() {
     if (!card || updatingFavorite) {
@@ -99,9 +156,7 @@ export function CardDetailsPage() {
                 alt={card.name}
               />
             ) : (
-              <div className="card-details-image-placeholder">
-                No image
-              </div>
+              <div className="card-details-image-placeholder">No image</div>
             )}
           </div>
         </div>
@@ -115,9 +170,7 @@ export function CardDetailsPage() {
 
               <h1>{card.name}</h1>
 
-              <p className="card-details-number">
-                Card #{card.cardNumber}
-              </p>
+              <p className="card-details-number">Card #{card.cardNumber}</p>
             </div>
 
             <button
@@ -128,14 +181,10 @@ export function CardDetailsPage() {
                 void handleToggleFavorite();
               }}
               aria-label={
-                card.favorite
-                  ? "Remove from favorites"
-                  : "Add to favorites"
+                card.favorite ? "Remove from favorites" : "Add to favorites"
               }
               title={
-                card.favorite
-                  ? "Remove from favorites"
-                  : "Add to favorites"
+                card.favorite ? "Remove from favorites" : "Add to favorites"
               }
             >
               {card.favorite ? "★" : "☆"}
@@ -169,8 +218,66 @@ export function CardDetailsPage() {
 
             <p>{card.notes?.trim() || "No notes added."}</p>
           </div>
+
+          <div className="card-details-actions">
+            <button
+              type="button"
+              className="card-details-edit-button"
+              onClick={() => setEditing(true)}
+            >
+              Edit card
+            </button>
+
+            <button
+              type="button"
+              className="card-details-remove-button"
+              onClick={() => setConfirmingDelete(true)}
+            >
+              Remove card
+            </button>
+          </div>
         </div>
       </section>
+
+      {editing && (
+        <Modal
+          title="Edit card"
+          onClose={() => {
+            if (!saving) {
+              setEditing(false);
+            }
+          }}
+        >
+          <EditCardForm
+            card={card}
+            saving={saving}
+            onCancel={() => setEditing(false)}
+            onSubmit={(values) => {
+              void handleUpdateCard(values);
+            }}
+          />
+        </Modal>
+      )}
+
+      {confirmingDelete && (
+        <Modal
+          title="Remove card"
+          onClose={() => {
+            if (!deleting) {
+              setConfirmingDelete(false);
+            }
+          }}
+        >
+          <DeleteCardConfirmation
+            cardName={card.name}
+            deleting={deleting}
+            onCancel={() => setConfirmingDelete(false)}
+            onConfirm={() => {
+              void handleDeleteCard();
+            }}
+          />
+        </Modal>
+      )}
     </main>
   );
 }
