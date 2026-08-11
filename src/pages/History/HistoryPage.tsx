@@ -31,11 +31,18 @@ export function HistoryPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [lastPage, setLastPage] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
+  const [action, setAction] = useState<CardHistoryAction | "">("");
 
   useEffect(() => {
     async function loadHistory() {
       try {
-        const response = await findCardHistory(0, PAGE_SIZE);
+        setLoading(true);
+
+        const response = await findCardHistory(
+          0,
+          PAGE_SIZE,
+          action || undefined,
+        );
 
         setHistory(response.content);
         setCurrentPage(response.number);
@@ -49,7 +56,7 @@ export function HistoryPage() {
     }
 
     void loadHistory();
-  }, []);
+  }, [action]);
 
   async function handleLoadMore() {
     if (loadingMore || lastPage) {
@@ -59,7 +66,11 @@ export function HistoryPage() {
     try {
       setLoadingMore(true);
 
-      const response = await findCardHistory(currentPage + 1, PAGE_SIZE);
+      const response = await findCardHistory(
+        currentPage + 1,
+        PAGE_SIZE,
+        action || undefined,
+      );
 
       setHistory((current) => [...current, ...response.content]);
 
@@ -86,6 +97,25 @@ export function HistoryPage() {
             {totalElements} {totalElements === 1 ? "event" : "events"}
           </span>
         )}
+      </div>
+
+      <div className="history-filters">
+        <label htmlFor="historyAction">Event type</label>
+
+        <select
+          id="historyAction"
+          value={action}
+          onChange={(event) =>
+            setAction(event.target.value as CardHistoryAction | "")
+          }
+        >
+          <option value="">All events</option>
+          <option value="ADDED">Added</option>
+          <option value="UPDATED">Updated</option>
+          <option value="FAVORITED">Favorited</option>
+          <option value="UNFAVORITED">Removed from favorites</option>
+          <option value="REMOVED">Removed</option>
+        </select>
       </div>
 
       {loading && <p className="history-message">Loading history...</p>}

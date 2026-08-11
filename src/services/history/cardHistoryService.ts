@@ -1,9 +1,13 @@
 import { apiClient } from "../api/apiClient";
-import type { CardHistoryPage } from "../../types/cardHistory";
+import type {
+  CardHistoryAction,
+  CardHistoryPage,
+} from "../../types/cardHistory";
 
 export async function findCardHistory(
   page = 0,
   size = 20,
+  action?: CardHistoryAction,
 ): Promise<CardHistoryPage> {
   const response = await apiClient.get<CardHistoryPage>(
     "/card-history",
@@ -11,6 +15,7 @@ export async function findCardHistory(
       params: {
         page,
         size,
+        action: action || undefined,
       },
     },
   );

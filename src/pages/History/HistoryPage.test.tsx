@@ -105,7 +105,7 @@ describe("HistoryPage", () => {
 
     expect(screen.getByText("3 events")).toBeInTheDocument();
 
-    expect(mockFindCardHistory).toHaveBeenCalledWith(0, 20);
+    expect(mockFindCardHistory).toHaveBeenCalledWith(0, 20, undefined);
   });
 
   it("should render empty state", async () => {
@@ -173,7 +173,7 @@ describe("HistoryPage", () => {
       await screen.findByText("Card marked as favorite."),
     ).toBeInTheDocument();
 
-    expect(mockFindCardHistory).toHaveBeenNthCalledWith(2, 1, 20);
+    expect(mockFindCardHistory).toHaveBeenNthCalledWith(2, 1, 20, undefined);
 
     expect(
       screen.queryByRole("button", {
@@ -248,6 +248,57 @@ describe("HistoryPage", () => {
       screen.queryByRole("link", {
         name: /Decidueye-GX/i,
       }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should filter history by action", async () => {
+    mockFindCardHistory
+      .mockResolvedValueOnce(FIRST_PAGE)
+      .mockResolvedValueOnce({
+        content: [
+          {
+            id: 2,
+            cardId: 1,
+            externalId: "sm1-12",
+            cardName: "Decidueye-GX",
+            action: "UPDATED",
+            description: "Quantity changed from 1 to 3.",
+            createdAt: "2026-08-09T18:15:00",
+            cardExists: true,
+          },
+        ],
+        totalElements: 1,
+        totalPages: 1,
+        number: 0,
+        size: 20,
+        first: true,
+        last: true,
+      });
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Card added to collection.");
+
+    fireEvent.change(screen.getByLabelText("Event type"), {
+      target: {
+        value: "UPDATED",
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenLastCalledWith(0, 20, "UPDATED");
+    });
+
+    expect(
+      await screen.findByText("Quantity changed from 1 to 3."),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Card added to collection."),
     ).not.toBeInTheDocument();
   });
 });
