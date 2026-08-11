@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import type { ChangeEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   findCards,
   deleteCard,
@@ -107,6 +107,7 @@ function formatCondition(condition: CardCondition) {
 }
 
 export function CollectionPage() {
+  const navigate = useNavigate();
   const [initialState] = useState(() => loadCollectionState());
 
   const [cards, setCards] = useState<Card[]>([]);
@@ -518,7 +519,24 @@ export function CollectionPage() {
                   <div className="collection-card-title">
                     <div>
                       <h2>{card.name}</h2>
-                      <p>{card.collectionName}</p>
+
+                      <button
+                        type="button"
+                        className="collection-card-set-link"
+                        disabled={!card.collectionId}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+
+                          if (!card.collectionId) {
+                            return;
+                          }
+
+                          navigate(`/collections/${card.collectionId}`);
+                        }}
+                      >
+                        {card.collectionName}
+                      </button>
                     </div>
 
                     <span className="card-number">#{card.cardNumber}</span>

@@ -22,6 +22,7 @@ export interface Card {
   id: number;
   externalId: string;
   name: string;
+  collectionId: string | null;
   collectionName: string;
   cardNumber: string;
   rarity: string | null;

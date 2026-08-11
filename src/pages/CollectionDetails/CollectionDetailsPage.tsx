@@ -1,23 +1,48 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
-import { getCollectionDetails } from "../../services/cards/cardService";
-import type { CollectionDetails } from "../../types/collectionDetails";
+import { getCollectionChecklist } from "../../services/cards/cardService";
+import { createWishlistCard } from "../../services/wishlist/wishlistService";
+import { AddCardForm } from "../../components/cards/AddCardForm";
+import { Modal } from "../../components/ui/Modal";
+import type {
+  CollectionChecklist,
+  CollectionChecklistCard,
+} from "../../types/collectionChecklist";
+
 import "./CollectionDetailsPage.css";
 
-export function CollectionDetailsPage() {
-  const { collectionId } = useParams<{ collectionId: string }>();
+type ChecklistFilter = "ALL" | "OWNED" | "MISSING";
 
-  const [collection, setCollection] =
-    useState<CollectionDetails | null>(null);
+export function CollectionDetailsPage() {
+  const { collectionId } = useParams<{
+    collectionId: string;
+  }>();
+
+  const [checklist, setChecklist] = useState<CollectionChecklist | null>(null);
+
+  const [filter, setFilter] = useState<ChecklistFilter>("ALL");
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
+  const [selectedCard, setSelectedCard] =
+    useState<CollectionChecklistCard | null>(null);
+
+  const [addingWishlistId, setAddingWishlistId] = useState<string | null>(null);
+
   useEffect(() => {
+    let active = true;
+
     async function loadCollection() {
       if (!collectionId) {
-        setError("Invalid collection.");
-        setLoading(false);
+        if (active) {
+          setError("Invalid collection.");
+          setLoading(false);
+        }
+
         return;
       }
 
@@ -25,24 +50,90 @@ export function CollectionDetailsPage() {
         setLoading(true);
         setError(null);
 
-        const response = await getCollectionDetails(collectionId);
+        const response = await getCollectionChecklist(collectionId);
 
-        setCollection(response);
+        if (!active) {
+          return;
+        }
+
+        setChecklist(response);
       } catch {
-        setError("Could not load the collection.");
+        if (active) {
+          setError("Could not load the collection.");
+        }
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
 
     void loadCollection();
+
+    return () => {
+      active = false;
+    };
   }, [collectionId]);
+
+  const visibleCards =
+    checklist?.cards.filter((card) => {
+      if (filter === "OWNED") {
+        return card.owned;
+      }
+
+      if (filter === "MISSING") {
+        return !card.owned;
+      }
+
+      return true;
+    }) ?? [];
+
+  async function handleAddToWishlist(card: CollectionChecklistCard) {
+    if (addingWishlistId !== null) {
+      return;
+    }
+
+    try {
+      setAddingWishlistId(card.externalId);
+
+      await createWishlistCard({
+        externalId: card.externalId,
+      });
+
+      toast.success(`${card.name} was added to your wishlist.`);
+    } catch {
+      toast.error("Could not add card to wishlist.");
+    } finally {
+      setAddingWishlistId(null);
+    }
+  }
+
+  async function handleAddedToCollection(card: CollectionChecklistCard) {
+    if (!collectionId) {
+      return;
+    }
+
+    try {
+      const response = await getCollectionChecklist(collectionId);
+
+      setChecklist(response);
+      setSelectedCard(null);
+
+      toast.success(`${card.name} was added to your collection.`);
+    } catch {
+      setSelectedCard(null);
+
+      toast.error(
+        `${card.name} was added, but the checklist could not be refreshed.`,
+      );
+    }
+  }
 
   if (loading) {
     return <p>Loading collection...</p>;
   }
 
-  if (error || !collection) {
+  if (error || !checklist) {
     return (
       <section className="collection-details-page">
         <p className="collection-details-error">
@@ -56,96 +147,155 @@ export function CollectionDetailsPage() {
 
   return (
     <section className="collection-details-page">
-      <Link
-        className="collection-details-back"
-        to="/collection"
-      >
+      <Link className="collection-details-back" to="/collection">
         ← Back to collection
       </Link>
 
       <header className="collection-details-header">
         <div>
-          <span>{collection.collectionId}</span>
-          <h1>{collection.collectionName}</h1>
+          <span>{checklist.collectionId}</span>
+
+          <h1>{checklist.collectionName}</h1>
 
           <p>
-            {collection.ownedUniqueCards} of {collection.totalCards} cards
-            owned
+            {checklist.ownedUniqueCards} / {checklist.totalCards} cards
+            collected
           </p>
         </div>
 
-        <strong>
-          {collection.completionPercentage.toFixed(2)}%
-        </strong>
+        <strong>{checklist.completionPercentage.toFixed(2)}%</strong>
       </header>
 
       <div className="collection-details-progress">
         <span
           style={{
-            width: `${Math.min(
-              collection.completionPercentage,
-              100,
-            )}%`,
+            width: `${Math.min(checklist.completionPercentage, 100)}%`,
           }}
         />
       </div>
 
-      <div className="collection-details-grid">
-        {collection.cards.map((card) => (
-          <Link
-            className="collection-details-card"
-            key={card.id}
-            to={`/collection/${card.id}`}
-          >
-            <div className="collection-details-image-wrapper">
-              {card.imageUrl ? (
-                <img
-                  src={card.imageUrl}
-                  alt={card.name}
-                />
-              ) : (
-                <div className="collection-details-placeholder">
-                  No image
-                </div>
-              )}
+      <div className="collection-checklist-filters">
+        <button
+          type="button"
+          className={filter === "ALL" ? "active" : ""}
+          onClick={() => setFilter("ALL")}
+        >
+          All
+        </button>
 
-              <span>×{card.quantity}</span>
+        <button
+          type="button"
+          className={filter === "OWNED" ? "active" : ""}
+          onClick={() => setFilter("OWNED")}
+        >
+          Owned
+        </button>
 
-              {card.favorite && (
-                <strong
-                  className="collection-details-favorite"
-                  aria-label="Favorite card"
-                >
-                  ★
-                </strong>
-              )}
-            </div>
-
-            <div className="collection-details-card-content">
-              <div>
-                <h2>{card.name}</h2>
-                <span>#{card.cardNumber}</span>
-              </div>
-
-              <p>{card.rarity ?? "Rarity unavailable"}</p>
-
-              <div className="collection-details-badges">
-                <span>
-                  {card.language
-                    .toLowerCase()
-                    .replace("_", " ")}
-                </span>
-
-                <span>
-                  {card.condition
-                    .toLowerCase()
-                    .replaceAll("_", " ")}
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
+        <button
+          type="button"
+          className={filter === "MISSING" ? "active" : ""}
+          onClick={() => setFilter("MISSING")}
+        >
+          Missing
+        </button>
       </div>
+
+      <div className="collection-details-grid">
+        {visibleCards.map((card) => {
+          const content = (
+            <>
+              <div className="collection-details-image-wrapper">
+                {card.imageUrl ? (
+                  <img src={card.imageUrl} alt={card.name} />
+                ) : (
+                  <div className="collection-details-placeholder">No image</div>
+                )}
+
+                <span
+                  className={`collection-checklist-status ${
+                    card.owned ? "owned" : "missing"
+                  }`}
+                >
+                  {card.owned ? "Owned" : "Missing"}
+                </span>
+              </div>
+
+              <div className="collection-details-card-content">
+                <div>
+                  <h2>{card.name}</h2>
+
+                  <span>#{card.cardNumber}</span>
+                </div>
+
+                <p>{card.rarity ?? "Rarity unavailable"}</p>
+
+                {!card.owned && (
+                  <div className="collection-checklist-actions">
+                    <button
+                      type="button"
+                      className="collection-checklist-add-button"
+                      onClick={() => {
+                        setSelectedCard(card);
+                      }}
+                    >
+                      Add to collection
+                    </button>
+
+                    <button
+                      type="button"
+                      className="collection-checklist-wishlist-button"
+                      disabled={addingWishlistId === card.externalId}
+                      onClick={() => {
+                        void handleAddToWishlist(card);
+                      }}
+                    >
+                      {addingWishlistId === card.externalId
+                        ? "Adding..."
+                        : "Add to wishlist"}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          );
+
+          if (card.owned && card.cardId !== null) {
+            return (
+              <Link
+                className="collection-details-card"
+                key={card.externalId}
+                to={`/collection/${card.cardId}`}
+              >
+                {content}
+              </Link>
+            );
+          }
+
+          return (
+            <article
+              className="collection-details-card missing"
+              key={card.externalId}
+            >
+              {content}
+            </article>
+          );
+        })}
+      </div>
+
+      {selectedCard && (
+        <Modal
+          title={`Add ${selectedCard.name}`}
+          onClose={() => setSelectedCard(null)}
+        >
+          <AddCardForm
+            externalId={selectedCard.externalId}
+            onCancel={() => setSelectedCard(null)}
+            onSuccess={() => {
+              void handleAddedToCollection(selectedCard);
+            }}
+          />
+        </Modal>
+      )}
     </section>
   );
 }

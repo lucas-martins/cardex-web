@@ -10,6 +10,7 @@ import type {
   CardImportPreview,
   CardImportResult,
 } from "../../types/cardImport";
+import type { CollectionChecklist } from "../../types/collectionChecklist";
 
 export interface FindCardsParams {
   page?: number;
@@ -173,4 +174,36 @@ export async function importCollectionCsv(
   );
 
   return response.data;
+}
+
+const collectionChecklistRequests = new Map<
+  string,
+  Promise<CollectionChecklist>
+>();
+
+export function getCollectionChecklist(
+  collectionId: string,
+): Promise<CollectionChecklist> {
+  const existingRequest =
+    collectionChecklistRequests.get(collectionId);
+
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = apiClient
+    .get<CollectionChecklist>(
+      `/cards/collections/${collectionId}/checklist`,
+    )
+    .then((response) => response.data)
+    .finally(() => {
+      collectionChecklistRequests.delete(collectionId);
+    });
+
+  collectionChecklistRequests.set(
+    collectionId,
+    request,
+  );
+
+  return request;
 }

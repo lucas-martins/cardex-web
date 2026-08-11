@@ -136,6 +136,7 @@ export function HistoryPage() {
 
               const content = (
                 <article
+                  key={item.id}
                   className={`history-item ${canOpenCard ? "clickable" : ""}`}
                 >
                   <div
