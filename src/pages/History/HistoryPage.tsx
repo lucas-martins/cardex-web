@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
-import type {
-  CardHistory,
-  CardHistoryAction,
-} from "../../types/cardHistory";
+import type { CardHistory, CardHistoryAction } from "../../types/cardHistory";
 import { findCardHistory } from "../../services/history/cardHistoryService";
 
 import "./HistoryPage.css";
@@ -37,10 +35,7 @@ export function HistoryPage() {
   useEffect(() => {
     async function loadHistory() {
       try {
-        const response = await findCardHistory(
-          0,
-          PAGE_SIZE,
-        );
+        const response = await findCardHistory(0, PAGE_SIZE);
 
         setHistory(response.content);
         setCurrentPage(response.number);
@@ -64,15 +59,9 @@ export function HistoryPage() {
     try {
       setLoadingMore(true);
 
-      const response = await findCardHistory(
-        currentPage + 1,
-        PAGE_SIZE,
-      );
+      const response = await findCardHistory(currentPage + 1, PAGE_SIZE);
 
-      setHistory((current) => [
-        ...current,
-        ...response.content,
-      ]);
+      setHistory((current) => [...current, ...response.content]);
 
       setCurrentPage(response.number);
       setLastPage(response.last);
@@ -89,72 +78,70 @@ export function HistoryPage() {
         <div>
           <h1>History</h1>
 
-          <p>
-            Recent activity in your collection.
-          </p>
+          <p>Recent activity in your collection.</p>
         </div>
 
         {!loading && (
           <span className="history-count">
-            {totalElements}{" "}
-            {totalElements === 1
-              ? "event"
-              : "events"}
+            {totalElements} {totalElements === 1 ? "event" : "events"}
           </span>
         )}
       </div>
 
-      {loading && (
-        <p className="history-message">
-          Loading history...
-        </p>
-      )}
+      {loading && <p className="history-message">Loading history...</p>}
 
       {!loading && history.length === 0 && (
         <section className="history-empty">
           <h2>No activity yet</h2>
 
-          <p>
-            Changes to your collection will appear here.
-          </p>
+          <p>Changes to your collection will appear here.</p>
         </section>
       )}
 
       {!loading && history.length > 0 && (
         <>
           <section className="history-timeline">
-            {history.map((item) => (
-              <article
-                className="history-item"
-                key={item.id}
-              >
-                <div
-                  className={`history-marker history-marker-${item.action.toLowerCase()}`}
-                />
+            {history.map((item) => {
+              const canOpenCard = item.cardId !== null && item.cardExists;
 
-                <div className="history-item-content">
-                  <div className="history-item-header">
-                    <strong>
-                      {item.cardName}
-                    </strong>
+              const content = (
+                <article
+                  className={`history-item ${canOpenCard ? "clickable" : ""}`}
+                >
+                  <div
+                    className={`history-marker history-marker-${item.action.toLowerCase()}`}
+                  />
 
-                    <span>
-                      {formatDateTime(
-                        item.createdAt,
-                      )}
+                  <div className="history-item-content">
+                    <div className="history-item-header">
+                      <strong>{item.cardName}</strong>
+
+                      <span>{formatDateTime(item.createdAt)}</span>
+                    </div>
+
+                    <span className="history-action">
+                      {actionLabels[item.action]}
                     </span>
+
+                    <p>{item.description}</p>
                   </div>
+                </article>
+              );
 
-                  <span className="history-action">
-                    {actionLabels[item.action]}
-                  </span>
+              if (!canOpenCard) {
+                return content;
+              }
 
-                  <p>
-                    {item.description}
-                  </p>
-                </div>
-              </article>
-            ))}
+              return (
+                <Link
+                  key={item.id}
+                  className="history-item-link"
+                  to={`/collection/${item.cardId}`}
+                >
+                  {content}
+                </Link>
+              );
+            })}
           </section>
 
           {!lastPage && (
@@ -166,9 +153,7 @@ export function HistoryPage() {
                   void handleLoadMore();
                 }}
               >
-                {loadingMore
-                  ? "Loading..."
-                  : "Load more"}
+                {loadingMore ? "Loading..." : "Load more"}
               </button>
             </div>
           )}

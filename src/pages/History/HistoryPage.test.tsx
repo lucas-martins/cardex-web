@@ -1,12 +1,8 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { HistoryPage } from "./HistoryPage";
+import { MemoryRouter } from "react-router-dom";
 
 const mockFindCardHistory = vi.hoisted(() => vi.fn());
 const mockToastError = vi.hoisted(() => vi.fn());
@@ -31,6 +27,7 @@ const FIRST_PAGE = {
       action: "UPDATED",
       description: "Quantity changed from 1 to 3.",
       createdAt: "2026-08-09T18:15:00",
+      cardExists: true,
     },
     {
       id: 1,
@@ -40,6 +37,7 @@ const FIRST_PAGE = {
       action: "ADDED",
       description: "Card added to collection.",
       createdAt: "2026-08-09T18:10:00",
+      cardExists: true,
     },
   ],
   totalElements: 3,
@@ -60,6 +58,7 @@ const SECOND_PAGE = {
       action: "FAVORITED",
       description: "Card marked as favorite.",
       createdAt: "2026-08-09T18:05:00",
+      cardExists: true,
     },
   ],
   totalElements: 3,
@@ -76,40 +75,37 @@ describe("HistoryPage", () => {
   });
 
   it("should show loading state", () => {
-    mockFindCardHistory.mockReturnValue(
-      new Promise(() => {}),
+    mockFindCardHistory.mockReturnValue(new Promise(() => {}));
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
     );
 
-    render(<HistoryPage />);
-
-    expect(
-      screen.getByText("Loading history..."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Loading history...")).toBeInTheDocument();
   });
 
   it("should load and render history", async () => {
     mockFindCardHistory.mockResolvedValue(FIRST_PAGE);
 
-    render(<HistoryPage />);
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "Quantity changed from 1 to 3.",
-        ),
+        screen.getByText("Quantity changed from 1 to 3."),
       ).toBeInTheDocument();
     });
 
-    expect(
-      screen.getByText("Card added to collection."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Card added to collection.")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("3 events"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("3 events")).toBeInTheDocument();
 
-    expect(mockFindCardHistory)
-      .toHaveBeenCalledWith(0, 20);
+    expect(mockFindCardHistory).toHaveBeenCalledWith(0, 20);
   });
 
   it("should render empty state", async () => {
@@ -123,35 +119,34 @@ describe("HistoryPage", () => {
       last: true,
     });
 
-    render(<HistoryPage />);
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByText("No activity yet")).toBeInTheDocument();
 
     expect(
-      await screen.findByText("No activity yet"),
+      screen.getByText("Changes to your collection will appear here."),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByText(
-        "Changes to your collection will appear here.",
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("0 events"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("0 events")).toBeInTheDocument();
   });
 
   it("should show error when history loading fails", async () => {
-    mockFindCardHistory.mockRejectedValue(
-      new Error("Failed"),
+    mockFindCardHistory.mockRejectedValue(new Error("Failed"));
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
     );
 
-    render(<HistoryPage />);
-
     await waitFor(() => {
-      expect(mockToastError)
-        .toHaveBeenCalledWith(
-          "Could not load card history.",
-        );
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Could not load card history.",
+      );
     });
   });
 
@@ -160,11 +155,13 @@ describe("HistoryPage", () => {
       .mockResolvedValueOnce(FIRST_PAGE)
       .mockResolvedValueOnce(SECOND_PAGE);
 
-    render(<HistoryPage />);
-
-    await screen.findByText(
-      "Quantity changed from 1 to 3.",
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
     );
+
+    await screen.findByText("Quantity changed from 1 to 3.");
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -173,17 +170,10 @@ describe("HistoryPage", () => {
     );
 
     expect(
-      await screen.findByText(
-        "Card marked as favorite.",
-      ),
+      await screen.findByText("Card marked as favorite."),
     ).toBeInTheDocument();
 
-    expect(mockFindCardHistory)
-      .toHaveBeenNthCalledWith(
-        2,
-        1,
-        20,
-      );
+    expect(mockFindCardHistory).toHaveBeenNthCalledWith(2, 1, 20);
 
     expect(
       screen.queryByRole("button", {
@@ -195,15 +185,15 @@ describe("HistoryPage", () => {
   it("should show error when loading more fails", async () => {
     mockFindCardHistory
       .mockResolvedValueOnce(FIRST_PAGE)
-      .mockRejectedValueOnce(
-        new Error("Failed"),
-      );
+      .mockRejectedValueOnce(new Error("Failed"));
 
-    render(<HistoryPage />);
-
-    await screen.findByText(
-      "Quantity changed from 1 to 3.",
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
     );
+
+    await screen.findByText("Quantity changed from 1 to 3.");
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -212,10 +202,9 @@ describe("HistoryPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockToastError)
-        .toHaveBeenCalledWith(
-          "Could not load more history.",
-        );
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Could not load more history.",
+      );
     });
 
     expect(
@@ -223,5 +212,42 @@ describe("HistoryPage", () => {
         name: "Load more",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("should not link to card details when card no longer exists", async () => {
+    mockFindCardHistory.mockResolvedValue({
+      content: [
+        {
+          id: 1,
+          cardId: 10,
+          externalId: "sm1-12",
+          cardName: "Decidueye-GX",
+          action: "ADDED",
+          description: "Card added to collection.",
+          createdAt: "2026-08-09T18:10:00",
+          cardExists: false,
+        },
+      ],
+      totalElements: 1,
+      totalPages: 1,
+      number: 0,
+      size: 20,
+      first: true,
+      last: true,
+    });
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Decidueye-GX");
+
+    expect(
+      screen.queryByRole("link", {
+        name: /Decidueye-GX/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -13,6 +13,7 @@ export interface CardHistory {
   action: CardHistoryAction;
   description: string;
   createdAt: string;
+  cardExists: boolean;
 }
 
 export interface CardHistoryPage {
