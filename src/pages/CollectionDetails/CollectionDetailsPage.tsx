@@ -130,7 +130,7 @@ export function CollectionDetailsPage() {
   }
 
   if (loading) {
-    return <p>Loading collection...</p>;
+    return <p>Loading collection checklist...</p>;
   }
 
   if (error || !checklist) {

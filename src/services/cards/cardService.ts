@@ -184,26 +184,22 @@ const collectionChecklistRequests = new Map<
 export function getCollectionChecklist(
   collectionId: string,
 ): Promise<CollectionChecklist> {
-  const existingRequest =
-    collectionChecklistRequests.get(collectionId);
+  const existingRequest = collectionChecklistRequests.get(collectionId);
 
   if (existingRequest) {
     return existingRequest;
   }
 
   const request = apiClient
-    .get<CollectionChecklist>(
-      `/cards/collections/${collectionId}/checklist`,
-    )
+    .get<CollectionChecklist>(`/cards/collections/${collectionId}/checklist`, {
+      timeout: 30000,
+    })
     .then((response) => response.data)
     .finally(() => {
       collectionChecklistRequests.delete(collectionId);
     });
 
-  collectionChecklistRequests.set(
-    collectionId,
-    request,
-  );
+  collectionChecklistRequests.set(collectionId, request);
 
   return request;
 }

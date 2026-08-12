@@ -150,7 +150,7 @@ describe("CollectionDetailsPage", () => {
     renderPage();
 
     expect(
-      screen.getByText("Loading collection..."),
+      screen.getByText("Loading collection checklist..."),
     ).toBeInTheDocument();
 
     expect(
