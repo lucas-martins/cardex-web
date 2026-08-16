@@ -1,3 +1,8 @@
+export type WishlistPriority =
+  | "HIGH"
+  | "MEDIUM"
+  | "LOW";
+
 export interface WishlistCard {
   id: number;
   externalId: string;
@@ -8,6 +13,7 @@ export interface WishlistCard {
   series: string | null;
   rarity: string | null;
   imageUrl: string | null;
+  priority: WishlistPriority;
   createdAt: string;
   updatedAt: string;
 }

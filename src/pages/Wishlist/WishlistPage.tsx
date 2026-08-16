@@ -1,22 +1,45 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-import type { WishlistCard } from "../../types/wishlistCard";
+import type { WishlistCard, WishlistPriority } from "../../types/wishlistCard";
 import {
   deleteWishlistCard,
   findWishlistCards,
+  updateWishlistPriority,
 } from "../../services/wishlist/wishlistService";
 import { AddCardForm } from "../../components/cards/AddCardForm";
 import { Modal } from "../../components/ui/Modal";
 
 import "./WishlistPage.css";
 
+type PriorityFilter = "ALL" | WishlistPriority;
+
+type WishlistSort = "PRIORITY_DESC" | "PRIORITY_ASC" | "RECENT";
+
+const PRIORITY_ORDER: Record<WishlistPriority, number> = {
+  HIGH: 3,
+  MEDIUM: 2,
+  LOW: 1,
+};
+
 export function WishlistPage() {
   const [cards, setCards] = useState<WishlistCard[]>([]);
+
   const [loading, setLoading] = useState(true);
+
   const [deletingId, setDeletingId] = useState<number | null>(null);
+
   const [selectedCard, setSelectedCard] = useState<WishlistCard | null>(null);
+
   const [cardToRemove, setCardToRemove] = useState<WishlistCard | null>(null);
+
+  const [updatingPriorityId, setUpdatingPriorityId] = useState<number | null>(
+    null,
+  );
+
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("ALL");
+
+  const [sort, setSort] = useState<WishlistSort>("PRIORITY_DESC");
 
   useEffect(() => {
     async function loadWishlist() {
@@ -35,6 +58,39 @@ export function WishlistPage() {
 
     void loadWishlist();
   }, []);
+
+  const visibleCards = cards
+    .filter((card) => {
+      if (priorityFilter === "ALL") {
+        return true;
+      }
+
+      return card.priority === priorityFilter;
+    })
+    .sort((first, second) => {
+      if (sort === "PRIORITY_DESC") {
+        const priorityComparison =
+          PRIORITY_ORDER[second.priority] - PRIORITY_ORDER[first.priority];
+
+        if (priorityComparison !== 0) {
+          return priorityComparison;
+        }
+      }
+
+      if (sort === "PRIORITY_ASC") {
+        const priorityComparison =
+          PRIORITY_ORDER[first.priority] - PRIORITY_ORDER[second.priority];
+
+        if (priorityComparison !== 0) {
+          return priorityComparison;
+        }
+      }
+
+      return (
+        new Date(second.createdAt).getTime() -
+        new Date(first.createdAt).getTime()
+      );
+    });
 
   async function handleDelete() {
     if (!cardToRemove || deletingId !== null) {
@@ -84,11 +140,41 @@ export function WishlistPage() {
     }
   }
 
+  async function handlePriorityChange(
+    card: WishlistCard,
+    priority: WishlistPriority,
+  ) {
+    if (updatingPriorityId !== null) {
+      return;
+    }
+
+    try {
+      setUpdatingPriorityId(card.id);
+
+      const updatedCard = await updateWishlistPriority(card.id, {
+        priority,
+      });
+
+      setCards((currentCards) =>
+        currentCards.map((currentCard) =>
+          currentCard.id === updatedCard.id ? updatedCard : currentCard,
+        ),
+      );
+
+      toast.success(`${card.name} priority was updated.`);
+    } catch {
+      toast.error("Could not update wishlist priority.");
+    } finally {
+      setUpdatingPriorityId(null);
+    }
+  }
+
   return (
     <main className="wishlist-page">
       <div className="wishlist-header">
         <div>
           <h1>Wishlist</h1>
+
           <p>Cards you want to add to your collection.</p>
         </div>
 
@@ -104,67 +190,154 @@ export function WishlistPage() {
       {!loading && cards.length === 0 && (
         <section className="wishlist-empty">
           <h2>Your wishlist is empty</h2>
+
           <p>Search for Pokémon cards and add the ones you want here.</p>
         </section>
       )}
 
       {!loading && cards.length > 0 && (
-        <section className="wishlist-grid">
-          {cards.map((card) => (
-            <article className="wishlist-card" key={card.id}>
-              <div className="wishlist-card-image-wrapper">
-                {card.imageUrl ? (
-                  <img
-                    className="wishlist-card-image"
-                    src={card.imageUrl}
-                    alt={card.name}
-                  />
-                ) : (
-                  <div className="wishlist-card-image-placeholder">
-                    No image
+        <>
+          <section className="wishlist-toolbar">
+            <div className="wishlist-filter-group">
+              <span>Priority</span>
+
+              <div className="wishlist-filter-buttons">
+                <button
+                  type="button"
+                  className={priorityFilter === "ALL" ? "active" : ""}
+                  onClick={() => setPriorityFilter("ALL")}
+                >
+                  All
+                </button>
+
+                <button
+                  type="button"
+                  className={priorityFilter === "HIGH" ? "active" : ""}
+                  onClick={() => setPriorityFilter("HIGH")}
+                >
+                  High
+                </button>
+
+                <button
+                  type="button"
+                  className={priorityFilter === "MEDIUM" ? "active" : ""}
+                  onClick={() => setPriorityFilter("MEDIUM")}
+                >
+                  Medium
+                </button>
+
+                <button
+                  type="button"
+                  className={priorityFilter === "LOW" ? "active" : ""}
+                  onClick={() => setPriorityFilter("LOW")}
+                >
+                  Low
+                </button>
+              </div>
+            </div>
+
+            <label className="wishlist-sort">
+              <span>Sort by</span>
+
+              <select
+                value={sort}
+                onChange={(event) =>
+                  setSort(event.target.value as WishlistSort)
+                }
+              >
+                <option value="PRIORITY_DESC">Priority: High to Low</option>
+
+                <option value="PRIORITY_ASC">Priority: Low to High</option>
+
+                <option value="RECENT">Recently added</option>
+              </select>
+            </label>
+          </section>
+
+          {visibleCards.length === 0 ? (
+            <section className="wishlist-filter-empty">
+              <p>No cards match this priority.</p>
+            </section>
+          ) : (
+            <section className="wishlist-grid">
+              {visibleCards.map((card) => (
+                <article className="wishlist-card" key={card.id}>
+                  <div className="wishlist-card-image-wrapper">
+                    {card.imageUrl ? (
+                      <img
+                        className="wishlist-card-image"
+                        src={card.imageUrl}
+                        alt={card.name}
+                      />
+                    ) : (
+                      <div className="wishlist-card-image-placeholder">
+                        No image
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="wishlist-card-content">
-                <h2>{card.name}</h2>
+                  <div className="wishlist-card-content">
+                    <h2>{card.name}</h2>
 
-                <p>{card.collectionName || "Unknown collection"}</p>
+                    <p>{card.collectionName || "Unknown collection"}</p>
 
-                <span>
-                  {card.cardNumber
-                    ? `#${card.cardNumber}`
-                    : "Number not informed"}
-                </span>
+                    <span>
+                      {card.cardNumber
+                        ? `#${card.cardNumber}`
+                        : "Number not informed"}
+                    </span>
 
-                <span>{card.rarity || "Rarity not informed"}</span>
+                    <span>{card.rarity || "Rarity not informed"}</span>
 
-                <div className="wishlist-card-actions">
-                  <button
-                    type="button"
-                    className="wishlist-add-button"
-                    onClick={() => setSelectedCard(card)}
-                  >
-                    Add to collection
-                  </button>
+                    <label className="wishlist-priority">
+                      <span>Priority</span>
 
-                  <button
-                    type="button"
-                    className="wishlist-remove-button"
-                    disabled={deletingId === card.id}
-                    onClick={() => {
-                      setCardToRemove(card);
-                    }}
-                  >
-                    {deletingId === card.id
-                      ? "Removing..."
-                      : "Remove from wishlist"}
-                  </button>
-                </div>
-              </div>
-            </article>
-          ))}
-        </section>
+                      <select
+                        value={card.priority}
+                        disabled={updatingPriorityId === card.id}
+                        onChange={(event) => {
+                          void handlePriorityChange(
+                            card,
+                            event.target.value as WishlistPriority,
+                          );
+                        }}
+                      >
+                        <option value="HIGH">High</option>
+
+                        <option value="MEDIUM">Medium</option>
+
+                        <option value="LOW">Low</option>
+                      </select>
+                    </label>
+
+                    <div className="wishlist-card-actions">
+                      <button
+                        type="button"
+                        className="wishlist-add-button"
+                        onClick={() => setSelectedCard(card)}
+                      >
+                        Add to collection
+                      </button>
+
+                      <button
+                        type="button"
+                        className="wishlist-remove-button"
+                        disabled={deletingId === card.id}
+                        onClick={() => {
+                          setCardToRemove(card);
+                        }}
+                      >
+                        {deletingId === card.id
+                          ? "Removing..."
+                          : "Remove from wishlist"}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </section>
+          )}
+        </>
       )}
 
       {selectedCard && (
