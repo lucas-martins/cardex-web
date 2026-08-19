@@ -13,8 +13,7 @@ import type {
 
 import "./CollectionDetailsPage.css";
 
-type ChecklistFilter = "ALL" | "OWNED" | "MISSING";
-
+type ChecklistFilter = "ALL" | "OWNED" | "MISSING" | "WISHLIST";
 export function CollectionDetailsPage() {
   const { collectionId } = useParams<{
     collectionId: string;
@@ -83,6 +82,10 @@ export function CollectionDetailsPage() {
 
       if (filter === "MISSING") {
         return !card.owned;
+      }
+
+      if (filter === "WISHLIST") {
+        return card.inWishlist;
       }
 
       return true;
@@ -217,6 +220,14 @@ export function CollectionDetailsPage() {
           onClick={() => setFilter("MISSING")}
         >
           Missing
+        </button>
+
+        <button
+          type="button"
+          className={filter === "WISHLIST" ? "active" : ""}
+          onClick={() => setFilter("WISHLIST")}
+        >
+          Wishlist
         </button>
       </div>
 
