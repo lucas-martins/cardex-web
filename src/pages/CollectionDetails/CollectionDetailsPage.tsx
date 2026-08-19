@@ -96,8 +96,28 @@ export function CollectionDetailsPage() {
     try {
       setAddingWishlistId(card.externalId);
 
-      await createWishlistCard({
+      const wishlistCard = await createWishlistCard({
         externalId: card.externalId,
+      });
+
+      setChecklist((currentChecklist) => {
+        if (!currentChecklist) {
+          return currentChecklist;
+        }
+
+        return {
+          ...currentChecklist,
+          cards: currentChecklist.cards.map((currentCard) =>
+            currentCard.externalId === card.externalId
+              ? {
+                  ...currentCard,
+                  inWishlist: true,
+                  wishlistId: wishlistCard.id,
+                  wishlistPriority: wishlistCard.priority,
+                }
+              : currentCard,
+          ),
+        };
       });
 
       toast.success(`${card.name} was added to your wishlist.`);
@@ -241,18 +261,31 @@ export function CollectionDetailsPage() {
                       Add to collection
                     </button>
 
-                    <button
-                      type="button"
-                      className="collection-checklist-wishlist-button"
-                      disabled={addingWishlistId === card.externalId}
-                      onClick={() => {
-                        void handleAddToWishlist(card);
-                      }}
-                    >
-                      {addingWishlistId === card.externalId
-                        ? "Adding..."
-                        : "Add to wishlist"}
-                    </button>
+                    {card.inWishlist ? (
+                      <div className="collection-checklist-in-wishlist">
+                        <span>✓ In wishlist</span>
+
+                        {card.wishlistPriority && (
+                          <strong>
+                            {card.wishlistPriority.charAt(0)}
+                            {card.wishlistPriority.slice(1).toLowerCase()}
+                          </strong>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="collection-checklist-wishlist-button"
+                        disabled={addingWishlistId === card.externalId}
+                        onClick={() => {
+                          void handleAddToWishlist(card);
+                        }}
+                      >
+                        {addingWishlistId === card.externalId
+                          ? "Adding..."
+                          : "Add to wishlist"}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

@@ -300,6 +300,26 @@
   opacity: 0.6;
 }
 
+.collection-checklist-in-wishlist {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  padding: 0 12px;
+  color: #bbf7d0;
+  background: rgb(22 101 52 / 18%);
+  border: 1px solid #166534;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.collection-checklist-in-wishlist strong {
+  color: #d6d3d1;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
 @media (max-width: 1000px) {
   .collection-details-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

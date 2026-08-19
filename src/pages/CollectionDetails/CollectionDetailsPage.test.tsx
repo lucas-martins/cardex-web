@@ -93,6 +93,9 @@ const CHECKLIST = {
         "https://example.com/caterpie.png",
       owned: false,
       cardId: null,
+      inWishlist: false,
+      wishlistId: null,
+      wishlistPriority: null,
     },
     {
       externalId: "sm1-2",
@@ -103,6 +106,9 @@ const CHECKLIST = {
         "https://example.com/metapod.png",
       owned: false,
       cardId: null,
+      inWishlist: true,
+      wishlistId: 50,
+      wishlistPriority: "HIGH" as const,
     },
     {
       externalId: "sm1-12",
@@ -113,6 +119,9 @@ const CHECKLIST = {
         "https://example.com/decidueye.png",
       owned: true,
       cardId: 10,
+      inWishlist: false,
+      wishlistId: null,
+      wishlistPriority: null,
     },
   ],
 };
@@ -150,7 +159,9 @@ describe("CollectionDetailsPage", () => {
     renderPage();
 
     expect(
-      screen.getByText("Loading collection checklist..."),
+      screen.getByText(
+        "Loading collection checklist...",
+      ),
     ).toBeInTheDocument();
 
     expect(
@@ -239,6 +250,40 @@ describe("CollectionDetailsPage", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("should show wishlist information for missing card already in wishlist", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(
+      CHECKLIST,
+    );
+
+    renderPage();
+
+    await screen.findByText("Metapod");
+
+    expect(
+      screen.getByText("✓ In wishlist"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("High"),
+    ).toBeInTheDocument();
+  });
+
+  it("should show add to wishlist for missing card not in wishlist", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(
+      CHECKLIST,
+    );
+
+    renderPage();
+
+    await screen.findByText("Caterpie");
+
+    expect(
+      screen.getByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).toBeInTheDocument();
+  });
+
   it("should navigate to owned card details", async () => {
     mockGetCollectionChecklist.mockResolvedValue(
       CHECKLIST,
@@ -259,25 +304,36 @@ describe("CollectionDetailsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("should add missing card to wishlist", async () => {
+  it("should add missing card to wishlist and update checklist state", async () => {
     mockGetCollectionChecklist.mockResolvedValue(
       CHECKLIST,
     );
 
-    mockCreateWishlistCard.mockResolvedValue(
-      undefined,
-    );
+    mockCreateWishlistCard.mockResolvedValue({
+      id: 60,
+      externalId: "sm1-1",
+      name: "Caterpie",
+      cardNumber: "1",
+      collectionId: "sm1",
+      collectionName: "Sun & Moon",
+      series: "Sun & Moon",
+      rarity: "Common",
+      imageUrl:
+        "https://example.com/caterpie.png",
+      priority: "MEDIUM",
+      createdAt: "2026-08-19T10:00:00",
+      updatedAt: "2026-08-19T10:00:00",
+    });
 
     renderPage();
 
     await screen.findByText("Caterpie");
 
-    const wishlistButtons =
-      screen.getAllByRole("button", {
+    fireEvent.click(
+      screen.getByRole("button", {
         name: "Add to wishlist",
-      });
-
-    fireEvent.click(wishlistButtons[0]);
+      }),
+    );
 
     await waitFor(() => {
       expect(mockCreateWishlistCard)
@@ -286,10 +342,61 @@ describe("CollectionDetailsPage", () => {
         });
     });
 
+    await waitFor(() => {
+      expect(
+        screen.getAllByText(
+          "✓ In wishlist",
+        ).length,
+      ).toBe(2);
+    });
+
+    expect(
+      screen.getByText("Medium"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).not.toBeInTheDocument();
+
     expect(mockToastSuccess)
       .toHaveBeenCalledWith(
         "Caterpie was added to your wishlist.",
       );
+  });
+
+  it("should keep card outside wishlist when adding fails", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(
+      CHECKLIST,
+    );
+
+    mockCreateWishlistCard.mockRejectedValue(
+      new Error("Failed"),
+    );
+
+    renderPage();
+
+    await screen.findByText("Caterpie");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Add to wishlist",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError)
+        .toHaveBeenCalledWith(
+          "Could not add card to wishlist.",
+        );
+    });
+
+    expect(
+      screen.getByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("should add missing card to collection and refresh checklist", async () => {
@@ -372,7 +479,9 @@ describe("CollectionDetailsPage", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Back to collection"),
+      screen.getByText(
+        "Back to collection",
+      ),
     ).toBeInTheDocument();
   });
 });
