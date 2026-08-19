@@ -3,13 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import { getCollectionChecklist } from "../../services/cards/cardService";
-import { createWishlistCard } from "../../services/wishlist/wishlistService";
+import {
+  createWishlistCard,
+  updateWishlistPriority,
+} from "../../services/wishlist/wishlistService";
 import { AddCardForm } from "../../components/cards/AddCardForm";
 import { Modal } from "../../components/ui/Modal";
 import type {
   CollectionChecklist,
   CollectionChecklistCard,
 } from "../../types/collectionChecklist";
+import type { WishlistPriority } from "../../types/wishlistCard";
 
 import "./CollectionDetailsPage.css";
 
@@ -31,6 +35,10 @@ export function CollectionDetailsPage() {
     useState<CollectionChecklistCard | null>(null);
 
   const [addingWishlistId, setAddingWishlistId] = useState<string | null>(null);
+
+  const [updatingWishlistPriorityId, setUpdatingWishlistPriorityId] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     let active = true;
@@ -149,6 +157,50 @@ export function CollectionDetailsPage() {
       toast.error(
         `${card.name} was added, but the checklist could not be refreshed.`,
       );
+    }
+  }
+
+  async function handleWishlistPriorityChange(
+    card: CollectionChecklistCard,
+    priority: WishlistPriority,
+  ) {
+    if (card.wishlistId === null || updatingWishlistPriorityId !== null) {
+      return;
+    }
+
+    try {
+      setUpdatingWishlistPriorityId(card.wishlistId);
+
+      const updatedWishlistCard = await updateWishlistPriority(
+        card.wishlistId,
+        {
+          priority,
+        },
+      );
+
+      setChecklist((currentChecklist) => {
+        if (!currentChecklist) {
+          return currentChecklist;
+        }
+
+        return {
+          ...currentChecklist,
+          cards: currentChecklist.cards.map((currentCard) =>
+            currentCard.externalId === card.externalId
+              ? {
+                  ...currentCard,
+                  wishlistPriority: updatedWishlistCard.priority,
+                }
+              : currentCard,
+          ),
+        };
+      });
+
+      toast.success(`${card.name} wishlist priority was updated.`);
+    } catch {
+      toast.error("Could not update wishlist priority.");
+    } finally {
+      setUpdatingWishlistPriorityId(null);
     }
   }
 
@@ -277,10 +329,25 @@ export function CollectionDetailsPage() {
                         <span>✓ In wishlist</span>
 
                         {card.wishlistPriority && (
-                          <strong>
-                            {card.wishlistPriority.charAt(0)}
-                            {card.wishlistPriority.slice(1).toLowerCase()}
-                          </strong>
+                          <select
+                            aria-label={`${card.name} wishlist priority`}
+                            value={card.wishlistPriority}
+                            disabled={
+                              updatingWishlistPriorityId === card.wishlistId
+                            }
+                            onChange={(event) => {
+                              void handleWishlistPriorityChange(
+                                card,
+                                event.target.value as WishlistPriority,
+                              );
+                            }}
+                          >
+                            <option value="HIGH">High</option>
+
+                            <option value="MEDIUM">Medium</option>
+
+                            <option value="LOW">Low</option>
+                          </select>
                         )}
                       </div>
                     ) : (

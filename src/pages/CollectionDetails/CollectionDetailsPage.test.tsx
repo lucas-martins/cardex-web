@@ -12,12 +12,19 @@ const mockToastSuccess = vi.hoisted(() => vi.fn());
 
 const mockToastError = vi.hoisted(() => vi.fn());
 
+const mockUpdateWishlistPriority = vi.hoisted(() => vi.fn());
+
 vi.mock("../../services/cards/cardService", () => ({
   getCollectionChecklist: mockGetCollectionChecklist,
 }));
 
 vi.mock("../../services/wishlist/wishlistService", () => ({
   createWishlistCard: mockCreateWishlistCard,
+}));
+
+vi.mock("../../services/wishlist/wishlistService", () => ({
+  createWishlistCard: mockCreateWishlistCard,
+  updateWishlistPriority: mockUpdateWishlistPriority,
 }));
 
 vi.mock("react-hot-toast", () => ({
@@ -259,7 +266,11 @@ describe("CollectionDetailsPage", () => {
       expect(screen.getAllByText("✓ In wishlist").length).toBe(2);
     });
 
-    expect(screen.getByText("Medium")).toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", {
+        name: "Caterpie wishlist priority",
+      }),
+    ).toHaveValue("MEDIUM");
 
     expect(
       screen.queryByRole("button", {
@@ -389,5 +400,82 @@ describe("CollectionDetailsPage", () => {
     expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
 
     expect(screen.getByText("High")).toBeInTheDocument();
+  });
+
+  it("should update wishlist priority from collection checklist", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    mockUpdateWishlistPriority.mockResolvedValue({
+      id: 50,
+      externalId: "sm1-2",
+      name: "Metapod",
+      cardNumber: "2",
+      collectionId: "sm1",
+      collectionName: "Sun & Moon",
+      series: "Sun & Moon",
+      rarity: "Uncommon",
+      imageUrl: "https://example.com/metapod.png",
+      priority: "LOW",
+      createdAt: "2026-08-19T10:00:00",
+      updatedAt: "2026-08-19T11:00:00",
+    });
+
+    renderPage();
+
+    await screen.findByText("Metapod");
+
+    const prioritySelect = screen.getByRole("combobox", {
+      name: "Metapod wishlist priority",
+    });
+
+    expect(prioritySelect).toHaveValue("HIGH");
+
+    fireEvent.change(prioritySelect, {
+      target: {
+        value: "LOW",
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockUpdateWishlistPriority).toHaveBeenCalledWith(50, {
+        priority: "LOW",
+      });
+    });
+
+    expect(
+      screen.getByRole("combobox", {
+        name: "Metapod wishlist priority",
+      }),
+    ).toHaveValue("LOW");
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Metapod wishlist priority was updated.",
+    );
+  });
+
+  it("should show error when wishlist priority update fails", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    mockUpdateWishlistPriority.mockRejectedValue(new Error("Failed"));
+
+    renderPage();
+
+    await screen.findByText("Metapod");
+
+    const prioritySelect = screen.getByRole("combobox", {
+      name: "Metapod wishlist priority",
+    });
+
+    fireEvent.change(prioritySelect, {
+      target: {
+        value: "LOW",
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Could not update wishlist priority.",
+      );
+    });
   });
 });
