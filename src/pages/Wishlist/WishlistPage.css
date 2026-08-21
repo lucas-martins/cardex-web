@@ -125,10 +125,7 @@
 
 .wishlist-grid {
   display: grid;
-  grid-template-columns: repeat(
-    4,
-    minmax(0, 1fr)
-  );
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -337,8 +334,7 @@
   border: 1px solid #57534e;
 }
 
-.wishlist-remove-actions
-  .secondary:hover:not(:disabled) {
+.wishlist-remove-actions .secondary:hover:not(:disabled) {
   background: #292524;
   border-color: #78716c;
 }
@@ -349,8 +345,7 @@
   border: 1px solid #b91c1c;
 }
 
-.wishlist-remove-actions
-  .danger:hover:not(:disabled) {
+.wishlist-remove-actions .danger:hover:not(:disabled) {
   background: #991b1b;
   border-color: #991b1b;
 }
@@ -360,12 +355,69 @@
   opacity: 0.6;
 }
 
+.wishlist-search {
+  display: flex;
+  min-width: 260px;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wishlist-search label {
+  color: #a8a29e;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.wishlist-search input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  color: #f5f5f5;
+  background: #181a1b;
+  border: 1px solid #3a3f46;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.wishlist-search input::placeholder {
+  color: #78716c;
+}
+
+.wishlist-search input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.wishlist-filter-empty h2 {
+  margin: 0 0 8px;
+  color: #f3f4f6;
+}
+
+.wishlist-filter-empty p {
+  margin: 0 0 18px;
+}
+
+.wishlist-filter-empty button {
+  min-height: 38px;
+  padding: 0 14px;
+  color: #ffffff;
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.wishlist-filter-empty button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
 @media (max-width: 1000px) {
   .wishlist-grid {
-    grid-template-columns: repeat(
-      3,
-      minmax(0, 1fr)
-    );
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -380,10 +432,11 @@
   }
 
   .wishlist-grid {
-    grid-template-columns: repeat(
-      2,
-      minmax(0, 1fr)
-    );
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wishlist-search {
+    min-width: 0;
   }
 }
 
@@ -400,10 +453,7 @@
 
   .wishlist-filter-buttons {
     display: grid;
-    grid-template-columns: repeat(
-      2,
-      1fr
-    );
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .wishlist-grid {

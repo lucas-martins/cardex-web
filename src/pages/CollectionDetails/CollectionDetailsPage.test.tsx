@@ -20,10 +20,6 @@ vi.mock("../../services/cards/cardService", () => ({
 
 vi.mock("../../services/wishlist/wishlistService", () => ({
   createWishlistCard: mockCreateWishlistCard,
-}));
-
-vi.mock("../../services/wishlist/wishlistService", () => ({
-  createWishlistCard: mockCreateWishlistCard,
   updateWishlistPriority: mockUpdateWishlistPriority,
 }));
 

@@ -494,4 +494,226 @@ describe("WishlistPage", () => {
       "Metapod was added to your collection and removed from your wishlist.",
     );
   });
+
+  it("should search wishlist cards by name", async () => {
+    mockFindWishlistCards.mockResolvedValue(CARDS);
+
+    render(<WishlistPage />);
+
+    await screen.findByText("Metapod");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search",
+      }),
+      {
+        target: {
+          value: "metapod",
+        },
+      },
+    );
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.queryByText("Pikachu")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Charizard")).not.toBeInTheDocument();
+
+    expect(screen.getByText("1 of 3 cards")).toBeInTheDocument();
+  });
+
+  it("should search wishlist cards by collection name", async () => {
+    mockFindWishlistCards.mockResolvedValue(CARDS);
+
+    render(<WishlistPage />);
+
+    await screen.findByText("Metapod");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search",
+      }),
+      {
+        target: {
+          value: "sun & moon",
+        },
+      },
+    );
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.queryByText("Pikachu")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Charizard")).not.toBeInTheDocument();
+  });
+
+  it("should search wishlist cards by card number", async () => {
+    mockFindWishlistCards.mockResolvedValue(CARDS);
+
+    render(<WishlistPage />);
+
+    await screen.findByText("Metapod");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search",
+      }),
+      {
+        target: {
+          value: "42",
+        },
+      },
+    );
+
+    expect(screen.getByText("Pikachu")).toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Charizard")).not.toBeInTheDocument();
+  });
+
+  it("should show empty filtered state when no cards match search", async () => {
+    mockFindWishlistCards.mockResolvedValue(CARDS);
+
+    render(<WishlistPage />);
+
+    await screen.findByText("Metapod");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search",
+      }),
+      {
+        target: {
+          value: "Mewtwo",
+        },
+      },
+    );
+
+    expect(screen.getByText("No cards found")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("No wishlist cards match your current filters."),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("0 of 3 cards")).toBeInTheDocument();
+  });
+
+  it("should clear wishlist filters", async () => {
+    mockFindWishlistCards.mockResolvedValue(CARDS);
+
+    render(<WishlistPage />);
+
+    await screen.findByText("Metapod");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search",
+      }),
+      {
+        target: {
+          value: "Mewtwo",
+        },
+      },
+    );
+
+    expect(screen.getByText("No cards found")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Clear filters",
+      }),
+    );
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.getByText("Pikachu")).toBeInTheDocument();
+
+    expect(screen.getByText("Charizard")).toBeInTheDocument();
+
+    expect(screen.getByText("3 cards")).toBeInTheDocument();
+  });
+
+  it("should combine search and priority filter", async () => {
+    mockFindWishlistCards.mockResolvedValue(CARDS);
+
+    render(<WishlistPage />);
+
+    await screen.findByText("Metapod");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search",
+      }),
+      {
+        target: {
+          value: "pi",
+        },
+      },
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "High",
+      }),
+    );
+
+    expect(screen.getByText("Pikachu")).toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Charizard")).not.toBeInTheDocument();
+
+    expect(screen.getByText("1 of 3 cards")).toBeInTheDocument();
+  });
+
+  it("should remove card from visible results when its priority no longer matches filter", async () => {
+    mockFindWishlistCards.mockResolvedValue(CARDS);
+
+    mockUpdateWishlistPriority.mockResolvedValue({
+      ...CARDS[1],
+      priority: "MEDIUM",
+      updatedAt: "2026-08-11T10:00:00",
+    });
+
+    render(<WishlistPage />);
+
+    await screen.findByText("Pikachu");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "High",
+      }),
+    );
+
+    expect(screen.getByText("Pikachu")).toBeInTheDocument();
+
+    const pikachuCard = screen.getByText("Pikachu").closest("article");
+
+    expect(pikachuCard).not.toBeNull();
+
+    const prioritySelect = within(pikachuCard!).getByRole("combobox", {
+      name: "Priority",
+    });
+
+    fireEvent.change(prioritySelect, {
+      target: {
+        value: "MEDIUM",
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockUpdateWishlistPriority).toHaveBeenCalledWith(2, {
+        priority: "MEDIUM",
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText("Pikachu")).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText("No cards found")).toBeInTheDocument();
+
+    expect(screen.getByText("0 of 3 cards")).toBeInTheDocument();
+  });
 });

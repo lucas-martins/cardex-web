@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 import type { WishlistCard, WishlistPriority } from "../../types/wishlistCard";
@@ -41,6 +41,8 @@ export function WishlistPage() {
 
   const [sort, setSort] = useState<WishlistSort>("PRIORITY_DESC");
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     async function loadWishlist() {
       try {
@@ -59,38 +61,61 @@ export function WishlistPage() {
     void loadWishlist();
   }, []);
 
-  const visibleCards = cards
-    .filter((card) => {
-      if (priorityFilter === "ALL") {
-        return true;
-      }
+  const visibleCards = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
 
-      return card.priority === priorityFilter;
-    })
-    .sort((first, second) => {
-      if (sort === "PRIORITY_DESC") {
-        const priorityComparison =
-          PRIORITY_ORDER[second.priority] - PRIORITY_ORDER[first.priority];
+    return cards
+      .filter((card) => {
+        const matchesPriority =
+          priorityFilter === "ALL" || card.priority === priorityFilter;
 
-        if (priorityComparison !== 0) {
-          return priorityComparison;
+        if (!matchesPriority) {
+          return false;
         }
-      }
 
-      if (sort === "PRIORITY_ASC") {
-        const priorityComparison =
-          PRIORITY_ORDER[first.priority] - PRIORITY_ORDER[second.priority];
-
-        if (priorityComparison !== 0) {
-          return priorityComparison;
+        if (!normalizedSearch) {
+          return true;
         }
-      }
 
-      return (
-        new Date(second.createdAt).getTime() -
-        new Date(first.createdAt).getTime()
-      );
-    });
+        const nameMatches = card.name.toLowerCase().includes(normalizedSearch);
+
+        const collectionMatches =
+          card.collectionName?.toLowerCase().includes(normalizedSearch) ??
+          false;
+
+        const numberMatches =
+          card.cardNumber?.toLowerCase().includes(normalizedSearch) ?? false;
+
+        return nameMatches || collectionMatches || numberMatches;
+      })
+      .sort((first, second) => {
+        if (sort === "PRIORITY_DESC") {
+          const priorityComparison =
+            PRIORITY_ORDER[second.priority] - PRIORITY_ORDER[first.priority];
+
+          if (priorityComparison !== 0) {
+            return priorityComparison;
+          }
+        }
+
+        if (sort === "PRIORITY_ASC") {
+          const priorityComparison =
+            PRIORITY_ORDER[first.priority] - PRIORITY_ORDER[second.priority];
+
+          if (priorityComparison !== 0) {
+            return priorityComparison;
+          }
+        }
+
+        return (
+          new Date(second.createdAt).getTime() -
+          new Date(first.createdAt).getTime()
+        );
+      });
+  }, [cards, priorityFilter, searchTerm, sort]);
+
+  const hasActiveFilter =
+    priorityFilter !== "ALL" || searchTerm.trim().length > 0;
 
   async function handleDelete() {
     if (!cardToRemove || deletingId !== null) {
@@ -180,7 +205,9 @@ export function WishlistPage() {
 
         {!loading && (
           <span className="wishlist-count">
-            {cards.length} {cards.length === 1 ? "card" : "cards"}
+            {hasActiveFilter
+              ? `${visibleCards.length} of ${cards.length} cards`
+              : `${cards.length} ${cards.length === 1 ? "card" : "cards"}`}
           </span>
         )}
       </div>
@@ -198,6 +225,18 @@ export function WishlistPage() {
       {!loading && cards.length > 0 && (
         <>
           <section className="wishlist-toolbar">
+            <div className="wishlist-search">
+              <label htmlFor="wishlist-search">Search</label>
+
+              <input
+                id="wishlist-search"
+                type="search"
+                value={searchTerm}
+                placeholder="Card, collection or number..."
+                onChange={(event) => setSearchTerm(event.target.value)}
+              />
+            </div>
+
             <div className="wishlist-filter-group">
               <span>Priority</span>
 
@@ -256,7 +295,19 @@ export function WishlistPage() {
 
           {visibleCards.length === 0 ? (
             <section className="wishlist-filter-empty">
-              <p>No cards match this priority.</p>
+              <h2>No cards found</h2>
+
+              <p>No wishlist cards match your current filters.</p>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchTerm("");
+                  setPriorityFilter("ALL");
+                }}
+              >
+                Clear filters
+              </button>
             </section>
           ) : (
             <section className="wishlist-grid">
@@ -323,9 +374,7 @@ export function WishlistPage() {
                         type="button"
                         className="wishlist-remove-button"
                         disabled={deletingId === card.id}
-                        onClick={() => {
-                          setCardToRemove(card);
-                        }}
+                        onClick={() => setCardToRemove(card)}
                       >
                         {deletingId === card.id
                           ? "Removing..."
