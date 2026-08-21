@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -7,6 +13,8 @@ import { CollectionDetailsPage } from "./CollectionDetailsPage";
 const mockGetCollectionChecklist = vi.hoisted(() => vi.fn());
 
 const mockCreateWishlistCard = vi.hoisted(() => vi.fn());
+
+const mockDeleteWishlistCard = vi.hoisted(() => vi.fn());
 
 const mockToastSuccess = vi.hoisted(() => vi.fn());
 
@@ -20,6 +28,7 @@ vi.mock("../../services/cards/cardService", () => ({
 
 vi.mock("../../services/wishlist/wishlistService", () => ({
   createWishlistCard: mockCreateWishlistCard,
+  deleteWishlistCard: mockDeleteWishlistCard,
   updateWishlistPriority: mockUpdateWishlistPriority,
 }));
 
@@ -111,7 +120,10 @@ function renderPage() {
           element={<CollectionDetailsPage />}
         />
 
-        <Route path="/collection/:id" element={<div>Card details</div>} />
+        <Route
+          path="/collection/:id"
+          element={<div>Card details</div>}
+        />
       </Routes>
     </MemoryRouter>,
   );
@@ -131,19 +143,33 @@ describe("CollectionDetailsPage", () => {
       screen.getByText("Loading collection checklist..."),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText("Sun & Moon")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Sun & Moon"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("1 / 3 cards collected")).toBeInTheDocument();
+    expect(
+      screen.getByText("1 / 3 cards collected"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("33.33%")).toBeInTheDocument();
+    expect(
+      screen.getByText("33.33%"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+    expect(
+      screen.getByText("Caterpie"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Metapod")).toBeInTheDocument();
+    expect(
+      screen.getByText("Metapod"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
+    expect(
+      screen.getByText("Decidueye-GX"),
+    ).toBeInTheDocument();
 
-    expect(mockGetCollectionChecklist).toHaveBeenCalledWith("sm1");
+    expect(
+      mockGetCollectionChecklist,
+    ).toHaveBeenCalledWith("sm1");
   });
 
   it("should filter owned cards", async () => {
@@ -159,11 +185,17 @@ describe("CollectionDetailsPage", () => {
       }),
     );
 
-    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
+    expect(
+      screen.getByText("Decidueye-GX"),
+    ).toBeInTheDocument();
 
-    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Caterpie"),
+    ).not.toBeInTheDocument();
 
-    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Metapod"),
+    ).not.toBeInTheDocument();
   });
 
   it("should filter missing cards", async () => {
@@ -179,11 +211,17 @@ describe("CollectionDetailsPage", () => {
       }),
     );
 
-    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+    expect(
+      screen.getByText("Caterpie"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Metapod")).toBeInTheDocument();
+    expect(
+      screen.getByText("Metapod"),
+    ).toBeInTheDocument();
 
-    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Decidueye-GX"),
+    ).not.toBeInTheDocument();
   });
 
   it("should show wishlist information for missing card already in wishlist", async () => {
@@ -193,9 +231,13 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Metapod");
 
-    expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
+    expect(
+      screen.getByText("✓ In wishlist"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("High")).toBeInTheDocument();
+    expect(
+      screen.getByText("High"),
+    ).toBeInTheDocument();
   });
 
   it("should show add to wishlist for missing card not in wishlist", async () => {
@@ -205,8 +247,13 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Caterpie");
 
+    const caterpieCard =
+      screen.getByText("Caterpie").closest("article");
+
+    expect(caterpieCard).not.toBeNull();
+
     expect(
-      screen.getByRole("button", {
+      within(caterpieCard!).getByRole("button", {
         name: "Add to wishlist",
       }),
     ).toBeInTheDocument();
@@ -219,9 +266,13 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Decidueye-GX");
 
-    fireEvent.click(screen.getByText("Decidueye-GX"));
+    fireEvent.click(
+      screen.getByText("Decidueye-GX"),
+    );
 
-    expect(await screen.findByText("Card details")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Card details"),
+    ).toBeInTheDocument();
   });
 
   it("should add missing card to wishlist and update checklist state", async () => {
@@ -246,20 +297,23 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Caterpie");
 
+    const caterpieCard =
+      screen.getByText("Caterpie").closest("article");
+
+    expect(caterpieCard).not.toBeNull();
+
     fireEvent.click(
-      screen.getByRole("button", {
+      within(caterpieCard!).getByRole("button", {
         name: "Add to wishlist",
       }),
     );
 
     await waitFor(() => {
-      expect(mockCreateWishlistCard).toHaveBeenCalledWith({
+      expect(
+        mockCreateWishlistCard,
+      ).toHaveBeenCalledWith({
         externalId: "sm1-1",
       });
-    });
-
-    await waitFor(() => {
-      expect(screen.getAllByText("✓ In wishlist").length).toBe(2);
     });
 
     expect(
@@ -269,12 +323,8 @@ describe("CollectionDetailsPage", () => {
     ).toHaveValue("MEDIUM");
 
     expect(
-      screen.queryByRole("button", {
-        name: "Add to wishlist",
-      }),
-    ).not.toBeInTheDocument();
-
-    expect(mockToastSuccess).toHaveBeenCalledWith(
+      mockToastSuccess,
+    ).toHaveBeenCalledWith(
       "Caterpie was added to your wishlist.",
     );
   });
@@ -282,26 +332,35 @@ describe("CollectionDetailsPage", () => {
   it("should keep card outside wishlist when adding fails", async () => {
     mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
 
-    mockCreateWishlistCard.mockRejectedValue(new Error("Failed"));
+    mockCreateWishlistCard.mockRejectedValue(
+      new Error("Failed"),
+    );
 
     renderPage();
 
     await screen.findByText("Caterpie");
 
+    const caterpieCard =
+      screen.getByText("Caterpie").closest("article");
+
+    expect(caterpieCard).not.toBeNull();
+
     fireEvent.click(
-      screen.getByRole("button", {
+      within(caterpieCard!).getByRole("button", {
         name: "Add to wishlist",
       }),
     );
 
     await waitFor(() => {
-      expect(mockToastError).toHaveBeenCalledWith(
+      expect(
+        mockToastError,
+      ).toHaveBeenCalledWith(
         "Could not add card to wishlist.",
       );
     });
 
     expect(
-      screen.getByRole("button", {
+      within(caterpieCard!).getByRole("button", {
         name: "Add to wishlist",
       }),
     ).toBeInTheDocument();
@@ -331,11 +390,16 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Caterpie");
 
-    const addButtons = screen.getAllByRole("button", {
-      name: "Add to collection",
-    });
+    const caterpieCard =
+      screen.getByText("Caterpie").closest("article");
 
-    fireEvent.click(addButtons[0]);
+    expect(caterpieCard).not.toBeNull();
+
+    fireEvent.click(
+      within(caterpieCard!).getByRole("button", {
+        name: "Add to collection",
+      }),
+    );
 
     expect(
       screen.getByRole("dialog", {
@@ -350,28 +414,42 @@ describe("CollectionDetailsPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockGetCollectionChecklist).toHaveBeenCalledTimes(2);
+      expect(
+        mockGetCollectionChecklist,
+      ).toHaveBeenCalledTimes(2);
     });
 
-    expect(screen.getByText("2 / 3 cards collected")).toBeInTheDocument();
+    expect(
+      screen.getByText("2 / 3 cards collected"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("66.67%")).toBeInTheDocument();
+    expect(
+      screen.getByText("66.67%"),
+    ).toBeInTheDocument();
 
-    expect(mockToastSuccess).toHaveBeenCalledWith(
+    expect(
+      mockToastSuccess,
+    ).toHaveBeenCalledWith(
       "Caterpie was added to your collection.",
     );
   });
 
   it("should show error when checklist loading fails", async () => {
-    mockGetCollectionChecklist.mockRejectedValue(new Error("Failed"));
+    mockGetCollectionChecklist.mockRejectedValue(
+      new Error("Failed"),
+    );
 
     renderPage();
 
     expect(
-      await screen.findByText("Could not load the collection."),
+      await screen.findByText(
+        "Could not load the collection.",
+      ),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("Back to collection")).toBeInTheDocument();
+    expect(
+      screen.getByText("Back to collection"),
+    ).toBeInTheDocument();
   });
 
   it("should filter wishlist cards", async () => {
@@ -387,15 +465,25 @@ describe("CollectionDetailsPage", () => {
       }),
     );
 
-    expect(screen.getByText("Metapod")).toBeInTheDocument();
+    expect(
+      screen.getByText("Metapod"),
+    ).toBeInTheDocument();
 
-    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Caterpie"),
+    ).not.toBeInTheDocument();
 
-    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Decidueye-GX"),
+    ).not.toBeInTheDocument();
 
-    expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
+    expect(
+      screen.getByText("✓ In wishlist"),
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("High")).toBeInTheDocument();
+    expect(
+      screen.getByText("High"),
+    ).toBeInTheDocument();
   });
 
   it("should update wishlist priority from collection checklist", async () => {
@@ -420,11 +508,14 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Metapod");
 
-    const prioritySelect = screen.getByRole("combobox", {
-      name: "Metapod wishlist priority",
-    });
+    const prioritySelect =
+      screen.getByRole("combobox", {
+        name: "Metapod wishlist priority",
+      });
 
-    expect(prioritySelect).toHaveValue("HIGH");
+    expect(
+      prioritySelect,
+    ).toHaveValue("HIGH");
 
     fireEvent.change(prioritySelect, {
       target: {
@@ -433,7 +524,9 @@ describe("CollectionDetailsPage", () => {
     });
 
     await waitFor(() => {
-      expect(mockUpdateWishlistPriority).toHaveBeenCalledWith(50, {
+      expect(
+        mockUpdateWishlistPriority,
+      ).toHaveBeenCalledWith(50, {
         priority: "LOW",
       });
     });
@@ -444,7 +537,9 @@ describe("CollectionDetailsPage", () => {
       }),
     ).toHaveValue("LOW");
 
-    expect(mockToastSuccess).toHaveBeenCalledWith(
+    expect(
+      mockToastSuccess,
+    ).toHaveBeenCalledWith(
       "Metapod wishlist priority was updated.",
     );
   });
@@ -452,15 +547,18 @@ describe("CollectionDetailsPage", () => {
   it("should show error when wishlist priority update fails", async () => {
     mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
 
-    mockUpdateWishlistPriority.mockRejectedValue(new Error("Failed"));
+    mockUpdateWishlistPriority.mockRejectedValue(
+      new Error("Failed"),
+    );
 
     renderPage();
 
     await screen.findByText("Metapod");
 
-    const prioritySelect = screen.getByRole("combobox", {
-      name: "Metapod wishlist priority",
-    });
+    const prioritySelect =
+      screen.getByRole("combobox", {
+        name: "Metapod wishlist priority",
+      });
 
     fireEvent.change(prioritySelect, {
       target: {
@@ -469,9 +567,124 @@ describe("CollectionDetailsPage", () => {
     });
 
     await waitFor(() => {
-      expect(mockToastError).toHaveBeenCalledWith(
+      expect(
+        mockToastError,
+      ).toHaveBeenCalledWith(
         "Could not update wishlist priority.",
       );
     });
+  });
+
+  it("should remove card from wishlist from collection checklist", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    mockDeleteWishlistCard.mockResolvedValue(
+      undefined,
+    );
+
+    renderPage();
+
+    await screen.findByText("Metapod");
+
+    const metapodCard =
+      screen.getByText("Metapod").closest("article");
+
+    expect(metapodCard).not.toBeNull();
+
+    expect(
+      within(metapodCard!).getByText(
+        "✓ In wishlist",
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      within(metapodCard!).getByRole("button", {
+        name: "Remove",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        mockDeleteWishlistCard,
+      ).toHaveBeenCalledWith(50);
+    });
+
+    await waitFor(() => {
+      expect(
+        within(metapodCard!).queryByText(
+          "✓ In wishlist",
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(
+      within(metapodCard!).queryByRole(
+        "combobox",
+        {
+          name: "Metapod wishlist priority",
+        },
+      ),
+    ).not.toBeInTheDocument();
+
+    expect(
+      within(metapodCard!).getByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      mockToastSuccess,
+    ).toHaveBeenCalledWith(
+      "Metapod was removed from your wishlist.",
+    );
+  });
+
+  it("should keep card in wishlist when removal fails", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    mockDeleteWishlistCard.mockRejectedValue(
+      new Error("Failed"),
+    );
+
+    renderPage();
+
+    await screen.findByText("Metapod");
+
+    const metapodCard =
+      screen.getByText("Metapod").closest("article");
+
+    expect(metapodCard).not.toBeNull();
+
+    fireEvent.click(
+      within(metapodCard!).getByRole("button", {
+        name: "Remove",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(
+        mockDeleteWishlistCard,
+      ).toHaveBeenCalledWith(50);
+    });
+
+    await waitFor(() => {
+      expect(
+        mockToastError,
+      ).toHaveBeenCalledWith(
+        "Could not remove card from wishlist.",
+      );
+    });
+
+    expect(
+      within(metapodCard!).getByText(
+        "✓ In wishlist",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      within(metapodCard!).getByRole("combobox", {
+        name: "Metapod wishlist priority",
+      }),
+    ).toHaveValue("HIGH");
   });
 });

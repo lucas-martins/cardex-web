@@ -6,6 +6,7 @@ import { getCollectionChecklist } from "../../services/cards/cardService";
 import {
   createWishlistCard,
   updateWishlistPriority,
+  deleteWishlistCard,
 } from "../../services/wishlist/wishlistService";
 import { AddCardForm } from "../../components/cards/AddCardForm";
 import { Modal } from "../../components/ui/Modal";
@@ -39,6 +40,10 @@ export function CollectionDetailsPage() {
   const [updatingWishlistPriorityId, setUpdatingWishlistPriorityId] = useState<
     number | null
   >(null);
+
+  const [removingWishlistId, setRemovingWishlistId] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     let active = true;
@@ -136,6 +141,44 @@ export function CollectionDetailsPage() {
       toast.error("Could not add card to wishlist.");
     } finally {
       setAddingWishlistId(null);
+    }
+  }
+
+  async function handleRemoveFromWishlist(card: CollectionChecklistCard) {
+    if (card.wishlistId === null || removingWishlistId !== null) {
+      return;
+    }
+
+    try {
+      setRemovingWishlistId(card.wishlistId);
+
+      await deleteWishlistCard(card.wishlistId);
+
+      setChecklist((currentChecklist) => {
+        if (!currentChecklist) {
+          return currentChecklist;
+        }
+
+        return {
+          ...currentChecklist,
+          cards: currentChecklist.cards.map((currentCard) =>
+            currentCard.externalId === card.externalId
+              ? {
+                  ...currentCard,
+                  inWishlist: false,
+                  wishlistId: null,
+                  wishlistPriority: null,
+                }
+              : currentCard,
+          ),
+        };
+      });
+
+      toast.success(`${card.name} was removed from your wishlist.`);
+    } catch {
+      toast.error("Could not remove card from wishlist.");
+    } finally {
+      setRemovingWishlistId(null);
     }
   }
 
@@ -328,27 +371,44 @@ export function CollectionDetailsPage() {
                       <div className="collection-checklist-in-wishlist">
                         <span>✓ In wishlist</span>
 
-                        {card.wishlistPriority && (
-                          <select
-                            aria-label={`${card.name} wishlist priority`}
-                            value={card.wishlistPriority}
-                            disabled={
-                              updatingWishlistPriorityId === card.wishlistId
-                            }
-                            onChange={(event) => {
-                              void handleWishlistPriorityChange(
-                                card,
-                                event.target.value as WishlistPriority,
-                              );
+                        <div className="collection-checklist-wishlist-controls">
+                          {card.wishlistPriority && (
+                            <select
+                              aria-label={`${card.name} wishlist priority`}
+                              value={card.wishlistPriority}
+                              disabled={
+                                updatingWishlistPriorityId ===
+                                  card.wishlistId ||
+                                removingWishlistId === card.wishlistId
+                              }
+                              onChange={(event) => {
+                                void handleWishlistPriorityChange(
+                                  card,
+                                  event.target.value as WishlistPriority,
+                                );
+                              }}
+                            >
+                              <option value="HIGH">High</option>
+
+                              <option value="MEDIUM">Medium</option>
+
+                              <option value="LOW">Low</option>
+                            </select>
+                          )}
+
+                          <button
+                            type="button"
+                            className="collection-checklist-remove-wishlist"
+                            disabled={removingWishlistId === card.wishlistId}
+                            onClick={() => {
+                              void handleRemoveFromWishlist(card);
                             }}
                           >
-                            <option value="HIGH">High</option>
-
-                            <option value="MEDIUM">Medium</option>
-
-                            <option value="LOW">Low</option>
-                          </select>
-                        )}
+                            {removingWishlistId === card.wishlistId
+                              ? "Removing..."
+                              : "Remove"}
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <button

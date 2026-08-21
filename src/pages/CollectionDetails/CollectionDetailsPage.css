@@ -340,6 +340,35 @@
   text-transform: capitalize;
 }
 
+.collection-checklist-wishlist-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collection-checklist-remove-wishlist {
+  min-height: 30px;
+  padding: 0 9px;
+  color: #fecaca;
+  background: transparent;
+  border: 1px solid #7f1d1d;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.collection-checklist-remove-wishlist:hover:not(:disabled) {
+  background: rgb(127 29 29 / 25%);
+  border-color: #b91c1c;
+}
+
+.collection-checklist-remove-wishlist:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 @media (max-width: 1000px) {
   .collection-details-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
