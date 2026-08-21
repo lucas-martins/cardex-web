@@ -182,6 +182,47 @@
   opacity: 0.6;
 }
 
+.search-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.search-card-owned {
+  min-height: 42px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbf7d0;
+  background: rgb(22 101 52 / 18%);
+  border: 1px solid #166534;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.search-card-in-wishlist {
+  min-height: 42px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #bbf7d0;
+  background: rgb(22 101 52 / 18%);
+  border: 1px solid #166534;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.search-card-in-wishlist strong {
+  color: #d6d3d1;
+  font-size: 0.75rem;
+}
+
 @media (max-width: 520px) {
   .search-card-actions {
     flex-direction: column;

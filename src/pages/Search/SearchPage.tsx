@@ -1,28 +1,41 @@
 import { type FormEvent, useState } from "react";
-import { searchPokemonCards } from "../../services/pokemon/pokemonCardService";
-import type { PokemonCardSearchResult } from "../../types/pokemonCard";
-import { AddCardForm } from "../../components/cards/AddCardForm";
-import { Modal } from "../../components/ui/Modal";
-import "./SearchPage.css";
 import axios from "axios";
 import toast from "react-hot-toast";
+
+import { AddCardForm } from "../../components/cards/AddCardForm";
+import { Modal } from "../../components/ui/Modal";
+import { searchPokemonCards } from "../../services/pokemon/pokemonCardService";
 import { createWishlistCard } from "../../services/wishlist/wishlistService";
+import type { PokemonCardSearchResult } from "../../types/pokemonCard";
+
+import "./SearchPage.css";
 
 const PAGE_SIZE = 20;
 
 export function SearchPage() {
   const [name, setName] = useState("");
+
   const [searchedName, setSearchedName] = useState("");
+
   const [cards, setCards] = useState<PokemonCardSearchResult[]>([]);
+
   const [currentPage, setCurrentPage] = useState(0);
+
   const [totalElements, setTotalElements] = useState(0);
+
   const [lastPage, setLastPage] = useState(true);
+
   const [loading, setLoading] = useState(false);
+
   const [loadingMore, setLoadingMore] = useState(false);
+
   const [searched, setSearched] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
+
   const [selectedCard, setSelectedCard] =
     useState<PokemonCardSearchResult | null>(null);
+
   const [addingToWishlistId, setAddingToWishlistId] = useState<string | null>(
     null,
   );
@@ -62,6 +75,7 @@ export function SearchPage() {
       setTotalElements(0);
       setLastPage(true);
       setSearched(true);
+
       if (
         axios.isAxiosError(requestError) &&
         requestError.code === "ECONNABORTED"
@@ -109,17 +123,32 @@ export function SearchPage() {
     }
   }
 
-  async function handleAddToWishlist(externalId: string) {
-    if (addingToWishlistId) {
+  async function handleAddToWishlist(card: PokemonCardSearchResult) {
+    if (addingToWishlistId !== null) {
       return;
     }
 
     try {
-      setAddingToWishlistId(externalId);
+      setAddingToWishlistId(card.externalId);
 
-      await createWishlistCard({ externalId });
+      const wishlistCard = await createWishlistCard({
+        externalId: card.externalId,
+      });
 
-      toast.success("Card added to wishlist.");
+      setCards((currentCards) =>
+        currentCards.map((currentCard) =>
+          currentCard.externalId === card.externalId
+            ? {
+                ...currentCard,
+                inWishlist: true,
+                wishlistId: wishlistCard.id,
+                wishlistPriority: wishlistCard.priority,
+              }
+            : currentCard,
+        ),
+      );
+
+      toast.success(`${card.name} was added to your wishlist.`);
     } catch {
       toast.error("Could not add card to wishlist.");
     } finally {
@@ -127,10 +156,38 @@ export function SearchPage() {
     }
   }
 
+  function handleAddedToCollection(card: PokemonCardSearchResult) {
+    setCards((currentCards) =>
+      currentCards.map((currentCard) =>
+        currentCard.externalId === card.externalId
+          ? {
+              ...currentCard,
+              owned: true,
+            }
+          : currentCard,
+      ),
+    );
+
+    toast.success(`${card.name} was added to your collection.`);
+
+    setSelectedCard(null);
+  }
+
+  function formatWishlistPriority(
+    priority: PokemonCardSearchResult["wishlistPriority"],
+  ) {
+    if (!priority) {
+      return null;
+    }
+
+    return priority.charAt(0) + priority.slice(1).toLowerCase();
+  }
+
   return (
     <section>
       <div className="search-header">
         <h1>Search Cards</h1>
+
         <p>Find a Pokémon card and add it to your collection.</p>
       </div>
 
@@ -175,26 +232,47 @@ export function SearchPage() {
 
             <div className="search-card-content">
               <h2>{card.name}</h2>
+
               <p>{card.collectionName}</p>
+
               <p>#{card.cardNumber}</p>
+
               <p>{card.rarity ?? "Rarity not available"}</p>
 
-              <button type="button" onClick={() => setSelectedCard(card)}>
-                Add to collection
-              </button>
+              <div className="search-card-actions">
+                {card.owned ? (
+                  <div className="search-card-owned">✓ In collection</div>
+                ) : (
+                  <button type="button" onClick={() => setSelectedCard(card)}>
+                    Add to collection
+                  </button>
+                )}
 
-              <button
-                type="button"
-                className="search-card-wishlist-button"
-                disabled={addingToWishlistId === card.externalId}
-                onClick={() => {
-                  void handleAddToWishlist(card.externalId);
-                }}
-              >
-                {addingToWishlistId === card.externalId
-                  ? "Adding..."
-                  : "Add to wishlist"}
-              </button>
+                {card.inWishlist ? (
+                  <div className="search-card-in-wishlist">
+                    <span>✓ In wishlist</span>
+
+                    {card.wishlistPriority && (
+                      <strong>
+                        {formatWishlistPriority(card.wishlistPriority)}
+                      </strong>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="search-card-wishlist-button"
+                    disabled={addingToWishlistId === card.externalId}
+                    onClick={() => {
+                      void handleAddToWishlist(card);
+                    }}
+                  >
+                    {addingToWishlistId === card.externalId
+                      ? "Adding..."
+                      : "Add to wishlist"}
+                  </button>
+                )}
+              </div>
             </div>
           </article>
         ))}
@@ -221,13 +299,7 @@ export function SearchPage() {
           <AddCardForm
             externalId={selectedCard.externalId}
             onCancel={() => setSelectedCard(null)}
-            onSuccess={() => {
-              toast.success(
-                `${selectedCard.name} was added to your collection.`,
-              );
-
-              setSelectedCard(null);
-            }}
+            onSuccess={() => handleAddedToCollection(selectedCard)}
           />
         </Modal>
       )}

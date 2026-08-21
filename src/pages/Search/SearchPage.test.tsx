@@ -61,15 +61,19 @@ const FIRST_PAGE = {
       externalId: "base1-4",
       name: "Charizard",
       cardNumber: "4",
-      collectionId: "base1",
       collectionName: "Base Set",
-      series: "Base",
       rarity: "Rare Holo",
       imageUrl: "https://example.com/charizard.png",
+      owned: false,
+      cardId: null,
+      inWishlist: false,
+      wishlistId: null,
+      wishlistPriority: null,
     },
   ],
   page: 1,
-  size: 20,
+  pageSize: 20,
+  count: 1,
   totalElements: 2,
   totalPages: 2,
   first: true,
@@ -82,19 +86,46 @@ const SECOND_PAGE = {
       externalId: "swsh4-25",
       name: "Charizard",
       cardNumber: "25",
-      collectionId: "swsh4",
       collectionName: "Vivid Voltage",
-      series: "Sword & Shield",
       rarity: "Rare",
       imageUrl: null,
+      owned: false,
+      cardId: null,
+      inWishlist: false,
+      wishlistId: null,
+      wishlistPriority: null,
     },
   ],
   page: 2,
-  size: 20,
+  pageSize: 20,
+  count: 1,
   totalElements: 2,
   totalPages: 2,
   first: false,
   last: true,
+};
+
+const OWNED_PAGE = {
+  ...FIRST_PAGE,
+  content: [
+    {
+      ...FIRST_PAGE.content[0],
+      owned: true,
+      cardId: 10,
+    },
+  ],
+};
+
+const WISHLIST_PAGE = {
+  ...FIRST_PAGE,
+  content: [
+    {
+      ...FIRST_PAGE.content[0],
+      inWishlist: true,
+      wishlistId: 20,
+      wishlistPriority: "HIGH" as const,
+    },
+  ],
 };
 
 describe("SearchPage", () => {
@@ -115,12 +146,15 @@ describe("SearchPage", () => {
       screen.getByText("Enter a card name."),
     ).toBeInTheDocument();
 
-    expect(mockSearchPokemonCards)
-      .not.toHaveBeenCalled();
+    expect(
+      mockSearchPokemonCards,
+    ).not.toHaveBeenCalled();
   });
 
   it("should search cards by name", async () => {
-    mockSearchPokemonCards.mockResolvedValue(FIRST_PAGE);
+    mockSearchPokemonCards.mockResolvedValue(
+      FIRST_PAGE,
+    );
 
     render(<SearchPage />);
 
@@ -140,12 +174,13 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockSearchPokemonCards)
-        .toHaveBeenCalledWith({
-          name: "Charizard",
-          page: 1,
-          size: 20,
-        });
+      expect(
+        mockSearchPokemonCards,
+      ).toHaveBeenCalledWith({
+        name: "Charizard",
+        page: 1,
+        size: 20,
+      });
     });
 
     expect(
@@ -159,13 +194,26 @@ describe("SearchPage", () => {
     expect(
       screen.getByText("Showing 1 of 2 cards"),
     ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Add to collection",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("should show empty state when no cards are found", async () => {
     mockSearchPokemonCards.mockResolvedValue({
       content: [],
       page: 1,
-      size: 20,
+      pageSize: 20,
+      count: 0,
       totalElements: 0,
       totalPages: 0,
       first: true,
@@ -189,11 +237,11 @@ describe("SearchPage", () => {
       }),
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByText("No cards found."),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(
+        "No cards found.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("should load more cards without replacing previous results", async () => {
@@ -227,15 +275,16 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockSearchPokemonCards)
-        .toHaveBeenNthCalledWith(
-          2,
-          {
-            name: "Charizard",
-            page: 2,
-            size: 20,
-          },
-        );
+      expect(
+        mockSearchPokemonCards,
+      ).toHaveBeenNthCalledWith(
+        2,
+        {
+          name: "Charizard",
+          page: 2,
+          size: 20,
+        },
+      );
     });
 
     expect(
@@ -251,9 +300,99 @@ describe("SearchPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("should add card to wishlist", async () => {
-    mockSearchPokemonCards.mockResolvedValue(FIRST_PAGE);
-    mockCreateWishlistCard.mockResolvedValue({});
+  it("should show card as already in collection", async () => {
+    mockSearchPokemonCards.mockResolvedValue(
+      OWNED_PAGE,
+    );
+
+    render(<SearchPage />);
+
+    fireEvent.change(
+      screen.getByLabelText("Card name"),
+      {
+        target: {
+          value: "Charizard",
+        },
+      },
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    expect(
+      await screen.findByText(
+        "✓ In collection",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Add to collection",
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should show card as already in wishlist", async () => {
+    mockSearchPokemonCards.mockResolvedValue(
+      WISHLIST_PAGE,
+    );
+
+    render(<SearchPage />);
+
+    fireEvent.change(
+      screen.getByLabelText("Card name"),
+      {
+        target: {
+          value: "Charizard",
+        },
+      },
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    expect(
+      await screen.findByText(
+        "✓ In wishlist",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("High"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should add card to wishlist and update search result", async () => {
+    mockSearchPokemonCards.mockResolvedValue(
+      FIRST_PAGE,
+    );
+
+    mockCreateWishlistCard.mockResolvedValue({
+      id: 30,
+      externalId: "base1-4",
+      name: "Charizard",
+      cardNumber: "4",
+      collectionId: "base1",
+      collectionName: "Base Set",
+      series: "Base",
+      rarity: "Rare Holo",
+      imageUrl: "https://example.com/charizard.png",
+      priority: "MEDIUM",
+      createdAt: "2026-08-21T10:00:00",
+      updatedAt: "2026-08-21T10:00:00",
+    });
 
     render(<SearchPage />);
 
@@ -281,20 +420,41 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockCreateWishlistCard)
-        .toHaveBeenCalledWith({
-          externalId: "base1-4",
-        });
+      expect(
+        mockCreateWishlistCard,
+      ).toHaveBeenCalledWith({
+        externalId: "base1-4",
+      });
     });
 
-    expect(mockToastSuccess)
-      .toHaveBeenCalledWith(
-        "Card added to wishlist.",
-      );
+    expect(
+      await screen.findByText(
+        "✓ In wishlist",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Medium"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      mockToastSuccess,
+    ).toHaveBeenCalledWith(
+      "Charizard was added to your wishlist.",
+    );
   });
 
   it("should show error when adding card to wishlist fails", async () => {
-    mockSearchPokemonCards.mockResolvedValue(FIRST_PAGE);
+    mockSearchPokemonCards.mockResolvedValue(
+      FIRST_PAGE,
+    );
+
     mockCreateWishlistCard.mockRejectedValue(
       new Error("Failed"),
     );
@@ -325,15 +485,24 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(mockToastError)
-        .toHaveBeenCalledWith(
-          "Could not add card to wishlist.",
-        );
+      expect(
+        mockToastError,
+      ).toHaveBeenCalledWith(
+        "Could not add card to wishlist.",
+      );
     });
+
+    expect(
+      screen.getByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).toBeInTheDocument();
   });
 
-  it("should open add to collection modal and close it after success", async () => {
-    mockSearchPokemonCards.mockResolvedValue(FIRST_PAGE);
+  it("should add card to collection and update search result", async () => {
+    mockSearchPokemonCards.mockResolvedValue(
+      FIRST_PAGE,
+    );
 
     render(<SearchPage />);
 
@@ -372,15 +541,28 @@ describe("SearchPage", () => {
       }),
     );
 
-    expect(mockToastSuccess)
-      .toHaveBeenCalledWith(
-        "Charizard was added to your collection.",
-      );
-
     expect(
       screen.queryByRole("dialog", {
         name: "Add Charizard",
       }),
     ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "✓ In collection",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Add to collection",
+      }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      mockToastSuccess,
+    ).toHaveBeenCalledWith(
+      "Charizard was added to your collection.",
+    );
   });
 });
