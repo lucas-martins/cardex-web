@@ -377,7 +377,6 @@ describe("WishlistPage", () => {
 
   it("should remove a card from wishlist", async () => {
     mockFindWishlistCards.mockResolvedValue(CARDS);
-    mockDeleteWishlistCard.mockResolvedValue(undefined);
 
     render(<WishlistPage />);
 
@@ -456,7 +455,6 @@ describe("WishlistPage", () => {
 
   it("should remove card from wishlist after adding it to collection", async () => {
     mockFindWishlistCards.mockResolvedValue(CARDS);
-    mockDeleteWishlistCard.mockResolvedValue(undefined);
 
     render(<WishlistPage />);
 
@@ -484,9 +482,7 @@ describe("WishlistPage", () => {
       }),
     );
 
-    await waitFor(() => {
-      expect(mockDeleteWishlistCard).toHaveBeenCalledWith(1);
-    });
+    expect(mockDeleteWishlistCard).not.toHaveBeenCalled();
 
     expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
 

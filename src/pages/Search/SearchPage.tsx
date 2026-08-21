@@ -163,6 +163,9 @@ export function SearchPage() {
           ? {
               ...currentCard,
               owned: true,
+              inWishlist: false,
+              wishlistId: null,
+              wishlistPriority: null,
             }
           : currentCard,
       ),

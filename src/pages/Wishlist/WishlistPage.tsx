@@ -143,26 +143,16 @@ export function WishlistPage() {
     }
   }
 
-  async function handleAddedToCollection(card: WishlistCard) {
-    try {
-      await deleteWishlistCard(card.id);
+  function handleAddedToCollection(card: WishlistCard) {
+    setCards((currentCards) =>
+      currentCards.filter((currentCard) => currentCard.id !== card.id),
+    );
 
-      setCards((currentCards) =>
-        currentCards.filter((currentCard) => currentCard.id !== card.id),
-      );
+    setSelectedCard(null);
 
-      setSelectedCard(null);
-
-      toast.success(
-        `${card.name} was added to your collection and removed from your wishlist.`,
-      );
-    } catch {
-      setSelectedCard(null);
-
-      toast.error(
-        `${card.name} was added to your collection, but could not be removed from your wishlist.`,
-      );
-    }
+    toast.success(
+      `${card.name} was added to your collection and removed from your wishlist.`,
+    );
   }
 
   async function handlePriorityChange(

@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { SearchPage } from "./SearchPage";
@@ -38,17 +33,11 @@ vi.mock("../../components/cards/AddCardForm", () => ({
     onSuccess: () => void;
   }) => (
     <div>
-      <button
-        type="button"
-        onClick={onCancel}
-      >
+      <button type="button" onClick={onCancel}>
         Cancel add
       </button>
 
-      <button
-        type="button"
-        onClick={onSuccess}
-      >
+      <button type="button" onClick={onSuccess}>
         Confirm add
       </button>
     </div>
@@ -142,30 +131,21 @@ describe("SearchPage", () => {
       }),
     );
 
-    expect(
-      screen.getByText("Enter a card name."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Enter a card name.")).toBeInTheDocument();
 
-    expect(
-      mockSearchPokemonCards,
-    ).not.toHaveBeenCalled();
+    expect(mockSearchPokemonCards).not.toHaveBeenCalled();
   });
 
   it("should search cards by name", async () => {
-    mockSearchPokemonCards.mockResolvedValue(
-      FIRST_PAGE,
-    );
+    mockSearchPokemonCards.mockResolvedValue(FIRST_PAGE);
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "  Charizard  ",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "  Charizard  ",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -174,26 +154,18 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockSearchPokemonCards,
-      ).toHaveBeenCalledWith({
+      expect(mockSearchPokemonCards).toHaveBeenCalledWith({
         name: "Charizard",
         page: 1,
         size: 20,
       });
     });
 
-    expect(
-      screen.getByText("Charizard"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Charizard")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Base Set"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Base Set")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Showing 1 of 2 cards"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Showing 1 of 2 cards")).toBeInTheDocument();
 
     expect(
       screen.getByRole("button", {
@@ -222,14 +194,11 @@ describe("SearchPage", () => {
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "Missingno",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Missingno",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -237,11 +206,7 @@ describe("SearchPage", () => {
       }),
     );
 
-    expect(
-      await screen.findByText(
-        "No cards found.",
-      ),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("No cards found.")).toBeInTheDocument();
   });
 
   it("should load more cards without replacing previous results", async () => {
@@ -251,14 +216,11 @@ describe("SearchPage", () => {
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "Charizard",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -275,46 +237,30 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockSearchPokemonCards,
-      ).toHaveBeenNthCalledWith(
-        2,
-        {
-          name: "Charizard",
-          page: 2,
-          size: 20,
-        },
-      );
+      expect(mockSearchPokemonCards).toHaveBeenNthCalledWith(2, {
+        name: "Charizard",
+        page: 2,
+        size: 20,
+      });
     });
 
-    expect(
-      screen.getByText("Base Set"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Base Set")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Vivid Voltage"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Vivid Voltage")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Showing 2 of 2 cards"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Showing 2 of 2 cards")).toBeInTheDocument();
   });
 
   it("should show card as already in collection", async () => {
-    mockSearchPokemonCards.mockResolvedValue(
-      OWNED_PAGE,
-    );
+    mockSearchPokemonCards.mockResolvedValue(OWNED_PAGE);
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "Charizard",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -322,11 +268,7 @@ describe("SearchPage", () => {
       }),
     );
 
-    expect(
-      await screen.findByText(
-        "✓ In collection",
-      ),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("✓ In collection")).toBeInTheDocument();
 
     expect(
       screen.queryByRole("button", {
@@ -336,20 +278,15 @@ describe("SearchPage", () => {
   });
 
   it("should show card as already in wishlist", async () => {
-    mockSearchPokemonCards.mockResolvedValue(
-      WISHLIST_PAGE,
-    );
+    mockSearchPokemonCards.mockResolvedValue(WISHLIST_PAGE);
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "Charizard",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -357,15 +294,9 @@ describe("SearchPage", () => {
       }),
     );
 
-    expect(
-      await screen.findByText(
-        "✓ In wishlist",
-      ),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("✓ In wishlist")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("High"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("High")).toBeInTheDocument();
 
     expect(
       screen.queryByRole("button", {
@@ -375,9 +306,7 @@ describe("SearchPage", () => {
   });
 
   it("should add card to wishlist and update search result", async () => {
-    mockSearchPokemonCards.mockResolvedValue(
-      FIRST_PAGE,
-    );
+    mockSearchPokemonCards.mockResolvedValue(FIRST_PAGE);
 
     mockCreateWishlistCard.mockResolvedValue({
       id: 30,
@@ -396,14 +325,11 @@ describe("SearchPage", () => {
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "Charizard",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -420,22 +346,14 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockCreateWishlistCard,
-      ).toHaveBeenCalledWith({
+      expect(mockCreateWishlistCard).toHaveBeenCalledWith({
         externalId: "base1-4",
       });
     });
 
-    expect(
-      await screen.findByText(
-        "✓ In wishlist",
-      ),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("✓ In wishlist")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Medium"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Medium")).toBeInTheDocument();
 
     expect(
       screen.queryByRole("button", {
@@ -443,32 +361,23 @@ describe("SearchPage", () => {
       }),
     ).not.toBeInTheDocument();
 
-    expect(
-      mockToastSuccess,
-    ).toHaveBeenCalledWith(
+    expect(mockToastSuccess).toHaveBeenCalledWith(
       "Charizard was added to your wishlist.",
     );
   });
 
   it("should show error when adding card to wishlist fails", async () => {
-    mockSearchPokemonCards.mockResolvedValue(
-      FIRST_PAGE,
-    );
+    mockSearchPokemonCards.mockResolvedValue(FIRST_PAGE);
 
-    mockCreateWishlistCard.mockRejectedValue(
-      new Error("Failed"),
-    );
+    mockCreateWishlistCard.mockRejectedValue(new Error("Failed"));
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "Charizard",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -485,9 +394,7 @@ describe("SearchPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockToastError,
-      ).toHaveBeenCalledWith(
+      expect(mockToastError).toHaveBeenCalledWith(
         "Could not add card to wishlist.",
       );
     });
@@ -499,21 +406,16 @@ describe("SearchPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("should add card to collection and update search result", async () => {
-    mockSearchPokemonCards.mockResolvedValue(
-      FIRST_PAGE,
-    );
+  it("should add card to collection and remove it from wishlist", async () => {
+    mockSearchPokemonCards.mockResolvedValue(WISHLIST_PAGE);
 
     render(<SearchPage />);
 
-    fireEvent.change(
-      screen.getByLabelText("Card name"),
-      {
-        target: {
-          value: "Charizard",
-        },
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
       },
-    );
+    });
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -522,6 +424,10 @@ describe("SearchPage", () => {
     );
 
     await screen.findByText("Base Set");
+
+    expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
+
+    expect(screen.getByText("High")).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -547,11 +453,11 @@ describe("SearchPage", () => {
       }),
     ).not.toBeInTheDocument();
 
-    expect(
-      screen.getByText(
-        "✓ In collection",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText("✓ In collection")).toBeInTheDocument();
+
+    expect(screen.queryByText("✓ In wishlist")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("High")).not.toBeInTheDocument();
 
     expect(
       screen.queryByRole("button", {
@@ -559,9 +465,7 @@ describe("SearchPage", () => {
       }),
     ).not.toBeInTheDocument();
 
-    expect(
-      mockToastSuccess,
-    ).toHaveBeenCalledWith(
+    expect(mockToastSuccess).toHaveBeenCalledWith(
       "Charizard was added to your collection.",
     );
   });
