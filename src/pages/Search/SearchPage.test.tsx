@@ -5,6 +5,8 @@ import { SearchPage } from "./SearchPage";
 
 const mockSearchPokemonCards = vi.hoisted(() => vi.fn());
 const mockCreateWishlistCard = vi.hoisted(() => vi.fn());
+const mockUpdateWishlistPriority = vi.hoisted(() => vi.fn());
+const mockDeleteWishlistCard = vi.hoisted(() => vi.fn());
 const mockToastSuccess = vi.hoisted(() => vi.fn());
 const mockToastError = vi.hoisted(() => vi.fn());
 
@@ -14,6 +16,8 @@ vi.mock("../../services/pokemon/pokemonCardService", () => ({
 
 vi.mock("../../services/wishlist/wishlistService", () => ({
   createWishlistCard: mockCreateWishlistCard,
+  updateWishlistPriority: mockUpdateWishlistPriority,
+  deleteWishlistCard: mockDeleteWishlistCard,
 }));
 
 vi.mock("react-hot-toast", () => ({
@@ -296,7 +300,11 @@ describe("SearchPage", () => {
 
     expect(await screen.findByText("✓ In wishlist")).toBeInTheDocument();
 
-    expect(screen.getByText("High")).toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", {
+        name: "Charizard wishlist priority",
+      }),
+    ).toHaveValue("HIGH");
 
     expect(
       screen.queryByRole("button", {
@@ -427,7 +435,11 @@ describe("SearchPage", () => {
 
     expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
 
-    expect(screen.getByText("High")).toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", {
+        name: "Charizard wishlist priority",
+      }),
+    ).toHaveValue("HIGH");
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -468,5 +480,217 @@ describe("SearchPage", () => {
     expect(mockToastSuccess).toHaveBeenCalledWith(
       "Charizard was added to your collection.",
     );
+  });
+
+  it("should update wishlist priority from search result", async () => {
+    mockSearchPokemonCards.mockResolvedValue(WISHLIST_PAGE);
+
+    mockUpdateWishlistPriority.mockResolvedValue({
+      id: 20,
+      externalId: "base1-4",
+      name: "Charizard",
+      cardNumber: "4",
+      collectionId: "base1",
+      collectionName: "Base Set",
+      series: "Base",
+      rarity: "Rare Holo",
+      imageUrl: "https://example.com/charizard.png",
+      priority: "LOW",
+      createdAt: "2026-08-21T10:00:00",
+      updatedAt: "2026-08-23T10:00:00",
+    });
+
+    render(<SearchPage />);
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await screen.findByText("✓ In wishlist");
+
+    const prioritySelect = screen.getByRole("combobox", {
+      name: "Charizard wishlist priority",
+    });
+
+    expect(prioritySelect).toHaveValue("HIGH");
+
+    fireEvent.change(prioritySelect, {
+      target: {
+        value: "LOW",
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockUpdateWishlistPriority).toHaveBeenCalledWith(20, {
+        priority: "LOW",
+      });
+    });
+
+    expect(
+      screen.getByRole("combobox", {
+        name: "Charizard wishlist priority",
+      }),
+    ).toHaveValue("LOW");
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Charizard wishlist priority was updated.",
+    );
+  });
+
+  it("should show error when updating wishlist priority fails", async () => {
+    mockSearchPokemonCards.mockResolvedValue(WISHLIST_PAGE);
+
+    mockUpdateWishlistPriority.mockRejectedValue(new Error("Failed"));
+
+    render(<SearchPage />);
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await screen.findByText("✓ In wishlist");
+
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "Charizard wishlist priority",
+      }),
+      {
+        target: {
+          value: "LOW",
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Could not update wishlist priority.",
+      );
+    });
+
+    expect(mockUpdateWishlistPriority).toHaveBeenCalledWith(20, {
+      priority: "LOW",
+    });
+  });
+
+  it("should remove card from wishlist from search result", async () => {
+    mockSearchPokemonCards.mockResolvedValue(WISHLIST_PAGE);
+
+    mockDeleteWishlistCard.mockResolvedValue(undefined);
+
+    render(<SearchPage />);
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await screen.findByText("✓ In wishlist");
+
+    expect(
+      screen.getByRole("combobox", {
+        name: "Charizard wishlist priority",
+      }),
+    ).toHaveValue("HIGH");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Remove",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockDeleteWishlistCard).toHaveBeenCalledWith(20);
+    });
+
+    expect(screen.queryByText("✓ In wishlist")).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("combobox", {
+        name: "Charizard wishlist priority",
+      }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).toBeInTheDocument();
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Charizard was removed from your wishlist.",
+    );
+  });
+
+  it("should show error when removing card from wishlist fails", async () => {
+    mockSearchPokemonCards.mockResolvedValue(WISHLIST_PAGE);
+
+    mockDeleteWishlistCard.mockRejectedValue(new Error("Failed"));
+
+    render(<SearchPage />);
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Charizard",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await screen.findByText("✓ In wishlist");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Remove",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Could not remove card from wishlist.",
+      );
+    });
+
+    expect(mockDeleteWishlistCard).toHaveBeenCalledWith(20);
+
+    expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("combobox", {
+        name: "Charizard wishlist priority",
+      }),
+    ).toHaveValue("HIGH");
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Add to wishlist",
+      }),
+    ).not.toBeInTheDocument();
   });
 });

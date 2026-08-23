@@ -5,7 +5,11 @@ import toast from "react-hot-toast";
 import { AddCardForm } from "../../components/cards/AddCardForm";
 import { Modal } from "../../components/ui/Modal";
 import { searchPokemonCards } from "../../services/pokemon/pokemonCardService";
-import { createWishlistCard } from "../../services/wishlist/wishlistService";
+import {
+  createWishlistCard,
+  deleteWishlistCard,
+  updateWishlistPriority,
+} from "../../services/wishlist/wishlistService";
 import type { PokemonCardSearchResult } from "../../types/pokemonCard";
 
 import "./SearchPage.css";
@@ -37,6 +41,14 @@ export function SearchPage() {
     useState<PokemonCardSearchResult | null>(null);
 
   const [addingToWishlistId, setAddingToWishlistId] = useState<string | null>(
+    null,
+  );
+
+  const [updatingWishlistId, setUpdatingWishlistId] = useState<number | null>(
+    null,
+  );
+
+  const [removingWishlistId, setRemovingWishlistId] = useState<number | null>(
     null,
   );
 
@@ -156,6 +168,78 @@ export function SearchPage() {
     }
   }
 
+  async function handleWishlistPriorityChange(
+    card: PokemonCardSearchResult,
+    priority: PokemonCardSearchResult["wishlistPriority"],
+  ) {
+    if (
+      card.wishlistId === null ||
+      priority === null ||
+      updatingWishlistId !== null
+    ) {
+      return;
+    }
+
+    try {
+      setUpdatingWishlistId(card.wishlistId);
+
+      const updatedWishlistCard = await updateWishlistPriority(
+        card.wishlistId,
+        {
+          priority,
+        },
+      );
+
+      setCards((currentCards) =>
+        currentCards.map((currentCard) =>
+          currentCard.externalId === card.externalId
+            ? {
+                ...currentCard,
+                wishlistPriority: updatedWishlistCard.priority,
+              }
+            : currentCard,
+        ),
+      );
+
+      toast.success(`${card.name} wishlist priority was updated.`);
+    } catch {
+      toast.error("Could not update wishlist priority.");
+    } finally {
+      setUpdatingWishlistId(null);
+    }
+  }
+
+  async function handleRemoveFromWishlist(card: PokemonCardSearchResult) {
+    if (card.wishlistId === null || removingWishlistId !== null) {
+      return;
+    }
+
+    try {
+      setRemovingWishlistId(card.wishlistId);
+
+      await deleteWishlistCard(card.wishlistId);
+
+      setCards((currentCards) =>
+        currentCards.map((currentCard) =>
+          currentCard.externalId === card.externalId
+            ? {
+                ...currentCard,
+                inWishlist: false,
+                wishlistId: null,
+                wishlistPriority: null,
+              }
+            : currentCard,
+        ),
+      );
+
+      toast.success(`${card.name} was removed from your wishlist.`);
+    } catch {
+      toast.error("Could not remove card from wishlist.");
+    } finally {
+      setRemovingWishlistId(null);
+    }
+  }
+
   function handleAddedToCollection(card: PokemonCardSearchResult) {
     setCards((currentCards) =>
       currentCards.map((currentCard) =>
@@ -174,16 +258,6 @@ export function SearchPage() {
     toast.success(`${card.name} was added to your collection.`);
 
     setSelectedCard(null);
-  }
-
-  function formatWishlistPriority(
-    priority: PokemonCardSearchResult["wishlistPriority"],
-  ) {
-    if (!priority) {
-      return null;
-    }
-
-    return priority.charAt(0) + priority.slice(1).toLowerCase();
   }
 
   return (
@@ -255,11 +329,42 @@ export function SearchPage() {
                   <div className="search-card-in-wishlist">
                     <span>✓ In wishlist</span>
 
-                    {card.wishlistPriority && (
-                      <strong>
-                        {formatWishlistPriority(card.wishlistPriority)}
-                      </strong>
-                    )}
+                    <div className="search-card-wishlist-controls">
+                      {card.wishlistPriority && (
+                        <select
+                          aria-label={`${card.name} wishlist priority`}
+                          value={card.wishlistPriority}
+                          disabled={
+                            updatingWishlistId === card.wishlistId ||
+                            removingWishlistId === card.wishlistId
+                          }
+                          onChange={(event) => {
+                            void handleWishlistPriorityChange(
+                              card,
+                              event.target
+                                .value as PokemonCardSearchResult["wishlistPriority"],
+                            );
+                          }}
+                        >
+                          <option value="HIGH">High</option>
+                          <option value="MEDIUM">Medium</option>
+                          <option value="LOW">Low</option>
+                        </select>
+                      )}
+
+                      <button
+                        type="button"
+                        className="search-card-remove-wishlist"
+                        disabled={removingWishlistId === card.wishlistId}
+                        onClick={() => {
+                          void handleRemoveFromWishlist(card);
+                        }}
+                      >
+                        {removingWishlistId === card.wishlistId
+                          ? "Removing..."
+                          : "Remove"}
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button
