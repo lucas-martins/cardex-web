@@ -8,6 +8,7 @@ export async function findCardHistory(
   page = 0,
   size = 20,
   action?: CardHistoryAction,
+  cardName?: string,
 ): Promise<CardHistoryPage> {
   const response = await apiClient.get<CardHistoryPage>(
     "/card-history",
@@ -16,6 +17,7 @@ export async function findCardHistory(
         page,
         size,
         action: action || undefined,
+        cardName: cardName || undefined,
       },
     },
   );

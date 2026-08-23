@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 
 import { HistoryPage } from "./HistoryPage";
-import { MemoryRouter } from "react-router-dom";
 
 const mockFindCardHistory = vi.hoisted(() => vi.fn());
 const mockToastError = vi.hoisted(() => vi.fn());
@@ -69,6 +69,27 @@ const SECOND_PAGE = {
   last: true,
 };
 
+const FILTERED_PAGE = {
+  content: [
+    {
+      id: 2,
+      cardId: 1,
+      externalId: "sm1-12",
+      cardName: "Decidueye-GX",
+      action: "UPDATED",
+      description: "Quantity changed from 1 to 3.",
+      createdAt: "2026-08-09T18:15:00",
+      cardExists: true,
+    },
+  ],
+  totalElements: 1,
+  totalPages: 1,
+  number: 0,
+  size: 20,
+  first: true,
+  last: true,
+};
+
 describe("HistoryPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -105,7 +126,12 @@ describe("HistoryPage", () => {
 
     expect(screen.getByText("3 events")).toBeInTheDocument();
 
-    expect(mockFindCardHistory).toHaveBeenCalledWith(0, 20, undefined);
+    expect(mockFindCardHistory).toHaveBeenCalledWith(
+      0,
+      20,
+      undefined,
+      undefined,
+    );
   });
 
   it("should render empty state", async () => {
@@ -125,7 +151,7 @@ describe("HistoryPage", () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByText("No activity yet")).toBeInTheDocument();
+    expect(await screen.findByText("No activity found")).toBeInTheDocument();
 
     expect(
       screen.getByText("Changes to your collection will appear here."),
@@ -173,7 +199,13 @@ describe("HistoryPage", () => {
       await screen.findByText("Card marked as favorite."),
     ).toBeInTheDocument();
 
-    expect(mockFindCardHistory).toHaveBeenNthCalledWith(2, 1, 20, undefined);
+    expect(mockFindCardHistory).toHaveBeenNthCalledWith(
+      2,
+      1,
+      20,
+      undefined,
+      undefined,
+    );
 
     expect(
       screen.queryByRole("button", {
@@ -254,26 +286,7 @@ describe("HistoryPage", () => {
   it("should filter history by action", async () => {
     mockFindCardHistory
       .mockResolvedValueOnce(FIRST_PAGE)
-      .mockResolvedValueOnce({
-        content: [
-          {
-            id: 2,
-            cardId: 1,
-            externalId: "sm1-12",
-            cardName: "Decidueye-GX",
-            action: "UPDATED",
-            description: "Quantity changed from 1 to 3.",
-            createdAt: "2026-08-09T18:15:00",
-            cardExists: true,
-          },
-        ],
-        totalElements: 1,
-        totalPages: 1,
-        number: 0,
-        size: 20,
-        first: true,
-        last: true,
-      });
+      .mockResolvedValueOnce(FILTERED_PAGE);
 
     render(
       <MemoryRouter>
@@ -290,7 +303,12 @@ describe("HistoryPage", () => {
     });
 
     await waitFor(() => {
-      expect(mockFindCardHistory).toHaveBeenLastCalledWith(0, 20, "UPDATED");
+      expect(mockFindCardHistory).toHaveBeenLastCalledWith(
+        0,
+        20,
+        "UPDATED",
+        undefined,
+      );
     });
 
     expect(
@@ -300,5 +318,266 @@ describe("HistoryPage", () => {
     expect(
       screen.queryByText("Card added to collection."),
     ).not.toBeInTheDocument();
+  });
+
+  it("should search history by card name", async () => {
+    mockFindCardHistory
+      .mockResolvedValueOnce(FIRST_PAGE)
+      .mockResolvedValueOnce(FILTERED_PAGE);
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Card added to collection.");
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "  Decidueye  ",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenLastCalledWith(
+        0,
+        20,
+        undefined,
+        "Decidueye",
+      );
+    });
+
+    expect(
+      await screen.findByText("Quantity changed from 1 to 3."),
+    ).toBeInTheDocument();
+  });
+
+  it("should combine action and card name filters", async () => {
+    mockFindCardHistory
+      .mockResolvedValueOnce(FIRST_PAGE)
+      .mockResolvedValueOnce(FILTERED_PAGE)
+      .mockResolvedValueOnce(FILTERED_PAGE);
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Card added to collection.");
+
+    fireEvent.change(screen.getByLabelText("Event type"), {
+      target: {
+        value: "UPDATED",
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenLastCalledWith(
+        0,
+        20,
+        "UPDATED",
+        undefined,
+      );
+    });
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Decidueye",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenLastCalledWith(
+        0,
+        20,
+        "UPDATED",
+        "Decidueye",
+      );
+    });
+  });
+
+  it("should clear card name filter", async () => {
+    mockFindCardHistory
+      .mockResolvedValueOnce(FIRST_PAGE)
+      .mockResolvedValueOnce(FILTERED_PAGE)
+      .mockResolvedValueOnce(FIRST_PAGE);
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Card added to collection.");
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Decidueye",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenLastCalledWith(
+        0,
+        20,
+        undefined,
+        "Decidueye",
+      );
+    });
+
+    expect(
+      screen.getByRole("button", {
+        name: "Clear",
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Clear",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenLastCalledWith(
+        0,
+        20,
+        undefined,
+        undefined,
+      );
+    });
+
+    expect(screen.getByLabelText("Card name")).toHaveValue("");
+  });
+
+  it("should keep card name filter when loading more", async () => {
+    const FILTERED_FIRST_PAGE = {
+      ...FIRST_PAGE,
+      totalElements: 3,
+      totalPages: 2,
+      last: false,
+    };
+
+    const FILTERED_SECOND_PAGE = {
+      ...SECOND_PAGE,
+      content: [
+        {
+          ...SECOND_PAGE.content[0],
+          cardName: "Decidueye-GX",
+        },
+      ],
+    };
+
+    mockFindCardHistory
+      .mockResolvedValueOnce(FIRST_PAGE)
+      .mockResolvedValueOnce(FILTERED_FIRST_PAGE)
+      .mockResolvedValueOnce(FILTERED_SECOND_PAGE);
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Card added to collection.");
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Decidueye",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenNthCalledWith(
+        2,
+        0,
+        20,
+        undefined,
+        "Decidueye",
+      );
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Load more",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockFindCardHistory).toHaveBeenNthCalledWith(
+        3,
+        1,
+        20,
+        undefined,
+        "Decidueye",
+      );
+    });
+  });
+
+  it("should show filtered empty state", async () => {
+    mockFindCardHistory
+      .mockResolvedValueOnce(FIRST_PAGE)
+      .mockResolvedValueOnce({
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        number: 0,
+        size: 20,
+        first: true,
+        last: true,
+      });
+
+    render(
+      <MemoryRouter>
+        <HistoryPage />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Card added to collection.");
+
+    fireEvent.change(screen.getByLabelText("Card name"), {
+      target: {
+        value: "Mewtwo",
+      },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Search",
+      }),
+    );
+
+    expect(await screen.findByText("No activity found")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("No history events match the current filters."),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("0 events")).toBeInTheDocument();
   });
 });

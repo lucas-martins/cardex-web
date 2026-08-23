@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
@@ -26,12 +26,22 @@ function formatDateTime(value: string) {
 
 export function HistoryPage() {
   const [history, setHistory] = useState<CardHistory[]>([]);
+
   const [loading, setLoading] = useState(true);
+
   const [loadingMore, setLoadingMore] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(0);
+
   const [lastPage, setLastPage] = useState(true);
+
   const [totalElements, setTotalElements] = useState(0);
+
   const [action, setAction] = useState<CardHistoryAction | "">("");
+
+  const [cardName, setCardName] = useState("");
+
+  const [appliedCardName, setAppliedCardName] = useState("");
 
   useEffect(() => {
     async function loadHistory() {
@@ -42,6 +52,7 @@ export function HistoryPage() {
           0,
           PAGE_SIZE,
           action || undefined,
+          appliedCardName || undefined,
         );
 
         setHistory(response.content);
@@ -56,7 +67,18 @@ export function HistoryPage() {
     }
 
     void loadHistory();
-  }, [action]);
+  }, [action, appliedCardName]);
+
+  function handleSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setAppliedCardName(cardName.trim());
+  }
+
+  function handleClearSearch() {
+    setCardName("");
+    setAppliedCardName("");
+  }
 
   async function handleLoadMore() {
     if (loadingMore || lastPage) {
@@ -70,11 +92,13 @@ export function HistoryPage() {
         currentPage + 1,
         PAGE_SIZE,
         action || undefined,
+        appliedCardName || undefined,
       );
 
       setHistory((current) => [...current, ...response.content]);
 
       setCurrentPage(response.number);
+
       setLastPage(response.last);
     } catch {
       toast.error("Could not load more history.");
@@ -110,21 +134,59 @@ export function HistoryPage() {
           }
         >
           <option value="">All events</option>
+
           <option value="ADDED">Added</option>
+
           <option value="UPDATED">Updated</option>
+
           <option value="FAVORITED">Favorited</option>
+
           <option value="UNFAVORITED">Removed from favorites</option>
+
           <option value="REMOVED">Removed</option>
         </select>
+
+        <form className="history-search" onSubmit={handleSearch}>
+          <label htmlFor="historyCardName">Card name</label>
+
+          <div className="history-search-controls">
+            <input
+              id="historyCardName"
+              type="search"
+              value={cardName}
+              placeholder="Example: Charizard"
+              onChange={(event) => setCardName(event.target.value)}
+            />
+
+            <button type="submit" disabled={loading}>
+              Search
+            </button>
+
+            {appliedCardName && (
+              <button
+                type="button"
+                className="history-clear-button"
+                disabled={loading}
+                onClick={handleClearSearch}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </form>
       </div>
 
       {loading && <p className="history-message">Loading history...</p>}
 
       {!loading && history.length === 0 && (
         <section className="history-empty">
-          <h2>No activity yet</h2>
+          <h2>No activity found</h2>
 
-          <p>Changes to your collection will appear here.</p>
+          <p>
+            {action || appliedCardName
+              ? "No history events match the current filters."
+              : "Changes to your collection will appear here."}
+          </p>
         </section>
       )}
 
