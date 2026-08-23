@@ -137,6 +137,15 @@ export function CollectionPage() {
   const [importing, setImporting] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  const [selectedCardIds, setSelectedCardIds] = useState<Set<number>>(
+    new Set(),
+  );
+
+  const [bulkUpdating, setBulkUpdating] = useState(false);
+
+  const [showBulkDeleteConfirmation, setShowBulkDeleteConfirmation] =
+    useState(false);
+
   const importInputRef = useRef<HTMLInputElement | null>(null);
 
   async function loadCards(
@@ -158,6 +167,7 @@ export function CollectionPage() {
       });
 
       setCards(response.content);
+      setSelectedCardIds(new Set());
       setTotalElements(response.totalElements);
       setCurrentPage(response.number);
       setTotalPages(response.totalPages);
@@ -200,6 +210,7 @@ export function CollectionPage() {
         }
 
         setCards(response.content);
+        setSelectedCardIds(new Set());
         setTotalElements(response.totalElements);
         setCurrentPage(response.number);
         setTotalPages(response.totalPages);
@@ -222,6 +233,128 @@ export function CollectionPage() {
       active = false;
     };
   }, [initialState]);
+
+  function handleToggleCardSelection(cardId: number) {
+    setSelectedCardIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (nextIds.has(cardId)) {
+        nextIds.delete(cardId);
+      } else {
+        nextIds.add(cardId);
+      }
+
+      return nextIds;
+    });
+  }
+
+  function handleToggleSelectAll() {
+    if (cards.length > 0 && selectedCardIds.size === cards.length) {
+      setSelectedCardIds(new Set());
+      return;
+    }
+
+    setSelectedCardIds(new Set(cards.map((card) => card.id)));
+  }
+
+  async function handleBulkFavorite(favorite: boolean) {
+    if (selectedCardIds.size === 0 || bulkUpdating) {
+      return;
+    }
+
+    const selectedCards = cards.filter((card) => selectedCardIds.has(card.id));
+
+    try {
+      setBulkUpdating(true);
+
+      const results = await Promise.allSettled(
+        selectedCards.map((card) =>
+          updateFavorite(card.id, {
+            favorite,
+          }),
+        ),
+      );
+
+      const succeeded = results.filter(
+        (result) => result.status === "fulfilled",
+      ).length;
+
+      const failed = results.length - succeeded;
+
+      await loadCards(filters, currentPage);
+
+      if (succeeded > 0) {
+        toast.success(
+          favorite
+            ? `${succeeded} ${
+                succeeded === 1 ? "card was" : "cards were"
+              } added to favorites.`
+            : `${succeeded} ${
+                succeeded === 1 ? "card was" : "cards were"
+              } removed from favorites.`,
+        );
+      }
+
+      if (failed > 0) {
+        toast.error(
+          `${failed} ${
+            failed === 1 ? "card could" : "cards could"
+          } not be updated.`,
+        );
+      }
+    } finally {
+      setBulkUpdating(false);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedCardIds.size === 0 || bulkUpdating) {
+      return;
+    }
+
+    const ids = Array.from(selectedCardIds);
+
+    try {
+      setBulkUpdating(true);
+
+      const results = await Promise.allSettled(ids.map((id) => deleteCard(id)));
+
+      const succeeded = results.filter(
+        (result) => result.status === "fulfilled",
+      ).length;
+
+      const failed = results.length - succeeded;
+
+      setShowBulkDeleteConfirmation(false);
+
+      const shouldGoPreviousPage =
+        currentPage > 0 && succeeded === cards.length;
+
+      const pageToLoad = shouldGoPreviousPage ? currentPage - 1 : currentPage;
+
+      saveCollectionState(filters, pageToLoad);
+
+      await loadCards(filters, pageToLoad);
+
+      if (succeeded > 0) {
+        toast.success(
+          `${succeeded} ${
+            succeeded === 1 ? "card was" : "cards were"
+          } removed from your collection.`,
+        );
+      }
+
+      if (failed > 0) {
+        toast.error(
+          `${failed} ${
+            failed === 1 ? "card could" : "cards could"
+          } not be removed.`,
+        );
+      }
+    } finally {
+      setBulkUpdating(false);
+    }
+  }
 
   async function handleDeleteCard() {
     if (!cardToDelete) {
@@ -466,6 +599,64 @@ export function CollectionPage() {
         }}
       />
 
+      {cards.length > 0 && !loading && (
+        <div className="collection-bulk-toolbar">
+          <label className="collection-select-all">
+            <input
+              type="checkbox"
+              checked={
+                cards.length > 0 && selectedCardIds.size === cards.length
+              }
+              onChange={handleToggleSelectAll}
+              disabled={bulkUpdating}
+            />
+            Select all on page
+          </label>
+
+          {selectedCardIds.size > 0 && (
+            <>
+              <span className="collection-selected-count">
+                {selectedCardIds.size}{" "}
+                {selectedCardIds.size === 1
+                  ? "card selected"
+                  : "cards selected"}
+              </span>
+
+              <div className="collection-bulk-actions">
+                <button
+                  type="button"
+                  disabled={bulkUpdating}
+                  onClick={() => {
+                    void handleBulkFavorite(true);
+                  }}
+                >
+                  Favorite
+                </button>
+
+                <button
+                  type="button"
+                  disabled={bulkUpdating}
+                  onClick={() => {
+                    void handleBulkFavorite(false);
+                  }}
+                >
+                  Unfavorite
+                </button>
+
+                <button
+                  type="button"
+                  className="danger"
+                  disabled={bulkUpdating}
+                  onClick={() => setShowBulkDeleteConfirmation(true)}
+                >
+                  Delete
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
       {loading && <p className="collection-loading">Loading collection...</p>}
 
       {cards.length === 0 ? (
@@ -483,6 +674,25 @@ export function CollectionPage() {
             >
               <article className="collection-card">
                 <div className="collection-card-image-wrapper">
+                  <label
+                    className="collection-card-select"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      aria-label={`Select ${card.name}`}
+                      checked={selectedCardIds.has(card.id)}
+                      disabled={bulkUpdating}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                      }}
+                      onChange={() => {
+                        handleToggleCardSelection(card.id);
+                      }}
+                    />
+                  </label>
                   <button
                     type="button"
                     className="favorite-button"
@@ -619,6 +829,52 @@ export function CollectionPage() {
             Next
           </button>
         </div>
+      )}
+
+      {showBulkDeleteConfirmation && (
+        <Modal
+          title="Delete selected cards"
+          onClose={() => {
+            if (!bulkUpdating) {
+              setShowBulkDeleteConfirmation(false);
+            }
+          }}
+        >
+          <div className="collection-bulk-delete-confirmation">
+            <p>
+              Are you sure you want to remove{" "}
+              <strong>
+                {selectedCardIds.size}{" "}
+                {selectedCardIds.size === 1 ? "card" : "cards"}
+              </strong>{" "}
+              from your collection?
+            </p>
+
+            <p>This action cannot be undone.</p>
+
+            <div className="collection-bulk-delete-actions">
+              <button
+                type="button"
+                className="secondary"
+                disabled={bulkUpdating}
+                onClick={() => setShowBulkDeleteConfirmation(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="danger"
+                disabled={bulkUpdating}
+                onClick={() => {
+                  void handleBulkDelete();
+                }}
+              >
+                {bulkUpdating ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </Modal>
       )}
 
       {cardToDelete && (
