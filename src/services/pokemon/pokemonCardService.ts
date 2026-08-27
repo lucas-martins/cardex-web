@@ -1,5 +1,5 @@
 import { apiClient } from "../api/apiClient";
-import type { PokemonCardSearchPage } from "../../types/pokemonCard";
+import type { PokemonCardSearchPage, PokemonCollection } from "../../types/pokemonCard";
 
 export interface SearchPokemonCardsParams {
   name: string;
@@ -20,6 +20,17 @@ export async function searchPokemonCards({
         page,
         size,
       },
+      timeout: 30000,
+    },
+  );
+
+  return response.data;
+}
+
+export async function findPokemonCollections(): Promise<PokemonCollection[]> {
+  const response = await apiClient.get<PokemonCollection[]>(
+    "/pokemon/cards/collections",
+    {
       timeout: 30000,
     },
   );

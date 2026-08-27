@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { CollectionGoals } from "../../components/goals/CollectionGoals";
 import { CardShowcaseSection } from "../../components/home/CardShowcaseSection";
 import { CollectionAnalyticsSection } from "../../components/home/CollectionAnalyticsSection";
 import { CollectionProgressSection } from "../../components/home/CollectionProgressSection";
@@ -13,14 +14,14 @@ import {
   getCollectionProgress,
   getCollectionSummary,
 } from "../../services/cards/cardService";
-import {
-  findWishlistCards,
-} from "../../services/wishlist/wishlistService";
+import { findPokemonCollections } from "../../services/pokemon/pokemonCardService";
+import { findWishlistCards } from "../../services/wishlist/wishlistService";
 import type { Card } from "../../types/card";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
-import type { CollectionGoals } from "../../types/collectionGoals";
+import type { CollectionGoals as CollectionGoalsType } from "../../types/collectionGoals";
 import type { CollectionProgress } from "../../types/collectionProgress";
 import type { CollectionSummary } from "../../types/collectionSummary";
+import type { PokemonCollection } from "../../types/pokemonCard";
 import type { WishlistCard } from "../../types/wishlistCard";
 
 import "./HomePage.css";
@@ -39,13 +40,16 @@ export function HomePage() {
     useState<CollectionAnalytics | null>(null);
 
   const [goals, setGoals] =
-    useState<CollectionGoals | null>(null);
+    useState<CollectionGoalsType | null>(null);
 
   const [collectionProgress, setCollectionProgress] =
     useState<CollectionProgress[]>([]);
 
   const [wishlistCards, setWishlistCards] =
     useState<WishlistCard[]>([]);
+
+  const [pokemonCollections, setPokemonCollections] =
+    useState<PokemonCollection[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -88,16 +92,21 @@ export function HomePage() {
 
         setSummary(summaryResponse);
         setAnalytics(analyticsResponse);
+
         setFavoriteCards(
           favoriteCardsResponse.content,
         );
+
         setRecentCards(
           recentCardsResponse.content,
         );
+
         setGoals(goalsResponse);
+
         setCollectionProgress(
           collectionProgressResponse,
         );
+
         setWishlistCards(wishlistResponse);
       } catch {
         setError(
@@ -108,7 +117,19 @@ export function HomePage() {
       }
     }
 
+    async function loadPokemonCollections() {
+      try {
+        const collections =
+          await findPokemonCollections();
+
+        setPokemonCollections(collections);
+      } catch {
+        setPokemonCollections([]);
+      }
+    }
+
     void loadHomeData();
+    void loadPokemonCollections();
   }, []);
 
   const highPriorityCount =
@@ -259,6 +280,10 @@ export function HomePage() {
               goals={goals}
             />
           )}
+
+          <CollectionGoals
+            collections={pokemonCollections}
+          />
 
           {collectionProgress.length > 0 && (
             <CollectionProgressSection

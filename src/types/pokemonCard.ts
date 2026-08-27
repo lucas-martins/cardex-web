@@ -33,3 +33,8 @@ export interface PokemonCardSearchPage {
 
   last: boolean;
 }
+
+export interface PokemonCollection {
+  id: string;
+  name: string;
+}
