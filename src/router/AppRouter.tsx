@@ -13,6 +13,7 @@ import { WishlistPage } from "../pages/Wishlist/WishlistPage";
 import { CollectionDetailsPage } from "../pages/CollectionDetails/CollectionDetailsPage";
 import { ProfilePage } from "../pages/Profile/ProfilePage";
 import { HistoryPage } from "../pages/History/HistoryPage";
+import { CollectionsPage } from "../pages/Collections/CollectionsPage";
 
 export function AppRouter() {
   return (
@@ -31,6 +32,7 @@ export function AppRouter() {
         >
           <Route path="/" element={<HomePage />} />
           <Route path="/collection" element={<CollectionPage />} />
+          <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/collection/:id" element={<CardDetailsPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />

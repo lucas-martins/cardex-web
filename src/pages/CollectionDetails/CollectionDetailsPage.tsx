@@ -258,15 +258,15 @@ export function CollectionDetailsPage() {
           {error ?? "Collection not found."}
         </p>
 
-        <Link to="/collection">Back to collection</Link>
+        <Link to="/collections">Back to collections</Link>
       </section>
     );
   }
 
   return (
     <section className="collection-details-page">
-      <Link className="collection-details-back" to="/collection">
-        ← Back to collection
+      <Link className="collection-details-back" to="/collections">
+        ← Back to collections
       </Link>
 
       <header className="collection-details-header">

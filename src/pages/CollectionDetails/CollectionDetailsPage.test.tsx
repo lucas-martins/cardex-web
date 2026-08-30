@@ -448,7 +448,7 @@ describe("CollectionDetailsPage", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Back to collection"),
+      screen.getByText("Back to collections"),
     ).toBeInTheDocument();
   });
 

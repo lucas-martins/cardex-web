@@ -37,4 +37,9 @@ export interface PokemonCardSearchPage {
 export interface PokemonCollection {
   id: string;
   name: string;
+  series: string;
+  printedTotal: number;
+  total: number;
+  ownedCards: number;
+  completionPercentage: number;
 }

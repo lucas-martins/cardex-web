@@ -46,6 +46,15 @@ export function MainLayout() {
             className={({ isActive }) =>
               isActive ? "navigation-link active" : "navigation-link"
             }
+            to="/collections"
+          >
+            Collections
+          </NavLink>
+
+          <NavLink
+            className={({ isActive }) =>
+              isActive ? "navigation-link active" : "navigation-link"
+            }
             to="/search"
           >
             Search Cards
