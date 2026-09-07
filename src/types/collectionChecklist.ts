@@ -1,5 +1,9 @@
 import type { WishlistPriority } from "./wishlistCard";
 
+export type CardCollectionSection =
+  | "NUMBERED"
+  | "ADDITIONAL";
+
 export interface CollectionChecklistCard {
   externalId: string;
   name: string;
@@ -8,10 +12,10 @@ export interface CollectionChecklistCard {
   imageUrl: string | null;
   owned: boolean;
   cardId: number | null;
-
   inWishlist: boolean;
   wishlistId: number | null;
   wishlistPriority: WishlistPriority | null;
+  section: CardCollectionSection;
 }
 
 export interface CollectionChecklist {

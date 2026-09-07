@@ -83,6 +83,7 @@ const CHECKLIST = {
       inWishlist: false,
       wishlistId: null,
       wishlistPriority: null,
+      section: "NUMBERED" as const,
     },
     {
       externalId: "sm1-2",
@@ -95,6 +96,7 @@ const CHECKLIST = {
       inWishlist: true,
       wishlistId: 50,
       wishlistPriority: "HIGH" as const,
+      section: "NUMBERED" as const,
     },
     {
       externalId: "sm1-12",
@@ -107,6 +109,7 @@ const CHECKLIST = {
       inWishlist: false,
       wishlistId: null,
       wishlistPriority: null,
+      section: "ADDITIONAL" as const,
     },
   ],
 };
@@ -120,10 +123,7 @@ function renderPage() {
           element={<CollectionDetailsPage />}
         />
 
-        <Route
-          path="/collection/:id"
-          element={<div>Card details</div>}
-        />
+        <Route path="/collection/:id" element={<div>Card details</div>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -143,33 +143,19 @@ describe("CollectionDetailsPage", () => {
       screen.getByText("Loading collection checklist..."),
     ).toBeInTheDocument();
 
-    expect(
-      await screen.findByText("Sun & Moon"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Sun & Moon")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("1 / 3 cards collected"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("1 / 3 cards collected")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("33.33%"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("33.33%")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Caterpie"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Metapod"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Decidueye-GX"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
 
-    expect(
-      mockGetCollectionChecklist,
-    ).toHaveBeenCalledWith("sm1");
+    expect(mockGetCollectionChecklist).toHaveBeenCalledWith("sm1");
   });
 
   it("should filter owned cards", async () => {
@@ -185,17 +171,11 @@ describe("CollectionDetailsPage", () => {
       }),
     );
 
-    expect(
-      screen.getByText("Decidueye-GX"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
 
-    expect(
-      screen.queryByText("Caterpie"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
 
-    expect(
-      screen.queryByText("Metapod"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
   });
 
   it("should filter missing cards", async () => {
@@ -211,17 +191,11 @@ describe("CollectionDetailsPage", () => {
       }),
     );
 
-    expect(
-      screen.getByText("Caterpie"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Metapod"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
 
-    expect(
-      screen.queryByText("Decidueye-GX"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
   });
 
   it("should show wishlist information for missing card already in wishlist", async () => {
@@ -231,13 +205,9 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Metapod");
 
-    expect(
-      screen.getByText("✓ In wishlist"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("High"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("High")).toBeInTheDocument();
   });
 
   it("should show add to wishlist for missing card not in wishlist", async () => {
@@ -247,8 +217,7 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Caterpie");
 
-    const caterpieCard =
-      screen.getByText("Caterpie").closest("article");
+    const caterpieCard = screen.getByText("Caterpie").closest("article");
 
     expect(caterpieCard).not.toBeNull();
 
@@ -266,13 +235,9 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Decidueye-GX");
 
-    fireEvent.click(
-      screen.getByText("Decidueye-GX"),
-    );
+    fireEvent.click(screen.getByText("Decidueye-GX"));
 
-    expect(
-      await screen.findByText("Card details"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Card details")).toBeInTheDocument();
   });
 
   it("should add missing card to wishlist and update checklist state", async () => {
@@ -297,8 +262,7 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Caterpie");
 
-    const caterpieCard =
-      screen.getByText("Caterpie").closest("article");
+    const caterpieCard = screen.getByText("Caterpie").closest("article");
 
     expect(caterpieCard).not.toBeNull();
 
@@ -309,9 +273,7 @@ describe("CollectionDetailsPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockCreateWishlistCard,
-      ).toHaveBeenCalledWith({
+      expect(mockCreateWishlistCard).toHaveBeenCalledWith({
         externalId: "sm1-1",
       });
     });
@@ -322,9 +284,7 @@ describe("CollectionDetailsPage", () => {
       }),
     ).toHaveValue("MEDIUM");
 
-    expect(
-      mockToastSuccess,
-    ).toHaveBeenCalledWith(
+    expect(mockToastSuccess).toHaveBeenCalledWith(
       "Caterpie was added to your wishlist.",
     );
   });
@@ -332,16 +292,13 @@ describe("CollectionDetailsPage", () => {
   it("should keep card outside wishlist when adding fails", async () => {
     mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
 
-    mockCreateWishlistCard.mockRejectedValue(
-      new Error("Failed"),
-    );
+    mockCreateWishlistCard.mockRejectedValue(new Error("Failed"));
 
     renderPage();
 
     await screen.findByText("Caterpie");
 
-    const caterpieCard =
-      screen.getByText("Caterpie").closest("article");
+    const caterpieCard = screen.getByText("Caterpie").closest("article");
 
     expect(caterpieCard).not.toBeNull();
 
@@ -352,9 +309,7 @@ describe("CollectionDetailsPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockToastError,
-      ).toHaveBeenCalledWith(
+      expect(mockToastError).toHaveBeenCalledWith(
         "Could not add card to wishlist.",
       );
     });
@@ -390,8 +345,7 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Caterpie");
 
-    const caterpieCard =
-      screen.getByText("Caterpie").closest("article");
+    const caterpieCard = screen.getByText("Caterpie").closest("article");
 
     expect(caterpieCard).not.toBeNull();
 
@@ -414,42 +368,28 @@ describe("CollectionDetailsPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockGetCollectionChecklist,
-      ).toHaveBeenCalledTimes(2);
+      expect(mockGetCollectionChecklist).toHaveBeenCalledTimes(2);
     });
 
-    expect(
-      screen.getByText("2 / 3 cards collected"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("2 / 3 cards collected")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("66.67%"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("66.67%")).toBeInTheDocument();
 
-    expect(
-      mockToastSuccess,
-    ).toHaveBeenCalledWith(
+    expect(mockToastSuccess).toHaveBeenCalledWith(
       "Caterpie was added to your collection.",
     );
   });
 
   it("should show error when checklist loading fails", async () => {
-    mockGetCollectionChecklist.mockRejectedValue(
-      new Error("Failed"),
-    );
+    mockGetCollectionChecklist.mockRejectedValue(new Error("Failed"));
 
     renderPage();
 
     expect(
-      await screen.findByText(
-        "Could not load the collection.",
-      ),
+      await screen.findByText("Could not load the collection."),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Back to collections"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Back to collections")).toBeInTheDocument();
   });
 
   it("should filter wishlist cards", async () => {
@@ -465,25 +405,15 @@ describe("CollectionDetailsPage", () => {
       }),
     );
 
-    expect(
-      screen.getByText("Metapod"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
 
-    expect(
-      screen.queryByText("Caterpie"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
 
-    expect(
-      screen.queryByText("Decidueye-GX"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
 
-    expect(
-      screen.getByText("✓ In wishlist"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("✓ In wishlist")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("High"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("High")).toBeInTheDocument();
   });
 
   it("should update wishlist priority from collection checklist", async () => {
@@ -508,14 +438,11 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Metapod");
 
-    const prioritySelect =
-      screen.getByRole("combobox", {
-        name: "Metapod wishlist priority",
-      });
+    const prioritySelect = screen.getByRole("combobox", {
+      name: "Metapod wishlist priority",
+    });
 
-    expect(
-      prioritySelect,
-    ).toHaveValue("HIGH");
+    expect(prioritySelect).toHaveValue("HIGH");
 
     fireEvent.change(prioritySelect, {
       target: {
@@ -524,9 +451,7 @@ describe("CollectionDetailsPage", () => {
     });
 
     await waitFor(() => {
-      expect(
-        mockUpdateWishlistPriority,
-      ).toHaveBeenCalledWith(50, {
+      expect(mockUpdateWishlistPriority).toHaveBeenCalledWith(50, {
         priority: "LOW",
       });
     });
@@ -537,9 +462,7 @@ describe("CollectionDetailsPage", () => {
       }),
     ).toHaveValue("LOW");
 
-    expect(
-      mockToastSuccess,
-    ).toHaveBeenCalledWith(
+    expect(mockToastSuccess).toHaveBeenCalledWith(
       "Metapod wishlist priority was updated.",
     );
   });
@@ -547,18 +470,15 @@ describe("CollectionDetailsPage", () => {
   it("should show error when wishlist priority update fails", async () => {
     mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
 
-    mockUpdateWishlistPriority.mockRejectedValue(
-      new Error("Failed"),
-    );
+    mockUpdateWishlistPriority.mockRejectedValue(new Error("Failed"));
 
     renderPage();
 
     await screen.findByText("Metapod");
 
-    const prioritySelect =
-      screen.getByRole("combobox", {
-        name: "Metapod wishlist priority",
-      });
+    const prioritySelect = screen.getByRole("combobox", {
+      name: "Metapod wishlist priority",
+    });
 
     fireEvent.change(prioritySelect, {
       target: {
@@ -567,9 +487,7 @@ describe("CollectionDetailsPage", () => {
     });
 
     await waitFor(() => {
-      expect(
-        mockToastError,
-      ).toHaveBeenCalledWith(
+      expect(mockToastError).toHaveBeenCalledWith(
         "Could not update wishlist priority.",
       );
     });
@@ -578,24 +496,17 @@ describe("CollectionDetailsPage", () => {
   it("should remove card from wishlist from collection checklist", async () => {
     mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
 
-    mockDeleteWishlistCard.mockResolvedValue(
-      undefined,
-    );
+    mockDeleteWishlistCard.mockResolvedValue(undefined);
 
     renderPage();
 
     await screen.findByText("Metapod");
 
-    const metapodCard =
-      screen.getByText("Metapod").closest("article");
+    const metapodCard = screen.getByText("Metapod").closest("article");
 
     expect(metapodCard).not.toBeNull();
 
-    expect(
-      within(metapodCard!).getByText(
-        "✓ In wishlist",
-      ),
-    ).toBeInTheDocument();
+    expect(within(metapodCard!).getByText("✓ In wishlist")).toBeInTheDocument();
 
     fireEvent.click(
       within(metapodCard!).getByRole("button", {
@@ -604,26 +515,19 @@ describe("CollectionDetailsPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockDeleteWishlistCard,
-      ).toHaveBeenCalledWith(50);
+      expect(mockDeleteWishlistCard).toHaveBeenCalledWith(50);
     });
 
     await waitFor(() => {
       expect(
-        within(metapodCard!).queryByText(
-          "✓ In wishlist",
-        ),
+        within(metapodCard!).queryByText("✓ In wishlist"),
       ).not.toBeInTheDocument();
     });
 
     expect(
-      within(metapodCard!).queryByRole(
-        "combobox",
-        {
-          name: "Metapod wishlist priority",
-        },
-      ),
+      within(metapodCard!).queryByRole("combobox", {
+        name: "Metapod wishlist priority",
+      }),
     ).not.toBeInTheDocument();
 
     expect(
@@ -632,9 +536,7 @@ describe("CollectionDetailsPage", () => {
       }),
     ).toBeInTheDocument();
 
-    expect(
-      mockToastSuccess,
-    ).toHaveBeenCalledWith(
+    expect(mockToastSuccess).toHaveBeenCalledWith(
       "Metapod was removed from your wishlist.",
     );
   });
@@ -642,16 +544,13 @@ describe("CollectionDetailsPage", () => {
   it("should keep card in wishlist when removal fails", async () => {
     mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
 
-    mockDeleteWishlistCard.mockRejectedValue(
-      new Error("Failed"),
-    );
+    mockDeleteWishlistCard.mockRejectedValue(new Error("Failed"));
 
     renderPage();
 
     await screen.findByText("Metapod");
 
-    const metapodCard =
-      screen.getByText("Metapod").closest("article");
+    const metapodCard = screen.getByText("Metapod").closest("article");
 
     expect(metapodCard).not.toBeNull();
 
@@ -662,29 +561,557 @@ describe("CollectionDetailsPage", () => {
     );
 
     await waitFor(() => {
-      expect(
-        mockDeleteWishlistCard,
-      ).toHaveBeenCalledWith(50);
+      expect(mockDeleteWishlistCard).toHaveBeenCalledWith(50);
     });
 
     await waitFor(() => {
-      expect(
-        mockToastError,
-      ).toHaveBeenCalledWith(
+      expect(mockToastError).toHaveBeenCalledWith(
         "Could not remove card from wishlist.",
       );
     });
 
-    expect(
-      within(metapodCard!).getByText(
-        "✓ In wishlist",
-      ),
-    ).toBeInTheDocument();
+    expect(within(metapodCard!).getByText("✓ In wishlist")).toBeInTheDocument();
 
     expect(
       within(metapodCard!).getByRole("combobox", {
         name: "Metapod wishlist priority",
       }),
     ).toHaveValue("HIGH");
+  });
+
+  it("should search cards by name", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "cater",
+        },
+      },
+    );
+
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+  });
+
+  it("should search cards by card number", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "12",
+        },
+      },
+    );
+
+    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
+
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+  });
+
+  it("should search cards by rarity", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "uncommon",
+        },
+      },
+    );
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+  });
+
+  it("should combine search with status filter", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "rare",
+        },
+      },
+    );
+
+    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Missing",
+      }),
+    );
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("No cards match the selected filters."),
+    ).toBeInTheDocument();
+  });
+
+  it("should sort cards by name ascending", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "Sort by",
+      }),
+      {
+        target: {
+          value: "NAME_ASC",
+        },
+      },
+    );
+
+    const cards = screen.getAllByRole("heading", {
+      level: 2,
+    });
+
+    expect(cards.map((card) => card.textContent)).toEqual([
+      "Caterpie",
+      "Decidueye-GX",
+      "Metapod",
+    ]);
+  });
+
+  it("should sort cards by name descending", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "Sort by",
+      }),
+      {
+        target: {
+          value: "NAME_DESC",
+        },
+      },
+    );
+
+    const cards = screen.getAllByRole("heading", {
+      level: 2,
+    });
+
+    expect(cards.map((card) => card.textContent)).toEqual([
+      "Metapod",
+      "Decidueye-GX",
+      "Caterpie",
+    ]);
+  });
+
+  it("should sort cards by rarity", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "Sort by",
+      }),
+      {
+        target: {
+          value: "RARITY",
+        },
+      },
+    );
+
+    const cards = screen.getAllByRole("heading", {
+      level: 2,
+    });
+
+    expect(cards.map((card) => card.textContent)).toEqual([
+      "Caterpie",
+      "Decidueye-GX",
+      "Metapod",
+    ]);
+  });
+
+  it("should sort card numbers numerically by default", async () => {
+    const checklistWithNumericCardNumbers = {
+      ...CHECKLIST,
+      cards: [
+        {
+          ...CHECKLIST.cards[2],
+          externalId: "sm1-12",
+          name: "Card Twelve",
+          cardNumber: "12",
+        },
+        {
+          ...CHECKLIST.cards[0],
+          externalId: "sm1-1",
+          name: "Card One",
+          cardNumber: "1",
+        },
+        {
+          ...CHECKLIST.cards[1],
+          externalId: "sm1-2",
+          name: "Card Two",
+          cardNumber: "2",
+        },
+      ],
+    };
+
+    mockGetCollectionChecklist.mockResolvedValue(
+      checklistWithNumericCardNumbers,
+    );
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    const cards = screen.getAllByRole("heading", {
+      level: 2,
+    });
+
+    expect(cards.map((card) => card.textContent)).toEqual([
+      "Card One",
+      "Card Two",
+      "Card Twelve",
+    ]);
+  });
+
+  it("should render available rarity options from checklist", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    const raritySelect = screen.getByRole("combobox", {
+      name: "Rarity",
+    });
+
+    expect(
+      within(raritySelect).getByRole("option", {
+        name: "All rarities",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      within(raritySelect).getByRole("option", {
+        name: "Common",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      within(raritySelect).getByRole("option", {
+        name: "Uncommon",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      within(raritySelect).getByRole("option", {
+        name: "Rare Holo GX",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("should filter cards by rarity", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "Rarity",
+      }),
+      {
+        target: {
+          value: "Uncommon",
+        },
+      },
+    );
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+  });
+
+  it("should combine rarity filter with status filter", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "Rarity",
+      }),
+      {
+        target: {
+          value: "Rare Holo GX",
+        },
+      },
+    );
+
+    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Missing",
+      }),
+    );
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("No cards match the selected filters."),
+    ).toBeInTheDocument();
+  });
+
+  it("should combine rarity filter with search", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.change(
+      screen.getByRole("combobox", {
+        name: "Rarity",
+      }),
+      {
+        target: {
+          value: "Common",
+        },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "cater",
+        },
+      },
+    );
+
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "meta",
+        },
+      },
+    );
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("No cards match the selected filters."),
+    ).toBeInTheDocument();
+  });
+
+  it("should show all card sections by default", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", {
+        name: "All cards",
+      }),
+    ).toHaveClass("active");
+  });
+
+  it("should filter numbered cards", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Numbered",
+      }),
+    );
+
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+  });
+
+  it("should filter additional cards", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Additional",
+      }),
+    );
+
+    expect(screen.getByText("Decidueye-GX")).toBeInTheDocument();
+
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+  });
+
+  it("should combine section filter with status filter", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Numbered",
+      }),
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Missing",
+      }),
+    );
+
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+
+    expect(screen.getByText("Metapod")).toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Owned",
+      }),
+    );
+
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("No cards match the selected filters."),
+    ).toBeInTheDocument();
+  });
+
+  it("should combine section filter with search", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Numbered",
+      }),
+    );
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "cater",
+        },
+      },
+    );
+
+    expect(screen.getByText("Caterpie")).toBeInTheDocument();
+
+    expect(screen.queryByText("Metapod")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: "Search cards",
+      }),
+      {
+        target: {
+          value: "decidueye",
+        },
+      },
+    );
+
+    expect(screen.queryByText("Caterpie")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Decidueye-GX")).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("No cards match the selected filters."),
+    ).toBeInTheDocument();
   });
 });
