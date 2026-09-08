@@ -6,12 +6,30 @@ import type { PokemonCollection } from "../../types/pokemonCard";
 
 import "./CollectionsPage.css";
 
+type CollectionProgressFilter =
+  | "ALL"
+  | "NOT_STARTED"
+  | "STARTED"
+  | "COMPLETED";
+
+type CollectionSort =
+  | "NAME_ASC"
+  | "NAME_DESC"
+  | "COMPLETION_DESC"
+  | "COMPLETION_ASC"
+  | "OWNED_DESC";
+
 export function CollectionsPage() {
   const [collections, setCollections] = useState<PokemonCollection[]>([]);
 
   const [search, setSearch] = useState("");
 
   const [selectedSeries, setSelectedSeries] = useState("");
+
+  const [progressFilter, setProgressFilter] =
+    useState<CollectionProgressFilter>("ALL");
+
+  const [sort, setSort] = useState<CollectionSort>("NAME_ASC");
 
   const [loading, setLoading] = useState(true);
 
@@ -63,18 +81,64 @@ export function CollectionsPage() {
   const filteredCollections = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return collections.filter((collection) => {
-      const matchesSearch =
-        normalizedSearch.length === 0 ||
-        collection.name.toLowerCase().includes(normalizedSearch) ||
-        collection.series.toLowerCase().includes(normalizedSearch);
+    return collections
+      .filter((collection) => {
+        const matchesSearch =
+          normalizedSearch.length === 0 ||
+          collection.name.toLowerCase().includes(normalizedSearch) ||
+          collection.series.toLowerCase().includes(normalizedSearch);
 
-      const matchesSeries =
-        selectedSeries.length === 0 || collection.series === selectedSeries;
+        const matchesSeries =
+          selectedSeries.length === 0 || collection.series === selectedSeries;
 
-      return matchesSearch && matchesSeries;
-    });
-  }, [collections, search, selectedSeries]);
+        const matchesProgress =
+          progressFilter === "ALL" ||
+          (progressFilter === "NOT_STARTED" &&
+            collection.ownedCards === 0) ||
+          (progressFilter === "STARTED" &&
+            collection.ownedCards > 0 &&
+            collection.ownedCards < collection.total) ||
+          (progressFilter === "COMPLETED" &&
+            collection.total > 0 &&
+            collection.ownedCards >= collection.total);
+
+        return matchesSearch && matchesSeries && matchesProgress;
+      })
+      .sort((first, second) => {
+        switch (sort) {
+          case "NAME_DESC":
+            return second.name.localeCompare(first.name);
+
+          case "COMPLETION_DESC":
+            return (
+              second.completionPercentage - first.completionPercentage ||
+              first.name.localeCompare(second.name)
+            );
+
+          case "COMPLETION_ASC":
+            return (
+              first.completionPercentage - second.completionPercentage ||
+              first.name.localeCompare(second.name)
+            );
+
+          case "OWNED_DESC":
+            return (
+              second.ownedCards - first.ownedCards ||
+              first.name.localeCompare(second.name)
+            );
+
+          case "NAME_ASC":
+          default:
+            return first.name.localeCompare(second.name);
+        }
+      });
+  }, [
+    collections,
+    progressFilter,
+    search,
+    selectedSeries,
+    sort,
+  ]);
 
   if (loading) {
     return <p>Loading collections...</p>;
@@ -136,12 +200,88 @@ export function CollectionsPage() {
             ))}
           </select>
         </div>
+
+        <div className="collections-sort">
+          <label htmlFor="collection-sort">Sort by</label>
+
+          <select
+            id="collection-sort"
+            value={sort}
+            onChange={(event) =>
+              setSort(event.target.value as CollectionSort)
+            }
+          >
+            <option value="NAME_ASC">Name A-Z</option>
+
+            <option value="NAME_DESC">Name Z-A</option>
+
+            <option value="COMPLETION_DESC">
+              Completion highest
+            </option>
+
+            <option value="COMPLETION_ASC">
+              Completion lowest
+            </option>
+
+            <option value="OWNED_DESC">
+              Owned cards highest
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div className="collections-progress-filter">
+        <span className="collections-progress-filter-label">
+          Progress
+        </span>
+
+        <div className="collections-progress-filter-buttons">
+          <button
+            type="button"
+            className={progressFilter === "ALL" ? "active" : ""}
+            onClick={() => setProgressFilter("ALL")}
+          >
+            All
+          </button>
+
+          <button
+            type="button"
+            className={
+              progressFilter === "NOT_STARTED" ? "active" : ""
+            }
+            onClick={() => setProgressFilter("NOT_STARTED")}
+          >
+            Not started
+          </button>
+
+          <button
+            type="button"
+            className={
+              progressFilter === "STARTED" ? "active" : ""
+            }
+            onClick={() => setProgressFilter("STARTED")}
+          >
+            Started
+          </button>
+
+          <button
+            type="button"
+            className={
+              progressFilter === "COMPLETED" ? "active" : ""
+            }
+            onClick={() => setProgressFilter("COMPLETED")}
+          >
+            Completed
+          </button>
+        </div>
       </div>
 
       <div className="collections-results-header">
         <span>
           {filteredCollections.length}{" "}
-          {filteredCollections.length === 1 ? "collection" : "collections"}
+          {filteredCollections.length === 1
+            ? "collection"
+            : "collections"}
         </span>
       </div>
 
@@ -149,7 +289,7 @@ export function CollectionsPage() {
         <div className="collections-empty">
           <h2>No collections found</h2>
 
-          <p>Try changing your search or series filter.</p>
+          <p>Try changing your search or filters.</p>
         </div>
       ) : (
         <div className="collections-grid">
@@ -174,7 +314,9 @@ export function CollectionsPage() {
                     <h2>{collection.name}</h2>
                   </div>
 
-                  <span className="collections-card-id">{collection.id}</span>
+                  <span className="collections-card-id">
+                    {collection.id}
+                  </span>
                 </div>
 
                 <div className="collections-card-progress-header">

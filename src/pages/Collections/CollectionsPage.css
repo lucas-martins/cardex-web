@@ -69,7 +69,8 @@
   display: grid;
   grid-template-columns:
     minmax(0, 1fr)
-    minmax(180px, 260px);
+    minmax(180px, 240px)
+    minmax(200px, 260px);
   gap: 18px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -78,20 +79,23 @@
 }
 
 .collections-search,
-.collections-series-filter {
+.collections-series-filter,
+.collections-sort {
   display: grid;
   gap: 7px;
 }
 
 .collections-search label,
-.collections-series-filter label {
+.collections-series-filter label,
+.collections-sort label {
   color: #374151;
   font-size: 13px;
   font-weight: 700;
 }
 
 .collections-search input,
-.collections-series-filter select {
+.collections-series-filter select,
+.collections-sort select {
   width: 100%;
   min-height: 44px;
   padding: 0 13px;
@@ -103,9 +107,54 @@
 }
 
 .collections-search input:focus,
-.collections-series-filter select:focus {
+.collections-series-filter select:focus,
+.collections-sort select:focus {
   outline: 2px solid #2563eb;
   outline-offset: 1px;
+}
+
+.collections-progress-filter {
+  display: grid;
+  gap: 10px;
+}
+
+.collections-progress-filter-label {
+  color: #374151;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.collections-progress-filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.collections-progress-filter-buttons button {
+  min-height: 40px;
+  padding: 0 16px;
+  color: #4b5563;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.collections-progress-filter-buttons button:hover {
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.collections-progress-filter-buttons button.active {
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #2563eb;
 }
 
 .collections-results-header {
@@ -262,6 +311,16 @@
 }
 
 @media (max-width: 1000px) {
+  .collections-filters {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(180px, 240px);
+  }
+
+  .collections-search {
+    grid-column: 1 / -1;
+  }
+
   .collections-grid {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
@@ -283,7 +342,27 @@
     grid-template-columns: 1fr;
   }
 
+  .collections-search {
+    grid-column: auto;
+  }
+
+  .collections-progress-filter-buttons {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .collections-progress-filter-buttons button {
+    width: 100%;
+  }
+
   .collections-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .collections-progress-filter-buttons {
     grid-template-columns: 1fr;
   }
 }
