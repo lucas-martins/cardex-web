@@ -24,5 +24,9 @@ export interface CollectionChecklist {
   ownedUniqueCards: number;
   totalCards: number;
   completionPercentage: number;
+  ownedNumberedCards: number;
+  numberedCards: number;
+  ownedAdditionalCards: number;
+  additionalCards: number;
   cards: CollectionChecklistCard[];
 }

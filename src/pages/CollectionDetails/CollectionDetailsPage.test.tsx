@@ -71,6 +71,10 @@ const CHECKLIST = {
   ownedUniqueCards: 1,
   totalCards: 3,
   completionPercentage: 33.33,
+  ownedNumberedCards: 0,
+  numberedCards: 2,
+  ownedAdditionalCards: 1,
+  additionalCards: 1,
   cards: [
     {
       externalId: "sm1-1",
@@ -326,6 +330,7 @@ describe("CollectionDetailsPage", () => {
       ...CHECKLIST,
       ownedUniqueCards: 2,
       completionPercentage: 66.67,
+      ownedNumberedCards: 1,
       cards: CHECKLIST.cards.map((card) =>
         card.externalId === "sm1-1"
           ? {
@@ -1113,5 +1118,77 @@ describe("CollectionDetailsPage", () => {
     expect(
       screen.getByText("No cards match the selected filters."),
     ).toBeInTheDocument();
+  });
+
+  it("should render numbered collection progress", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    expect(screen.getAllByText("Numbered")).toHaveLength(2);
+
+    expect(screen.getByText("0 / 2")).toBeInTheDocument();
+  });
+
+  it("should render additional collection progress", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    expect(screen.getAllByText("Additional")).toHaveLength(2);
+
+    expect(screen.getByText("1 / 1")).toBeInTheDocument();
+  });
+
+  it("should calculate numbered progress percentage", async () => {
+    const checklistWithNumberedProgress = {
+      ...CHECKLIST,
+      ownedNumberedCards: 1,
+      numberedCards: 2,
+    };
+
+    mockGetCollectionChecklist.mockResolvedValue(checklistWithNumberedProgress);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    expect(screen.getByText("50.00%")).toBeInTheDocument();
+  });
+
+  it("should calculate additional progress percentage", async () => {
+    mockGetCollectionChecklist.mockResolvedValue(CHECKLIST);
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    expect(screen.getByText("100.00%")).toBeInTheDocument();
+  });
+
+  it("should handle collection section with zero cards", async () => {
+    const checklistWithoutAdditionalCards = {
+      ...CHECKLIST,
+      ownedAdditionalCards: 0,
+      additionalCards: 0,
+    };
+
+    mockGetCollectionChecklist.mockResolvedValue(
+      checklistWithoutAdditionalCards,
+    );
+
+    renderPage();
+
+    await screen.findByText("Sun & Moon");
+
+    expect(screen.getByText("0 / 0")).toBeInTheDocument();
+
+    expect(screen.queryByText("NaN%")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("Infinity%")).not.toBeInTheDocument();
   });
 });
