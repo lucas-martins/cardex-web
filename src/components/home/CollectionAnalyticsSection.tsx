@@ -72,6 +72,7 @@ export function CollectionAnalyticsSection({
                     {formatMarketPrices(
                       collection.estimatedValueUsd,
                       collection.estimatedValueEur,
+                      collection.estimatedValueBrl,
                     )}
                   </strong>
                 </li>

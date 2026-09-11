@@ -57,6 +57,7 @@ export function CollectionProgressSection({
                 {formatMarketPrices(
                   collection.estimatedValueUsd,
                   collection.estimatedValueEur,
+                  collection.estimatedValueBrl,
                 )}
               </p>
             </Link>

@@ -126,6 +126,10 @@ export function WishlistPage() {
     (card) => card.marketPriceEur != null,
   );
 
+  const hasBrlPrice = visibleCards.some(
+    (card) => card.marketPriceBrl != null,
+  );
+
   const wishlistValueLabel = formatMarketPrices(
     hasUsdPrice
       ? visibleCards.reduce(
@@ -136,6 +140,12 @@ export function WishlistPage() {
     hasEurPrice
       ? visibleCards.reduce(
           (total, card) => total + (Number(card.marketPriceEur) || 0),
+          0,
+        )
+      : null,
+    hasBrlPrice
+      ? visibleCards.reduce(
+          (total, card) => total + (Number(card.marketPriceBrl) || 0),
           0,
         )
       : null,
@@ -364,6 +374,7 @@ export function WishlistPage() {
                       {formatMarketPrices(
                         card.marketPriceUsd,
                         card.marketPriceEur,
+                        card.marketPriceBrl,
                       )}
                     </p>
 

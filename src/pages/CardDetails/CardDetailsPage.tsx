@@ -227,7 +227,11 @@ export function CardDetailsPage() {
             <div>
               <dt>Market price</dt>
               <dd>
-                {formatMarketPrices(card.marketPriceUsd, card.marketPriceEur)}
+                {formatMarketPrices(
+                  card.marketPriceUsd,
+                  card.marketPriceEur,
+                  card.marketPriceBrl,
+                )}
               </dd>
             </div>
 
@@ -237,6 +241,7 @@ export function CardDetailsPage() {
                 {formatMarketPrices(
                   card.estimatedValueUsd,
                   card.estimatedValueEur,
+                  card.estimatedValueBrl,
                 )}
               </dd>
             </div>

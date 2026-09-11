@@ -764,6 +764,7 @@ export function CollectionPage() {
                     {formatMarketPrices(
                       card.estimatedValueUsd,
                       card.estimatedValueEur,
+                      card.estimatedValueBrl,
                     )}
                   </p>
 

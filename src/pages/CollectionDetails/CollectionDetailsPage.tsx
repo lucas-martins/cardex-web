@@ -407,6 +407,7 @@ export function CollectionDetailsPage() {
               {formatMarketPrices(
                 checklist.estimatedOwnedValueUsd,
                 checklist.estimatedOwnedValueEur,
+                checklist.estimatedOwnedValueBrl,
               )}
             </strong>
           </div>
@@ -418,6 +419,7 @@ export function CollectionDetailsPage() {
               {formatMarketPrices(
                 checklist.estimatedMissingValueUsd,
                 checklist.estimatedMissingValueEur,
+                checklist.estimatedMissingValueBrl,
               )}
             </strong>
           </div>
@@ -591,6 +593,7 @@ export function CollectionDetailsPage() {
                   {formatMarketPrices(
                     card.marketPriceUsd,
                     card.marketPriceEur,
+                    card.marketPriceBrl,
                   )}
                 </p>
 

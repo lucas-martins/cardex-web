@@ -23,14 +23,15 @@ export function CollectionSummarySection({
             {formatMarketPrices(
               summary.estimatedValueUsd,
               summary.estimatedValueEur,
+              summary.estimatedValueBrl,
             )}
           </strong>
           <p>
             {totalCopies === 0
               ? "Add cards to start estimating your collection value."
               : unpricedCopies > 0
-                ? `Based on ${pricedCopies} of ${totalCopies} copies with known market prices.`
-                : `Based on ${pricedCopies} ${pricedCopies === 1 ? "copy" : "copies"} with known market prices.`}
+                ? `Based on ${pricedCopies} of ${totalCopies} copies with known market prices. BRL is an exchange-rate estimate.`
+                : `Based on ${pricedCopies} ${pricedCopies === 1 ? "copy" : "copies"} with known market prices. BRL is an exchange-rate estimate.`}
           </p>
         </div>
       </article>

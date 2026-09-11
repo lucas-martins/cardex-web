@@ -16,6 +16,7 @@ export interface PokemonCardSearchResult {
   wishlistPriority: WishlistPriority | null;
   marketPriceUsd?: number | null;
   marketPriceEur?: number | null;
+  marketPriceBrl?: number | null;
 }
 
 export interface PokemonCardSearchPage {

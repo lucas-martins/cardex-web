@@ -321,6 +321,7 @@ export function SearchPage() {
                 {formatMarketPrices(
                   card.marketPriceUsd,
                   card.marketPriceEur,
+                  card.marketPriceBrl,
                 )}
               </p>
 

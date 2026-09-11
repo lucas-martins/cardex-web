@@ -11,6 +11,7 @@ export interface CollectionSummary {
   mostOwnedCard: MostOwnedCard | null;
   estimatedValueUsd?: number;
   estimatedValueEur?: number;
+  estimatedValueBrl?: number;
   pricedCopies?: number;
   unpricedCopies?: number;
 }

@@ -15,4 +15,5 @@ export interface CollectionValueItem {
   name: string;
   estimatedValueUsd: number;
   estimatedValueEur: number;
+  estimatedValueBrl?: number;
 }

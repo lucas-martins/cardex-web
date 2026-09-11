@@ -6,4 +6,5 @@ export interface CollectionProgress {
   completionPercentage: number;
   estimatedValueUsd?: number;
   estimatedValueEur?: number;
+  estimatedValueBrl?: number;
 }

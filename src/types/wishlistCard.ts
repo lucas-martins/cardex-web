@@ -18,4 +18,5 @@ export interface WishlistCard {
   updatedAt: string;
   marketPriceUsd?: number | null;
   marketPriceEur?: number | null;
+  marketPriceBrl?: number | null;
 }

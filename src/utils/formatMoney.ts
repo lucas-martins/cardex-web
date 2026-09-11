@@ -28,26 +28,39 @@ export function formatEur(
   }).format(amount);
 }
 
+export function formatBrl(
+  value: number | string | null | undefined,
+): string {
+  const amount = toNumber(value);
+
+  if (amount === null) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(amount);
+}
+
 export function formatMarketPrices(
   usd: number | string | null | undefined,
   eur: number | string | null | undefined,
+  brl?: number | string | null | undefined,
 ): string {
+  const brlLabel = formatBrl(brl);
   const usdLabel = formatUsd(usd);
   const eurLabel = formatEur(eur);
 
-  if (usdLabel === "—" && eurLabel === "—") {
+  const parts = [brlLabel, usdLabel, eurLabel].filter(
+    (label) => label !== "—",
+  );
+
+  if (parts.length === 0) {
     return "Price unavailable";
   }
 
-  if (eurLabel === "—") {
-    return usdLabel;
-  }
-
-  if (usdLabel === "—") {
-    return eurLabel;
-  }
-
-  return `${usdLabel} · ${eurLabel}`;
+  return parts.join(" · ");
 }
 
 function toNumber(
