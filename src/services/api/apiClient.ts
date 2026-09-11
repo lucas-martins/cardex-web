@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 import { authStorage } from "../../utils/authStorage";
 
 export const apiClient = axios.create({
@@ -6,29 +6,46 @@ export const apiClient = axios.create({
   timeout: 10000,
 });
 
-function isPublicAuthEndpoint(url?: string): boolean {
+function resolveRequestPath(url?: string): string {
   if (!url) {
-    return false;
+    return "";
   }
 
+  try {
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return new URL(url).pathname;
+    }
+  } catch {
+    return url;
+  }
+
+  return url;
+}
+
+function isPublicAuthEndpoint(url?: string): boolean {
+  const path = resolveRequestPath(url);
+
   return (
-    url.startsWith("/auth/login") ||
-    url.startsWith("/auth/register") ||
-    url.startsWith("/auth/forgot-password") ||
-    url.startsWith("/auth/reset-password")
+    path.includes("/auth/login") ||
+    path.includes("/auth/register") ||
+    path.includes("/auth/forgot-password") ||
+    path.includes("/auth/reset-password")
   );
 }
 
 function isPublicApiEndpoint(url?: string): boolean {
-  if (!url) {
-    return false;
-  }
+  const path = resolveRequestPath(url);
 
-  return url.startsWith("/public/");
+  return path.includes("/public/");
+}
+
+function clearAuthorizationHeader(config: InternalAxiosRequestConfig) {
+  config.headers.delete("Authorization");
 }
 
 apiClient.interceptors.request.use((config) => {
   if (isPublicAuthEndpoint(config.url) || isPublicApiEndpoint(config.url)) {
+    clearAuthorizationHeader(config);
     return config;
   }
 
