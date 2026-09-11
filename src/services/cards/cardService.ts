@@ -1,5 +1,10 @@
 import { apiClient } from "../api/apiClient";
-import type { Card, CardCondition, CardLanguage } from "../../types/card";
+import type {
+  Card,
+  CardCondition,
+  CardFinish,
+  CardLanguage,
+} from "../../types/card";
 import type { PageResponse } from "../../types/page";
 import type { CollectionSummary } from "../../types/collectionSummary";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
@@ -30,6 +35,9 @@ export interface CreateCardRequest {
   quantity: number;
   language: CardLanguage;
   condition: CardCondition;
+  finish?: CardFinish;
+  gradingCompany?: string;
+  grade?: string;
   notes?: string;
 }
 
@@ -37,6 +45,9 @@ export interface UpdateCardRequest {
   quantity: number;
   language: CardLanguage;
   condition: CardCondition;
+  finish?: CardFinish;
+  gradingCompany?: string | null;
+  grade?: string | null;
   notes?: string;
 }
 

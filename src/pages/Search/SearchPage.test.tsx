@@ -12,6 +12,7 @@ const mockToastError = vi.hoisted(() => vi.fn());
 
 vi.mock("../../services/pokemon/pokemonCardService", () => ({
   searchPokemonCards: mockSearchPokemonCards,
+  findPokemonCollections: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock("../../services/wishlist/wishlistService", () => ({
@@ -135,7 +136,9 @@ describe("SearchPage", () => {
       }),
     );
 
-    expect(screen.getByText("Enter a card name.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Enter a name, set, number, or rarity to search."),
+    ).toBeInTheDocument();
 
     expect(mockSearchPokemonCards).not.toHaveBeenCalled();
   });
@@ -160,6 +163,9 @@ describe("SearchPage", () => {
     await waitFor(() => {
       expect(mockSearchPokemonCards).toHaveBeenCalledWith({
         name: "Charizard",
+        setId: "",
+        number: "",
+        rarity: "",
         page: 1,
         size: 20,
       });
@@ -210,7 +216,7 @@ describe("SearchPage", () => {
       }),
     );
 
-    expect(await screen.findByText("No cards found.")).toBeInTheDocument();
+    expect(await screen.findByText("No cards found")).toBeInTheDocument();
   });
 
   it("should load more cards without replacing previous results", async () => {
@@ -243,6 +249,9 @@ describe("SearchPage", () => {
     await waitFor(() => {
       expect(mockSearchPokemonCards).toHaveBeenNthCalledWith(2, {
         name: "Charizard",
+        setId: "",
+        number: "",
+        rarity: "",
         page: 2,
         size: 20,
       });

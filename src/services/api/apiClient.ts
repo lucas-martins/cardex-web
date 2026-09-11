@@ -6,12 +6,29 @@ export const apiClient = axios.create({
   timeout: 10000,
 });
 
-apiClient.interceptors.request.use((config) => {
-  const isAuthEndpoint =
-    config.url?.startsWith("/auth/login") ||
-    config.url?.startsWith("/auth/register");
+function isPublicAuthEndpoint(url?: string): boolean {
+  if (!url) {
+    return false;
+  }
 
-  if (isAuthEndpoint) {
+  return (
+    url.startsWith("/auth/login") ||
+    url.startsWith("/auth/register") ||
+    url.startsWith("/auth/forgot-password") ||
+    url.startsWith("/auth/reset-password")
+  );
+}
+
+function isPublicApiEndpoint(url?: string): boolean {
+  if (!url) {
+    return false;
+  }
+
+  return url.startsWith("/public/");
+}
+
+apiClient.interceptors.request.use((config) => {
+  if (isPublicAuthEndpoint(config.url) || isPublicApiEndpoint(config.url)) {
     return config;
   }
 
@@ -29,10 +46,23 @@ apiClient.interceptors.response.use(
 
   (error) => {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      authStorage.removeToken();
+      const requestUrl = error.config?.url;
+      const onPublicPage =
+        window.location.pathname.startsWith("/share/") ||
+        window.location.pathname === "/login" ||
+        window.location.pathname === "/register" ||
+        window.location.pathname === "/forgot-password" ||
+        window.location.pathname === "/reset-password";
 
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      if (
+        !isPublicAuthEndpoint(requestUrl) &&
+        !isPublicApiEndpoint(requestUrl)
+      ) {
+        authStorage.removeToken();
+
+        if (!onPublicPage) {
+          window.location.href = "/login";
+        }
       }
     }
 

@@ -11,6 +11,9 @@ const mockChangePassword = vi.hoisted(() => vi.fn());
 const mockToastError = vi.hoisted(() => vi.fn());
 const mockToastSuccess = vi.hoisted(() => vi.fn());
 const mockUpdateUser = vi.hoisted(() => vi.fn());
+const mockGetShareStatus = vi.hoisted(() => vi.fn());
+const mockEnableShare = vi.hoisted(() => vi.fn());
+const mockDisableShare = vi.hoisted(() => vi.fn());
 
 vi.mock("../../context/useAuth", () => ({
   useAuth: mockUseAuth,
@@ -35,6 +38,12 @@ vi.mock("../../services/auth/authService", () => ({
   },
 }));
 
+vi.mock("../../services/share/shareService", () => ({
+  getShareStatus: mockGetShareStatus,
+  enableShare: mockEnableShare,
+  disableShare: mockDisableShare,
+}));
+
 vi.mock("react-hot-toast", () => ({
   default: {
     error: mockToastError,
@@ -45,6 +54,12 @@ vi.mock("react-hot-toast", () => ({
 describe("ProfilePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    mockGetShareStatus.mockResolvedValue({
+      enabled: false,
+      shareToken: null,
+      shareUrl: null,
+    });
 
     mockUseAuth.mockReturnValue({
       user: {

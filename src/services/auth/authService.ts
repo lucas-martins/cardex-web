@@ -4,6 +4,10 @@ import type { LoginResponse } from "../../types/auth/loginResponse";
 import type { RegisterRequest } from "../../types/auth/registerRequest";
 import type { UserResponse } from "../../types/auth/userResponse";
 
+export interface ForgotPasswordResponse {
+  resetToken: string;
+}
+
 export const authService = {
   async login(request: LoginRequest): Promise<LoginResponse> {
     const response = await apiClient.post<LoginResponse>(
@@ -14,8 +18,29 @@ export const authService = {
     return response.data;
   },
 
-  async register(request: RegisterRequest): Promise<void> {
-    await apiClient.post("/auth/register", request);
+  async register(request: RegisterRequest): Promise<LoginResponse> {
+    const response = await apiClient.post<LoginResponse>(
+      "/auth/register",
+      request,
+    );
+
+    return response.data;
+  },
+
+  async forgotPassword(email: string): Promise<ForgotPasswordResponse> {
+    const response = await apiClient.post<ForgotPasswordResponse>(
+      "/auth/forgot-password",
+      { email },
+    );
+
+    return response.data;
+  },
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    await apiClient.post("/auth/reset-password", {
+      token,
+      newPassword,
+    });
   },
 
   async me(): Promise<UserResponse> {

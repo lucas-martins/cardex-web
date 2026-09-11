@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 import "./MainLayout.css";
 import { useAuth } from "../context/useAuth";
@@ -9,6 +10,8 @@ export function MainLayout() {
 
   const { user, logout } = useAuth();
 
+  const [navOpen, setNavOpen] = useState(false);
+
   function handleLogout() {
     logout();
 
@@ -17,19 +20,38 @@ export function MainLayout() {
     });
   }
 
+  function closeNav() {
+    setNavOpen(false);
+  }
+
   return (
     <div className="main-layout">
       <header className="main-header">
-        <NavLink className="brand" to="/">
-          CardDex
-        </NavLink>
+        <div className="main-header-top">
+          <NavLink className="brand" to="/" onClick={closeNav}>
+            CardDex
+          </NavLink>
 
-        <nav className="main-navigation">
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-label={navOpen ? "Close menu" : "Open menu"}
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen((open) => !open)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
+
+        <nav className={`main-navigation${navOpen ? " open" : ""}`}>
           <NavLink
             className={({ isActive }) =>
               isActive ? "navigation-link active" : "navigation-link"
             }
             to="/"
+            onClick={closeNav}
           >
             Home
           </NavLink>
@@ -39,6 +61,7 @@ export function MainLayout() {
               isActive ? "navigation-link active" : "navigation-link"
             }
             to="/collection"
+            onClick={closeNav}
           >
             My Collection
           </NavLink>
@@ -48,6 +71,7 @@ export function MainLayout() {
               isActive ? "navigation-link active" : "navigation-link"
             }
             to="/collections"
+            onClick={closeNav}
           >
             Collections
           </NavLink>
@@ -57,6 +81,7 @@ export function MainLayout() {
               isActive ? "navigation-link active" : "navigation-link"
             }
             to="/search"
+            onClick={closeNav}
           >
             Search Cards
           </NavLink>
@@ -66,6 +91,7 @@ export function MainLayout() {
               isActive ? "navigation-link active" : "navigation-link"
             }
             to="/wishlist"
+            onClick={closeNav}
           >
             Wishlist
           </NavLink>
@@ -75,6 +101,7 @@ export function MainLayout() {
               isActive ? "navigation-link active" : "navigation-link"
             }
             to="/history"
+            onClick={closeNav}
           >
             History
           </NavLink>
@@ -82,7 +109,7 @@ export function MainLayout() {
 
         <div className="header-user">
           <ThemeToggle />
-          <NavLink className="header-username" to="/profile">
+          <NavLink className="header-username" to="/profile" onClick={closeNav}>
             {user?.name}
           </NavLink>
           <button

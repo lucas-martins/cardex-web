@@ -13,7 +13,7 @@ import { FullPageLoader } from "../../components/fullPageLoader/FullPageLoader";
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { authenticated, loading } = useAuth();
+  const { authenticated, loading, acceptSession } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,15 +53,17 @@ export function RegisterPage() {
     try {
       setSubmitting(true);
 
-      await authService.register({
+      const response = await authService.register({
         name: normalizedName,
         email: normalizedEmail,
         password,
       });
 
+      await acceptSession(response);
+
       toast.success("Account created successfully.");
 
-      navigate("/login", {
+      navigate("/", {
         replace: true,
       });
     } catch (error) {

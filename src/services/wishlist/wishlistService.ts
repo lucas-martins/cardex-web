@@ -4,10 +4,20 @@ import { apiClient } from "../api/apiClient";
 export interface CreateWishlistCardRequest {
   externalId: string;
   priority?: WishlistPriority;
+  notes?: string;
+  storeUrl?: string;
+  targetPriceUsd?: number;
 }
 
 export interface UpdateWishlistPriorityRequest {
   priority: WishlistPriority;
+}
+
+export interface UpdateWishlistCardRequest {
+  notes?: string | null;
+  storeUrl?: string | null;
+  targetPriceUsd?: number | null;
+  priority?: WishlistPriority;
 }
 
 export async function createWishlistCard(
@@ -30,6 +40,18 @@ export async function updateWishlistPriority(
 ): Promise<WishlistCard> {
   const response = await apiClient.patch<WishlistCard>(
     `/wishlist/${id}/priority`,
+    request,
+  );
+
+  return response.data;
+}
+
+export async function updateWishlistCard(
+  id: number,
+  request: UpdateWishlistCardRequest,
+): Promise<WishlistCard> {
+  const response = await apiClient.patch<WishlistCard>(
+    `/wishlist/${id}`,
     request,
   );
 

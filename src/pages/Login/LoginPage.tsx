@@ -89,6 +89,10 @@ export function LoginPage() {
           disabled={submitting}
         />
 
+        <p className="login-forgot">
+          <Link to="/forgot-password">Forgot password?</Link>
+        </p>
+
         <button type="submit" disabled={submitting}>
           {submitting ? "Signing in..." : "Sign in"}
         </button>

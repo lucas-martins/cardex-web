@@ -1,11 +1,17 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import { useAuth } from "../../context/useAuth";
 import { authService } from "../../services/auth/authService";
+import {
+  disableShare,
+  enableShare,
+  getShareStatus,
+} from "../../services/share/shareService";
+import type { ShareStatus } from "../../types/share";
 
 import "./ProfilePage.css";
 
@@ -26,6 +32,40 @@ export function ProfilePage() {
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirmation, setNewPasswordConfirmation] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+
+  const [shareStatus, setShareStatus] = useState<ShareStatus | null>(null);
+  const [loadingShare, setLoadingShare] = useState(true);
+  const [updatingShare, setUpdatingShare] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadShareStatus() {
+      try {
+        setLoadingShare(true);
+
+        const status = await getShareStatus();
+
+        if (active) {
+          setShareStatus(status);
+        }
+      } catch {
+        if (active) {
+          toast.error("Could not load share settings.");
+        }
+      } finally {
+        if (active) {
+          setLoadingShare(false);
+        }
+      }
+    }
+
+    void loadShareStatus();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   if (!user) {
     return null;
@@ -103,6 +143,80 @@ export function ProfilePage() {
     }
   }
 
+  function getShareLink(status: ShareStatus) {
+    if (status.shareUrl) {
+      if (status.shareUrl.startsWith("http")) {
+        return status.shareUrl;
+      }
+
+      return `${window.location.origin}${status.shareUrl}`;
+    }
+
+    if (status.shareToken) {
+      return `${window.location.origin}/share/${status.shareToken}`;
+    }
+
+    return null;
+  }
+
+  async function handleEnableShare() {
+    try {
+      setUpdatingShare(true);
+
+      const status = await enableShare();
+
+      setShareStatus(status);
+
+      toast.success("Collection sharing enabled.");
+    } catch {
+      toast.error("Could not enable collection sharing.");
+    } finally {
+      setUpdatingShare(false);
+    }
+  }
+
+  async function handleDisableShare() {
+    try {
+      setUpdatingShare(true);
+
+      await disableShare();
+
+      setShareStatus({
+        enabled: false,
+        shareToken: null,
+        shareUrl: null,
+      });
+
+      toast.success("Collection sharing disabled.");
+    } catch {
+      toast.error("Could not disable collection sharing.");
+    } finally {
+      setUpdatingShare(false);
+    }
+  }
+
+  async function handleCopyShareLink() {
+    if (!shareStatus) {
+      return;
+    }
+
+    const link = getShareLink(shareStatus);
+
+    if (!link) {
+      toast.error("Share link is not available.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success("Share link copied.");
+    } catch {
+      toast.error("Could not copy share link.");
+    }
+  }
+
+  const shareLink = shareStatus ? getShareLink(shareStatus) : null;
+
   return (
     <main className="profile-page">
       <section className="profile-card">
@@ -141,6 +255,78 @@ export function ProfilePage() {
             <span>Role</span>
             <strong>{roleLabel[user.role] ?? user.role}</strong>
           </div>
+        </div>
+
+        <div className="profile-section">
+          <div className="profile-section-header">
+            <h2>Share collection</h2>
+            <p>
+              Create a public link so others can view your collection progress.
+            </p>
+          </div>
+
+          {loadingShare ? (
+            <p className="profile-share-message">Loading share settings...</p>
+          ) : (
+            <div className="profile-share">
+              <p className="profile-share-status">
+                Status:{" "}
+                <strong>
+                  {shareStatus?.enabled ? "Enabled" : "Disabled"}
+                </strong>
+              </p>
+
+              {shareStatus?.enabled && shareLink && (
+                <div className="profile-share-link">
+                  <label htmlFor="shareLink">Share link</label>
+
+                  <div className="profile-share-link-row">
+                    <input
+                      id="shareLink"
+                      type="text"
+                      value={shareLink}
+                      readOnly
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handleCopyShareLink();
+                      }}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="profile-share-actions">
+                {shareStatus?.enabled ? (
+                  <button
+                    type="button"
+                    className="profile-share-disable"
+                    disabled={updatingShare}
+                    onClick={() => {
+                      void handleDisableShare();
+                    }}
+                  >
+                    {updatingShare ? "Disabling..." : "Disable sharing"}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="profile-share-enable"
+                    disabled={updatingShare}
+                    onClick={() => {
+                      void handleEnableShare();
+                    }}
+                  >
+                    {updatingShare ? "Enabling..." : "Enable sharing"}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="profile-section">

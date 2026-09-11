@@ -5,6 +5,8 @@ import { MainLayout } from "../layouts/MainLayout";
 
 import { LoginPage } from "../pages/Login/LoginPage";
 import { RegisterPage } from "../pages/Register/RegisterPage";
+import { ForgotPasswordPage } from "../pages/ForgotPassword/ForgotPasswordPage";
+import { ResetPasswordPage } from "../pages/ResetPassword/ResetPasswordPage";
 import { HomePage } from "../pages/Home/HomePage";
 import { CollectionPage } from "../pages/Collection/CollectionPage";
 import { CardDetailsPage } from "../pages/CardDetails/CardDetailsPage";
@@ -14,6 +16,8 @@ import { CollectionDetailsPage } from "../pages/CollectionDetails/CollectionDeta
 import { ProfilePage } from "../pages/Profile/ProfilePage";
 import { HistoryPage } from "../pages/History/HistoryPage";
 import { CollectionsPage } from "../pages/Collections/CollectionsPage";
+import { PublicSharePage } from "../pages/PublicShare/PublicSharePage";
+import { PublicShareChecklistPage } from "../pages/PublicShare/PublicShareChecklistPage";
 
 export function AppRouter() {
   return (
@@ -22,6 +26,17 @@ export function AppRouter() {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        <Route path="/share/:token" element={<PublicSharePage />} />
+
+        <Route
+          path="/share/:token/collections/:collectionId"
+          element={<PublicShareChecklistPage />}
+        />
 
         <Route
           element={

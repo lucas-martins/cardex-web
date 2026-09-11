@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import toast from "react-hot-toast";
 
 import type { WishlistCard, WishlistPriority } from "../../types/wishlistCard";
-import { formatMarketPrices } from "../../utils/formatMoney";
+import { formatMarketPrices, formatUsd } from "../../utils/formatMoney";
 import {
   deleteWishlistCard,
   findWishlistCards,
+  updateWishlistCard,
   updateWishlistPriority,
 } from "../../services/wishlist/wishlistService";
 import { AddCardForm } from "../../components/cards/AddCardForm";
@@ -33,6 +35,14 @@ export function WishlistPage() {
   const [selectedCard, setSelectedCard] = useState<WishlistCard | null>(null);
 
   const [cardToRemove, setCardToRemove] = useState<WishlistCard | null>(null);
+
+  const [cardToEdit, setCardToEdit] = useState<WishlistCard | null>(null);
+
+  const [editNotes, setEditNotes] = useState("");
+  const [editStoreUrl, setEditStoreUrl] = useState("");
+  const [editTargetPriceUsd, setEditTargetPriceUsd] = useState("");
+  const [editPriority, setEditPriority] = useState<WishlistPriority>("MEDIUM");
+  const [savingDetails, setSavingDetails] = useState(false);
 
   const [updatingPriorityId, setUpdatingPriorityId] = useState<number | null>(
     null,
@@ -187,6 +197,66 @@ export function WishlistPage() {
     toast.success(
       `${card.name} was added to your collection and removed from your wishlist.`,
     );
+  }
+
+  function openEditDetails(card: WishlistCard) {
+    setCardToEdit(card);
+    setEditNotes(card.notes ?? "");
+    setEditStoreUrl(card.storeUrl ?? "");
+    setEditTargetPriceUsd(
+      card.targetPriceUsd != null ? String(card.targetPriceUsd) : "",
+    );
+    setEditPriority(card.priority);
+  }
+
+  async function handleSaveDetails(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!cardToEdit || savingDetails) {
+      return;
+    }
+
+    const normalizedStoreUrl = editStoreUrl.trim();
+    const normalizedNotes = editNotes.trim();
+    const normalizedTargetPrice = editTargetPriceUsd.trim();
+
+    let targetPriceUsd: number | null = null;
+
+    if (normalizedTargetPrice) {
+      const parsedPrice = Number(normalizedTargetPrice);
+
+      if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+        toast.error("Enter a valid target price.");
+        return;
+      }
+
+      targetPriceUsd = parsedPrice;
+    }
+
+    try {
+      setSavingDetails(true);
+
+      const updatedCard = await updateWishlistCard(cardToEdit.id, {
+        notes: normalizedNotes || null,
+        storeUrl: normalizedStoreUrl || null,
+        targetPriceUsd,
+        priority: editPriority,
+      });
+
+      setCards((currentCards) =>
+        currentCards.map((currentCard) =>
+          currentCard.id === updatedCard.id ? updatedCard : currentCard,
+        ),
+      );
+
+      setCardToEdit(null);
+
+      toast.success(`${updatedCard.name} details were updated.`);
+    } catch {
+      toast.error("Could not update wishlist details.");
+    } finally {
+      setSavingDetails(false);
+    }
   }
 
   async function handlePriorityChange(
@@ -378,6 +448,33 @@ export function WishlistPage() {
                       )}
                     </p>
 
+                    {(card.notes ||
+                      card.storeUrl ||
+                      card.targetPriceUsd != null) && (
+                      <div className="wishlist-card-details">
+                        {card.notes && (
+                          <p className="wishlist-card-notes">{card.notes}</p>
+                        )}
+
+                        {card.storeUrl && (
+                          <a
+                            className="wishlist-card-store"
+                            href={card.storeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Open store link
+                          </a>
+                        )}
+
+                        {card.targetPriceUsd != null && (
+                          <span className="wishlist-card-target-price">
+                            Target: {formatUsd(card.targetPriceUsd)}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
                     <label className="wishlist-priority">
                       <span>Priority</span>
 
@@ -400,6 +497,14 @@ export function WishlistPage() {
                     </label>
 
                     <div className="wishlist-card-actions">
+                      <button
+                        type="button"
+                        className="wishlist-edit-button"
+                        onClick={() => openEditDetails(card)}
+                      >
+                        Edit details
+                      </button>
+
                       <button
                         type="button"
                         className="wishlist-add-button"
@@ -437,6 +542,83 @@ export function WishlistPage() {
             onCancel={() => setSelectedCard(null)}
             onSuccess={() => handleAddedToCollection(selectedCard)}
           />
+        </Modal>
+      )}
+
+      {cardToEdit && (
+        <Modal
+          title={`Edit ${cardToEdit.name}`}
+          onClose={() => {
+            if (!savingDetails) {
+              setCardToEdit(null);
+            }
+          }}
+        >
+          <form className="wishlist-edit-form" onSubmit={handleSaveDetails}>
+            <label htmlFor="wishlist-notes">Notes</label>
+
+            <textarea
+              id="wishlist-notes"
+              value={editNotes}
+              onChange={(event) => setEditNotes(event.target.value)}
+              rows={3}
+              maxLength={1000}
+              disabled={savingDetails}
+            />
+
+            <label htmlFor="wishlist-store-url">Store URL</label>
+
+            <input
+              id="wishlist-store-url"
+              type="url"
+              value={editStoreUrl}
+              onChange={(event) => setEditStoreUrl(event.target.value)}
+              placeholder="https://..."
+              disabled={savingDetails}
+            />
+
+            <label htmlFor="wishlist-target-price">Target price (USD)</label>
+
+            <input
+              id="wishlist-target-price"
+              type="number"
+              min="0"
+              step="0.01"
+              value={editTargetPriceUsd}
+              onChange={(event) => setEditTargetPriceUsd(event.target.value)}
+              disabled={savingDetails}
+            />
+
+            <label htmlFor="wishlist-edit-priority">Priority</label>
+
+            <select
+              id="wishlist-edit-priority"
+              value={editPriority}
+              onChange={(event) =>
+                setEditPriority(event.target.value as WishlistPriority)
+              }
+              disabled={savingDetails}
+            >
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+
+            <div className="wishlist-edit-actions">
+              <button
+                type="button"
+                className="secondary"
+                disabled={savingDetails}
+                onClick={() => setCardToEdit(null)}
+              >
+                Cancel
+              </button>
+
+              <button type="submit" disabled={savingDetails}>
+                {savingDetails ? "Saving..." : "Save details"}
+              </button>
+            </div>
+          </form>
         </Modal>
       )}
 

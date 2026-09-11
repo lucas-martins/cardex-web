@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { authService } from "../services/auth/authService";
 import { authStorage } from "../utils/authStorage";
+import type { LoginResponse } from "../types/auth/loginResponse";
 import type { UserResponse } from "../types/auth/userResponse";
 import { AuthContext } from "./AuthContext";
 
@@ -38,12 +39,7 @@ export function AuthProvider({ children }: Props) {
     void restoreSession();
   }, []);
 
-  async function login(email: string, password: string) {
-    const response = await authService.login({
-      email,
-      password,
-    });
-
+  async function acceptSession(response: LoginResponse) {
     authStorage.saveToken(response.accessToken);
 
     try {
@@ -56,6 +52,15 @@ export function AuthProvider({ children }: Props) {
 
       throw error;
     }
+  }
+
+  async function login(email: string, password: string) {
+    const response = await authService.login({
+      email,
+      password,
+    });
+
+    await acceptSession(response);
   }
 
   function logout() {
@@ -74,6 +79,7 @@ export function AuthProvider({ children }: Props) {
         authenticated: Boolean(user),
         loading,
         login,
+        acceptSession,
         logout,
         updateUser,
       }}

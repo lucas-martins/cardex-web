@@ -6,6 +6,7 @@ import { RegisterPage } from "./RegisterPage";
 
 const mockUseAuth = vi.hoisted(() => vi.fn());
 const mockRegister = vi.hoisted(() => vi.fn());
+const mockAcceptSession = vi.hoisted(() => vi.fn());
 const mockNavigate = vi.hoisted(() => vi.fn());
 const mockToastError = vi.hoisted(() => vi.fn());
 const mockToastSuccess = vi.hoisted(() => vi.fn());
@@ -43,11 +44,14 @@ describe("RegisterPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    mockAcceptSession.mockResolvedValue(undefined);
+
     mockUseAuth.mockReturnValue({
       user: null,
       authenticated: false,
       loading: false,
       login: vi.fn(),
+      acceptSession: mockAcceptSession,
       logout: vi.fn(),
     });
   });
@@ -162,8 +166,18 @@ describe("RegisterPage", () => {
       .not.toHaveBeenCalled();
   });
 
-  it("should register user and navigate to login", async () => {
-    mockRegister.mockResolvedValue(undefined);
+  it("should register user, accept session and navigate home", async () => {
+    const sessionResponse = {
+      accessToken: "jwt-token",
+      tokenType: "Bearer",
+      expiresIn: 3600,
+      id: 1,
+      name: "Lucas Martins",
+      email: "lucas@example.com",
+      role: "USER",
+    };
+
+    mockRegister.mockResolvedValue(sessionResponse);
 
     render(
       <MemoryRouter>
@@ -222,6 +236,9 @@ describe("RegisterPage", () => {
         });
     });
 
+    expect(mockAcceptSession)
+      .toHaveBeenCalledWith(sessionResponse);
+
     expect(mockToastSuccess)
       .toHaveBeenCalledWith(
         "Account created successfully.",
@@ -229,7 +246,7 @@ describe("RegisterPage", () => {
 
     expect(mockNavigate)
       .toHaveBeenCalledWith(
-        "/login",
+        "/",
         {
           replace: true,
         },

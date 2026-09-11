@@ -18,6 +18,13 @@ export type CardCondition =
   | "PLAYED"
   | "POOR";
 
+export type CardFinish =
+  | "NORMAL"
+  | "HOLOFOIL"
+  | "REVERSE_HOLO"
+  | "FIRST_EDITION"
+  | "OTHER";
+
 export interface Card {
   id: number;
   externalId: string;
@@ -29,6 +36,9 @@ export interface Card {
   quantity: number;
   language: CardLanguage;
   condition: CardCondition;
+  finish?: CardFinish;
+  gradingCompany?: string | null;
+  grade?: string | null;
   imageUrl: string | null;
   notes: string | null;
   createdAt: string;

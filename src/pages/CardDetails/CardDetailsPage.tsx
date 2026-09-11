@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import type { Card, CardCondition, CardLanguage } from "../../types/card";
+import type { Card, CardCondition, CardFinish, CardLanguage } from "../../types/card";
 import {
   deleteCard,
   findCardById,
@@ -59,6 +59,9 @@ export function CardDetailsPage() {
     quantity: number;
     language: CardLanguage;
     condition: CardCondition;
+    finish?: CardFinish;
+    gradingCompany?: string | null;
+    grade?: string | null;
     notes?: string;
   }) {
     if (!card) {
@@ -138,6 +141,18 @@ export function CardDetailsPage() {
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(value));
+  }
+
+  function formatFinish(finish?: CardFinish) {
+    const labels: Record<CardFinish, string> = {
+      NORMAL: "Normal",
+      HOLOFOIL: "Holofoil",
+      REVERSE_HOLO: "Reverse Holo",
+      FIRST_EDITION: "First Edition",
+      OTHER: "Other",
+    };
+
+    return labels[finish ?? "NORMAL"];
   }
 
   if (loading) {
@@ -222,6 +237,21 @@ export function CardDetailsPage() {
             <div>
               <dt>Condition</dt>
               <dd>{card.condition}</dd>
+            </div>
+
+            <div>
+              <dt>Finish</dt>
+              <dd>{formatFinish(card.finish)}</dd>
+            </div>
+
+            <div>
+              <dt>Grading company</dt>
+              <dd>{card.gradingCompany?.trim() || "Not graded"}</dd>
+            </div>
+
+            <div>
+              <dt>Grade</dt>
+              <dd>{card.grade?.trim() || "—"}</dd>
             </div>
 
             <div>

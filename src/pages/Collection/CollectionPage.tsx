@@ -10,7 +10,7 @@ import {
   previewCollectionCsv,
   importCollectionCsv,
 } from "../../services/cards/cardService";
-import type { Card, CardCondition, CardLanguage } from "../../types/card";
+import type { Card, CardCondition, CardFinish, CardLanguage } from "../../types/card";
 import "./CollectionPage.css";
 import toast from "react-hot-toast";
 import { DeleteCardConfirmation } from "../../components/cards/DeleteCardConfirmation";
@@ -105,6 +105,18 @@ function formatCondition(condition: CardCondition) {
   };
 
   return labels[condition];
+}
+
+function formatFinish(finish?: CardFinish) {
+  const labels: Record<CardFinish, string> = {
+    NORMAL: "Normal",
+    HOLOFOIL: "Holofoil",
+    REVERSE_HOLO: "Reverse Holo",
+    FIRST_EDITION: "First Edition",
+    OTHER: "Other",
+  };
+
+  return labels[finish ?? "NORMAL"];
 }
 
 export function CollectionPage() {
@@ -387,6 +399,9 @@ export function CollectionPage() {
     quantity: number;
     language: CardLanguage;
     condition: CardCondition;
+    finish?: CardFinish;
+    gradingCompany?: string | null;
+    grade?: string | null;
     notes?: string;
   }) {
     if (!cardToEdit) {
@@ -756,6 +771,15 @@ export function CollectionPage() {
                   <div className="collection-card-badges">
                     <span>{formatLanguage(card.language)}</span>
                     <span>{formatCondition(card.condition)}</span>
+                    <span>{formatFinish(card.finish)}</span>
+
+                    {card.grade?.trim() && (
+                      <span>
+                        {card.gradingCompany?.trim()
+                          ? `${card.gradingCompany.trim()} ${card.grade.trim()}`
+                          : `Grade ${card.grade.trim()}`}
+                      </span>
+                    )}
 
                     {card.rarity && <span>{card.rarity}</span>}
                   </div>

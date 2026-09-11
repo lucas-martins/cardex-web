@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
 import { createCard } from "../../services/cards/cardService";
-import type { CardCondition, CardLanguage } from "../../types/card";
+import type { CardCondition, CardFinish, CardLanguage } from "../../types/card";
 import "./AddCardForm.css";
 import toast from "react-hot-toast";
 
@@ -18,6 +18,9 @@ export function AddCardForm({
   const [quantity, setQuantity] = useState(1);
   const [language, setLanguage] = useState<CardLanguage>("ENGLISH");
   const [condition, setCondition] = useState<CardCondition>("NEAR_MINT");
+  const [finish, setFinish] = useState<CardFinish>("NORMAL");
+  const [gradingCompany, setGradingCompany] = useState("");
+  const [grade, setGrade] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -32,6 +35,9 @@ export function AddCardForm({
         quantity,
         language,
         condition,
+        finish,
+        gradingCompany: gradingCompany.trim() || undefined,
+        grade: grade.trim() || undefined,
         notes: notes.trim() || undefined,
       });
 
@@ -90,6 +96,42 @@ export function AddCardForm({
           <option value="PLAYED">Played</option>
           <option value="POOR">Poor</option>
         </select>
+      </label>
+
+      <label>
+        Finish
+        <select
+          value={finish}
+          onChange={(event) => setFinish(event.target.value as CardFinish)}
+        >
+          <option value="NORMAL">Normal</option>
+          <option value="HOLOFOIL">Holofoil</option>
+          <option value="REVERSE_HOLO">Reverse Holo</option>
+          <option value="FIRST_EDITION">First Edition</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </label>
+
+      <label>
+        Grading company
+        <input
+          type="text"
+          value={gradingCompany}
+          onChange={(event) => setGradingCompany(event.target.value)}
+          placeholder="Optional, e.g. PSA"
+          maxLength={50}
+        />
+      </label>
+
+      <label>
+        Grade
+        <input
+          type="text"
+          value={grade}
+          onChange={(event) => setGrade(event.target.value)}
+          placeholder="Optional, e.g. 10"
+          maxLength={20}
+        />
       </label>
 
       <label>

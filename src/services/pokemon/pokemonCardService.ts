@@ -2,13 +2,19 @@ import { apiClient } from "../api/apiClient";
 import type { PokemonCardSearchPage, PokemonCollection } from "../../types/pokemonCard";
 
 export interface SearchPokemonCardsParams {
-  name: string;
+  name?: string;
+  setId?: string;
+  number?: string;
+  rarity?: string;
   page?: number;
   size?: number;
 }
 
 export async function searchPokemonCards({
   name,
+  setId,
+  number,
+  rarity,
   page = 1,
   size = 20,
 }: SearchPokemonCardsParams): Promise<PokemonCardSearchPage> {
@@ -16,7 +22,10 @@ export async function searchPokemonCards({
     "/pokemon/cards",
     {
       params: {
-        name,
+        name: name || undefined,
+        setId: setId || undefined,
+        number: number || undefined,
+        rarity: rarity || undefined,
         page,
         size,
       },

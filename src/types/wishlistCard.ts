@@ -14,6 +14,9 @@ export interface WishlistCard {
   rarity: string | null;
   imageUrl: string | null;
   priority: WishlistPriority;
+  notes?: string | null;
+  storeUrl?: string | null;
+  targetPriceUsd?: number | null;
   createdAt: string;
   updatedAt: string;
   marketPriceUsd?: number | null;

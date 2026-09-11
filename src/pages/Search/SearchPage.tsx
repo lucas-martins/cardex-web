@@ -1,65 +1,111 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 import { AddCardForm } from "../../components/cards/AddCardForm";
 import { Modal } from "../../components/ui/Modal";
-import { searchPokemonCards } from "../../services/pokemon/pokemonCardService";
+import {
+  findPokemonCollections,
+  searchPokemonCards,
+} from "../../services/pokemon/pokemonCardService";
 import {
   createWishlistCard,
   deleteWishlistCard,
   updateWishlistPriority,
 } from "../../services/wishlist/wishlistService";
-import type { PokemonCardSearchResult } from "../../types/pokemonCard";
+import type {
+  PokemonCardSearchResult,
+  PokemonCollection,
+} from "../../types/pokemonCard";
 import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./SearchPage.css";
 
 const PAGE_SIZE = 20;
 
+const RARITY_OPTIONS = [
+  "Common",
+  "Uncommon",
+  "Rare",
+  "Rare Holo",
+  "Rare Holo EX",
+  "Rare Holo GX",
+  "Rare Holo V",
+  "Rare Holo VMAX",
+  "Rare Ultra",
+  "Rare Secret",
+  "Illustration Rare",
+  "Special Illustration Rare",
+  "Hyper Rare",
+  "Promo",
+];
+
+interface SearchFilters {
+  name: string;
+  setId: string;
+  number: string;
+  rarity: string;
+}
+
+const EMPTY_FILTERS: SearchFilters = {
+  name: "",
+  setId: "",
+  number: "",
+  rarity: "",
+};
+
 export function SearchPage() {
-  const [name, setName] = useState("");
-
-  const [searchedName, setSearchedName] = useState("");
-
+  const [filters, setFilters] = useState<SearchFilters>(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] =
+    useState<SearchFilters>(EMPTY_FILTERS);
+  const [collections, setCollections] = useState<PokemonCollection[]>([]);
   const [cards, setCards] = useState<PokemonCardSearchResult[]>([]);
-
   const [currentPage, setCurrentPage] = useState(0);
-
   const [totalElements, setTotalElements] = useState(0);
-
   const [lastPage, setLastPage] = useState(true);
-
   const [loading, setLoading] = useState(false);
-
   const [loadingMore, setLoadingMore] = useState(false);
-
   const [searched, setSearched] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
-
   const [selectedCard, setSelectedCard] =
     useState<PokemonCardSearchResult | null>(null);
-
   const [addingToWishlistId, setAddingToWishlistId] = useState<string | null>(
     null,
   );
-
   const [updatingWishlistId, setUpdatingWishlistId] = useState<number | null>(
     null,
   );
-
   const [removingWishlistId, setRemovingWishlistId] = useState<number | null>(
     null,
   );
 
+  useEffect(() => {
+    async function loadCollections() {
+      try {
+        const response = await findPokemonCollections();
+        setCollections(response);
+      } catch {
+        setCollections([]);
+      }
+    }
+
+    void loadCollections();
+  }, []);
+
+  function hasAnyFilter(value: SearchFilters) {
+    return Boolean(
+      value.name.trim() ||
+        value.setId.trim() ||
+        value.number.trim() ||
+        value.rarity.trim(),
+    );
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const normalizedName = name.trim();
-
-    if (!normalizedName) {
-      setError("Enter a card name.");
+    if (!hasAnyFilter(filters)) {
+      setError("Enter a name, set, number, or rarity to search.");
       setCards([]);
       setSearched(false);
       return;
@@ -67,17 +113,28 @@ export function SearchPage() {
 
     setSelectedCard(null);
 
+    const nextFilters: SearchFilters = {
+      name: filters.name.trim(),
+      setId: filters.setId.trim(),
+      number: filters.number.trim(),
+      rarity: filters.rarity.trim(),
+    };
+
     try {
       setLoading(true);
       setError(null);
 
       const response = await searchPokemonCards({
-        name: normalizedName,
+        name: nextFilters.name,
+        setId: nextFilters.setId,
+        number: nextFilters.number,
+        rarity: nextFilters.rarity,
         page: 1,
         size: PAGE_SIZE,
       });
 
-      setSearchedName(normalizedName);
+      setFilters(nextFilters);
+      setAppliedFilters(nextFilters);
       setCards(response.content);
       setCurrentPage(response.page);
       setTotalElements(response.totalElements);
@@ -112,13 +169,15 @@ export function SearchPage() {
       setError(null);
 
       const response = await searchPokemonCards({
-        name: searchedName,
+        name: appliedFilters.name,
+        setId: appliedFilters.setId,
+        number: appliedFilters.number,
+        rarity: appliedFilters.rarity,
         page: currentPage + 1,
         size: PAGE_SIZE,
       });
 
       setCards((currentCards) => [...currentCards, ...response.content]);
-
       setCurrentPage(response.page);
       setLastPage(response.last);
       setTotalElements(response.totalElements);
@@ -257,7 +316,6 @@ export function SearchPage() {
     );
 
     toast.success(`${card.name} was added to your collection.`);
-
     setSelectedCard(null);
   }
 
@@ -265,28 +323,112 @@ export function SearchPage() {
     <section>
       <div className="search-header">
         <h1>Search Cards</h1>
-
-        <p>Find a Pokémon card and add it to your collection.</p>
+        <p>
+          Find a Pokémon card by name, set, number, or rarity and add it to your
+          collection.
+        </p>
       </div>
 
       <form className="search-form" onSubmit={handleSubmit}>
-        <input
-          type="search"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Example: Charizard"
-          aria-label="Card name"
-        />
+        <div className="search-filters">
+          <label>
+            <span>Name</span>
+            <input
+              type="search"
+              aria-label="Card name"
+              value={filters.name}
+              onChange={(event) =>
+                setFilters((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))
+              }
+              placeholder="Example: Charizard"
+            />
+          </label>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Search"}
-        </button>
+          <label>
+            <span>Set</span>
+            <select
+              aria-label="Set"
+              value={filters.setId}
+              onChange={(event) =>
+                setFilters((current) => ({
+                  ...current,
+                  setId: event.target.value,
+                }))
+              }
+            >
+              <option value="">Any set</option>
+              {collections.map((collection) => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span>Number</span>
+            <input
+              type="text"
+              aria-label="Card number"
+              value={filters.number}
+              onChange={(event) =>
+                setFilters((current) => ({
+                  ...current,
+                  number: event.target.value,
+                }))
+              }
+              placeholder="Example: 4"
+            />
+          </label>
+
+          <label>
+            <span>Rarity</span>
+            <select
+              aria-label="Rarity"
+              value={filters.rarity}
+              onChange={(event) =>
+                setFilters((current) => ({
+                  ...current,
+                  rarity: event.target.value,
+                }))
+              }
+            >
+              <option value="">Any rarity</option>
+              {RARITY_OPTIONS.map((rarity) => (
+                <option key={rarity} value={rarity}>
+                  {rarity}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="search-form-actions">
+          <button type="submit" disabled={loading}>
+            {loading ? "Searching..." : "Search"}
+          </button>
+
+          <button
+            type="button"
+            className="search-clear-button"
+            disabled={loading}
+            onClick={() => setFilters(EMPTY_FILTERS)}
+          >
+            Clear filters
+          </button>
+        </div>
       </form>
 
       {error && <p className="search-message error">{error}</p>}
 
       {!loading && searched && !error && cards.length === 0 && (
-        <p className="search-message">No cards found.</p>
+        <div className="search-empty">
+          <h2>No cards found</h2>
+          <p>Try another name, set, number, or rarity combination.</p>
+        </div>
       )}
 
       {!loading && searched && cards.length > 0 && (
@@ -310,13 +452,9 @@ export function SearchPage() {
 
             <div className="search-card-content">
               <h2>{card.name}</h2>
-
               <p>{card.collectionName}</p>
-
               <p>#{card.cardNumber}</p>
-
               <p>{card.rarity ?? "Rarity not available"}</p>
-
               <p className="search-card-price">
                 {formatMarketPrices(
                   card.marketPriceUsd,
@@ -337,7 +475,6 @@ export function SearchPage() {
                 {card.inWishlist ? (
                   <div className="search-card-in-wishlist">
                     <span>✓ In wishlist</span>
-
                     <div className="search-card-wishlist-controls">
                       {card.wishlistPriority && (
                         <select
@@ -395,13 +532,14 @@ export function SearchPage() {
         ))}
       </div>
 
-      {cards.length > 0 && !lastPage && (
-        <div className="load-more-container">
+      {!lastPage && cards.length > 0 && (
+        <div className="search-load-more">
           <button
-            className="load-more-button"
             type="button"
-            onClick={handleLoadMore}
             disabled={loadingMore}
+            onClick={() => {
+              void handleLoadMore();
+            }}
           >
             {loadingMore ? "Loading..." : "Load more"}
           </button>

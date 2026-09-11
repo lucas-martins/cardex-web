@@ -3,6 +3,7 @@ import { type FormEvent, useState } from "react";
 import type {
   Card,
   CardCondition,
+  CardFinish,
   CardLanguage,
 } from "../../types/card";
 import "./EditCardForm.css";
@@ -15,6 +16,9 @@ interface EditCardFormProps {
     quantity: number;
     language: CardLanguage;
     condition: CardCondition;
+    finish?: CardFinish;
+    gradingCompany?: string | null;
+    grade?: string | null;
     notes?: string;
   }) => void;
 }
@@ -30,6 +34,11 @@ export function EditCardForm({
     useState<CardLanguage>(card.language);
   const [condition, setCondition] =
     useState<CardCondition>(card.condition);
+  const [finish, setFinish] = useState<CardFinish>(card.finish ?? "NORMAL");
+  const [gradingCompany, setGradingCompany] = useState(
+    card.gradingCompany ?? "",
+  );
+  const [grade, setGrade] = useState(card.grade ?? "");
   const [notes, setNotes] = useState(card.notes ?? "");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -39,6 +48,9 @@ export function EditCardForm({
       quantity,
       language,
       condition,
+      finish,
+      gradingCompany: gradingCompany.trim() || null,
+      grade: grade.trim() || null,
       notes: notes.trim() || undefined,
     });
   }
@@ -94,6 +106,42 @@ export function EditCardForm({
           <option value="PLAYED">Played</option>
           <option value="POOR">Poor</option>
         </select>
+      </label>
+
+      <label>
+        Finish
+        <select
+          value={finish}
+          onChange={(event) => setFinish(event.target.value as CardFinish)}
+        >
+          <option value="NORMAL">Normal</option>
+          <option value="HOLOFOIL">Holofoil</option>
+          <option value="REVERSE_HOLO">Reverse Holo</option>
+          <option value="FIRST_EDITION">First Edition</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </label>
+
+      <label>
+        Grading company
+        <input
+          type="text"
+          value={gradingCompany}
+          onChange={(event) => setGradingCompany(event.target.value)}
+          placeholder="Optional, e.g. PSA"
+          maxLength={50}
+        />
+      </label>
+
+      <label>
+        Grade
+        <input
+          type="text"
+          value={grade}
+          onChange={(event) => setGrade(event.target.value)}
+          placeholder="Optional, e.g. 10"
+          maxLength={20}
+        />
       </label>
 
       <label>
