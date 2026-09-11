@@ -8,9 +8,10 @@
   width: 100%;
   max-width: 700px;
   padding: 32px;
-  border: 1px solid #404040;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #1b1b1b;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .profile-header {
@@ -19,11 +20,12 @@
 
 .profile-header h1 {
   margin: 0;
+  color: var(--text-primary);
 }
 
 .profile-header p {
   margin-top: 8px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .profile-info {
@@ -38,13 +40,14 @@
 }
 
 .profile-field span {
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: .9rem;
 }
 
 .profile-field strong {
   margin-top: 4px;
   font-size: 1.05rem;
+  color: var(--text-primary);
 }
 
 .profile-logout {
@@ -52,8 +55,8 @@
   padding: 12px 16px;
   border: 0;
   border-radius: 8px;
-  background: #3158d4;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -61,7 +64,7 @@
 }
 
 .profile-logout:hover {
-  background: #3f68e8;
+  background: var(--color-primary-hover);
 }
 
 .profile-logout:disabled {
@@ -72,7 +75,7 @@
 .profile-section {
   margin-top: 32px;
   padding-top: 32px;
-  border-top: 1px solid #404040;
+  border-top: 1px solid var(--border-default);
 }
 
 .profile-section-header {
@@ -82,11 +85,12 @@
 .profile-section-header h2 {
   margin: 0;
   font-size: 1.25rem;
+  color: var(--text-primary);
 }
 
 .profile-section-header p {
   margin: 8px 0 0;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .profile-password-form {
@@ -98,23 +102,27 @@
 .profile-password-form label {
   margin-top: 8px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .profile-password-form input {
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border: 1px solid #454a50;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
-  background: #111516;
-  color: #f3f4f6;
+  background: var(--bg-input);
+  color: var(--text-primary);
   font: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .profile-password-form input:focus {
-  border-color: #6f96ff;
+  border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(111 150 255 / 15%);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
 }
 
 .profile-password-form input:disabled {
@@ -128,15 +136,16 @@
   padding: 12px 16px;
   border: 0;
   border-radius: 8px;
-  background: #3158d4;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .profile-password-button:hover:not(:disabled) {
-  background: #3f68e8;
+  background: var(--color-primary-hover);
 }
 
 .profile-password-button:disabled {
@@ -147,7 +156,7 @@
 .profile-actions {
   margin-top: 32px;
   padding-top: 32px;
-  border-top: 1px solid #404040;
+  border-top: 1px solid var(--border-default);
 }
 
 .profile-edit-form {
@@ -159,23 +168,27 @@
 
 .profile-edit-form label {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .profile-edit-form input {
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border: 1px solid #454a50;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
-  background: #111516;
-  color: #f3f4f6;
+  background: var(--bg-input);
+  color: var(--text-primary);
   font: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .profile-edit-form input:focus {
-  border-color: #6f96ff;
+  border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(111 150 255 / 15%);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
 }
 
 .profile-edit-form button {
@@ -183,15 +196,16 @@
   padding: 10px 14px;
   border: 0;
   border-radius: 8px;
-  background: #3158d4;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .profile-edit-form button:hover:not(:disabled) {
-  background: #3f68e8;
+  background: var(--color-primary-hover);
 }
 
 .profile-edit-form button:disabled,

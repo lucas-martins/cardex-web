@@ -7,13 +7,14 @@
 .card-details-back {
   display: inline-flex;
   margin-bottom: 24px;
-  color: #4b5563;
+  color: var(--text-muted);
   font-weight: 600;
   text-decoration: none;
+  transition: color 0.15s ease;
 }
 
 .card-details-back:hover {
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .card-details-container {
@@ -37,7 +38,7 @@
   display: block;
   width: 100%;
   border-radius: 16px;
-  box-shadow: 0 12px 30px rgb(0 0 0 / 16%);
+  box-shadow: var(--shadow-lg);
 }
 
 .card-details-image-placeholder {
@@ -45,8 +46,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  color: #9ca3af;
-  background: #f3f4f6;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
   border-radius: 16px;
   aspect-ratio: 2.5 / 3.5;
 }
@@ -62,18 +63,18 @@
   justify-content: space-between;
   gap: 24px;
   padding-bottom: 28px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .card-details-heading h1 {
   margin: 8px 0;
-  color: #111827;
+  color: var(--text-primary);
   font-size: clamp(32px, 5vw, 52px);
   line-height: 1.1;
 }
 
 .card-details-collection {
-  color: #6b7280;
+  color: var(--color-primary);
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -82,27 +83,30 @@
 
 .card-details-number {
   margin: 0;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .card-details-favorite {
   flex: 0 0 auto;
   width: 52px;
   height: 52px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+  background: var(--bg-surface);
+  color: var(--color-warning);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   font-size: 30px;
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .card-details-favorite:hover:not(:disabled) {
   transform: scale(1.06);
-  box-shadow: 0 6px 18px rgb(0 0 0 / 12%);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
 }
 
 .card-details-favorite:disabled {
@@ -119,14 +123,15 @@
 
 .card-details-information div {
   padding: 18px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
+  box-shadow: var(--shadow-card);
 }
 
 .card-details-information dt {
   margin-bottom: 6px;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -134,7 +139,7 @@
 
 .card-details-information dd {
   margin: 0;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 17px;
   font-weight: 600;
 }
@@ -145,20 +150,20 @@
 
 .card-details-notes h2 {
   margin: 0 0 12px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 20px;
 }
 
 .card-details-notes p {
   margin: 0;
-  color: #4b5563;
+  color: var(--text-secondary);
   line-height: 1.7;
   white-space: pre-wrap;
 }
 
 .card-details-message {
   padding: 60px 0;
-  color: #6b7280;
+  color: var(--text-muted);
   text-align: center;
 }
 
@@ -167,7 +172,7 @@
   gap: 12px;
   margin-top: 32px;
   padding-top: 28px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-default);
 }
 
 .card-details-actions button {
@@ -180,25 +185,28 @@
 }
 
 .card-details-edit-button {
-  color: #ffffff;
-  background: #2563eb;
-  border: 1px solid #2563eb;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
 }
 
 .card-details-edit-button:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .card-details-remove-button {
-  color: #b91c1c;
+  color: var(--color-danger);
   background: transparent;
-  border: 1px solid #b91c1c;
+  border: 1px solid var(--color-danger);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .card-details-remove-button:hover {
   color: #ffffff;
-  background: #b91c1c;
+  background: var(--color-danger);
 }
 
 .card-details-history {
@@ -207,7 +215,7 @@
   gap: 16px;
   margin-top: 28px;
   padding-top: 28px;
-  border-top: 1px solid #343739;
+  border-top: 1px solid var(--border-default);
 }
 
 .card-details-history > div {
@@ -217,12 +225,12 @@
 }
 
 .card-details-history span {
-  color: #8f8982;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .card-details-history strong {
-  color: #f3f4f6;
+  color: var(--text-primary);
   font-size: 15px;
 }
 

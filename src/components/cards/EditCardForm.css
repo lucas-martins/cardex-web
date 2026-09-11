@@ -6,7 +6,7 @@
 .edit-card-form label {
   display: grid;
   gap: 7px;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -17,10 +17,18 @@
   width: 100%;
   padding: 10px 12px;
   font: inherit;
-  color: #111827;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
+  transition: border-color 0.15s ease;
+}
+
+.edit-card-form input:focus,
+.edit-card-form select:focus,
+.edit-card-form textarea:focus {
+  outline: 2px solid var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .edit-card-form textarea {
@@ -40,18 +48,32 @@
   font-weight: 600;
   cursor: pointer;
   border-radius: 8px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .edit-card-actions button:first-child {
-  color: #374151;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+.edit-card-actions button:first-child:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .edit-card-actions button:last-child {
-  color: #ffffff;
-  background: #2563eb;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
   border: 0;
+}
+
+.edit-card-actions button:last-child:hover:not(:disabled) {
+  background: var(--color-primary-hover);
 }
 
 .edit-card-actions button:disabled {

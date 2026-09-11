@@ -7,23 +7,27 @@
 .register-form label {
   margin-top: 8px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .register-form input {
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border: 1px solid #5a554b;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
-  background: #111516;
-  color: #f3f4f6;
+  background: var(--bg-input);
+  color: var(--text-primary);
   font: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .register-form input:focus {
-  border-color: #6f96ff;
+  border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(111, 150, 255, 0.15);
+  box-shadow: 0 0 0 3px var(--color-primary-subtle);
 }
 
 .register-form button {
@@ -31,15 +35,16 @@
   padding: 12px 16px;
   border: 0;
   border-radius: 8px;
-  background: #3158d4;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .register-form button:hover:not(:disabled) {
-  background: #3f68e8;
+  background: var(--color-primary-hover);
 }
 
 .register-form button:disabled,

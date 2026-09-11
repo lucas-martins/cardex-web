@@ -42,17 +42,17 @@ export function RaritiesChart({
           <CartesianGrid
             strokeDasharray="3 3"
             horizontal={false}
-            stroke="rgba(255, 255, 255, 0.12)"
+            stroke="var(--chart-grid)"
           />
 
           <XAxis
             type="number"
             allowDecimals={false}
             tick={{
-              fill: "rgba(255, 255, 255, 0.72)",
+              fill: "var(--chart-text)",
             }}
             axisLine={{
-              stroke: "rgba(255, 255, 255, 0.24)",
+              stroke: "var(--chart-axis)",
             }}
             tickLine={false}
           />
@@ -62,7 +62,7 @@ export function RaritiesChart({
             dataKey="name"
             width={125}
             tick={{
-              fill: "rgba(255, 255, 255, 0.72)",
+              fill: "var(--chart-text)",
             }}
             tickLine={false}
             axisLine={false}
@@ -70,18 +70,19 @@ export function RaritiesChart({
 
           <Tooltip
             cursor={{
-              fill: "rgba(255, 255, 255, 0.04)",
+              fill: "var(--bg-surface-hover)",
             }}
             contentStyle={{
-              backgroundColor: "#17191b",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
+              backgroundColor: "var(--chart-tooltip-bg)",
+              border: "1px solid var(--chart-tooltip-border)",
               borderRadius: "8px",
+              boxShadow: "var(--shadow-lg)",
             }}
             labelStyle={{
-              color: "#ffffff",
+              color: "var(--chart-tooltip-text)",
             }}
             itemStyle={{
-              color: "#ffffff",
+              color: "var(--chart-tooltip-text)",
             }}
             formatter={(value) => [value, "Cards"]}
           />

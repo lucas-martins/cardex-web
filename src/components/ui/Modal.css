@@ -14,9 +14,11 @@
   max-width: 520px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
-  background: #ffffff;
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  box-shadow: 0 24px 80px rgb(0 0 0 / 35%);
+  box-shadow: var(--shadow-lg);
 }
 
 .modal-header {
@@ -25,29 +27,33 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .modal-header h2 {
   margin: 0;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 20px;
 }
 
 .modal-close-button {
   width: 36px;
   height: 36px;
-  color: #4b5563;
+  color: var(--text-muted);
   font-size: 26px;
   line-height: 1;
   cursor: pointer;
   background: transparent;
   border: 0;
   border-radius: 6px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .modal-close-button:hover {
-  background: #f3f4f6;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .modal-content {

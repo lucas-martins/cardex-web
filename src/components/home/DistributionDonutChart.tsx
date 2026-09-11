@@ -65,15 +65,16 @@ export function DistributionDonutChart({
 
           <Tooltip
             contentStyle={{
-              backgroundColor: "#17191b",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
+              backgroundColor: "var(--chart-tooltip-bg)",
+              border: "1px solid var(--chart-tooltip-border)",
               borderRadius: "8px",
+              boxShadow: "var(--shadow-lg)",
             }}
             labelStyle={{
-              color: "#ffffff",
+              color: "var(--chart-tooltip-text)",
             }}
             itemStyle={{
-              color: "#ffffff",
+              color: "var(--chart-tooltip-text)",
             }}
             formatter={(value, name) => [value, name]}
           />

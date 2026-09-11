@@ -27,23 +27,25 @@
 }
 
 .collection-import-button {
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  color: var(--color-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--color-primary);
 }
 
 .collection-import-button:hover:not(:disabled) {
-  background: #dbeafe;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
 }
 
 .collection-export-button {
-  color: #ffffff;
-  background: #2563eb;
-  border: 1px solid #2563eb;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
 }
 
 .collection-export-button:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .collection-import-input {
@@ -66,18 +68,18 @@
 .collection-empty {
   padding: 56px 24px;
   text-align: center;
-  background: #ffffff;
-  border: 1px dashed #d1d5db;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
   border-radius: 12px;
 }
 
 .collection-empty h2 {
   margin-bottom: 8px;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .collection-empty p {
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .collection-grid {
@@ -90,10 +92,10 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 6%);
+  box-shadow: var(--shadow-card);
   transition:
     transform 160ms ease,
     border-color 160ms ease,
@@ -102,26 +104,27 @@
 
 .collection-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgb(0 0 0 / 10%);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
 }
 
 .collection-card-selected {
-  border-color: #2563eb;
+  border-color: var(--color-primary);
   box-shadow:
-    0 0 0 2px rgb(37 99 235 / 25%),
-    0 8px 24px rgb(0 0 0 / 12%);
+    0 0 0 2px var(--color-primary-subtle),
+    var(--shadow-md);
 }
 
 .collection-card-selected:hover {
   box-shadow:
-    0 0 0 2px rgb(37 99 235 / 32%),
-    0 12px 28px rgb(0 0 0 / 14%);
+    0 0 0 2px var(--color-primary-subtle-hover),
+    var(--shadow-lg);
 }
 
 .collection-card-image-wrapper {
   position: relative;
   padding: 16px;
-  background: #f3f4f6;
+  background: var(--bg-surface-muted);
 }
 
 .collection-card-image,
@@ -140,7 +143,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
 }
 
 .quantity-badge {
@@ -156,9 +160,9 @@
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
-  background: #111827;
+  background: var(--color-primary);
   border-radius: 999px;
-  box-shadow: 0 4px 10px rgb(0 0 0 / 24%);
+  box-shadow: var(--shadow-sm);
 }
 
 .collection-card-content {
@@ -177,17 +181,17 @@
 
 .collection-card-title h2 {
   margin-bottom: 4px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 19px;
 }
 
 .collection-card-title p {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .card-number {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -201,16 +205,16 @@
 
 .collection-card-badges span {
   padding: 5px 9px;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 600;
-  background: #f3f4f6;
+  background: var(--bg-subtle);
   border-radius: 999px;
 }
 
 .collection-card-notes {
   margin-top: 16px;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -233,23 +237,25 @@
 }
 
 .collection-card-actions button:first-child {
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  color: var(--color-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--color-primary);
 }
 
 .collection-card-actions button:first-child:hover {
-  background: #dbeafe;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
 }
 
 .collection-card-actions button:last-child {
-  color: #b91c1c;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
 }
 
 .collection-card-actions button:last-child:hover {
-  background: #fee2e2;
+  background: var(--color-danger);
+  color: #ffffff;
 }
 
 .collection-loading {
@@ -266,7 +272,7 @@
 }
 
 .collection-pagination span {
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -276,15 +282,16 @@
   padding: 0 16px;
   font: inherit;
   font-weight: 600;
-  color: #1d4ed8;
+  color: var(--color-primary);
   cursor: pointer;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
 }
 
 .collection-pagination button:hover:not(:disabled) {
-  background: #dbeafe;
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
 }
 
 .collection-pagination button:disabled {
@@ -343,15 +350,16 @@
   width: 100%;
   margin-top: 12px;
   padding: 10px 14px;
-  color: #111827;
-  background: #f3f4f6;
+  color: var(--text-primary);
+  background: var(--bg-subtle);
   border-radius: 8px;
   font-weight: 600;
   text-decoration: none;
+  transition: background-color 0.15s ease;
 }
 
 .collection-card-view-details:hover {
-  background: #e5e7eb;
+  background: var(--bg-surface-hover);
 }
 
 .collection-import-preview {
@@ -365,7 +373,7 @@
 
 .collection-import-filename {
   margin: 0;
-  color: #4b5563;
+  color: var(--text-secondary);
   word-break: break-word;
 }
 
@@ -381,36 +389,36 @@
   padding: 16px;
   display: grid;
   gap: 6px;
-  background: #f3f4f6;
+  background: var(--bg-subtle);
   border-radius: 10px;
   min-width: 0;
 }
 
 .collection-import-summary span {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 600;
 }
 
 .collection-import-summary strong {
-  color: #111827;
+  color: var(--text-primary);
   font-size: 24px;
 }
 
 .collection-import-summary .valid {
-  background: #f0fdf4;
+  background: var(--color-success-bg);
 }
 
 .collection-import-summary .valid strong {
-  color: #15803d;
+  color: var(--color-success-text);
 }
 
 .collection-import-summary .invalid {
-  background: #fef2f2;
+  background: var(--color-danger-bg);
 }
 
 .collection-import-summary .invalid strong {
-  color: #b91c1c;
+  color: var(--color-danger-text);
 }
 
 .collection-import-items {
@@ -433,16 +441,17 @@
   align-items: start;
   gap: 18px;
   box-sizing: border-box;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 10px;
 }
 
 .collection-import-item.valid {
-  border-left: 4px solid #16a34a;
+  border-left: 4px solid var(--color-success);
 }
 
 .collection-import-item.invalid {
-  border-left: 4px solid #dc2626;
+  border-left: 4px solid var(--color-danger);
 }
 
 .collection-import-item > div:first-child {
@@ -452,11 +461,11 @@
 }
 
 .collection-import-item > div:first-child strong {
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .collection-import-item > div:first-child span {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 13px;
 }
 
@@ -474,14 +483,14 @@
 }
 
 .collection-import-item-status .invalid {
-  color: #b91c1c;
+  color: var(--color-danger);
 }
 
 .collection-import-result {
   padding: 16px;
-  color: #166534;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
   border-radius: 10px;
 }
 
@@ -510,22 +519,31 @@
 }
 
 .collection-import-actions .secondary {
-  color: #374151;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+.collection-import-actions .secondary:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .collection-import-actions .primary {
-  color: #ffffff;
-  background: #2563eb;
-  border: 1px solid #2563eb;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.collection-import-actions .primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
 }
 
 .collection-card-set-link {
   display: inline;
   margin: 0;
   padding: 0;
-  color: #a8a29e;
+  color: var(--text-muted);
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -535,7 +553,7 @@
 }
 
 .collection-card-set-link:hover {
-  color: #3b82f6;
+  color: var(--color-primary);
 }
 
 .collection-card-set-link:disabled {
@@ -582,8 +600,8 @@
 .collection-selected-count {
   padding-left: 14px;
 
-  color: #a8a29e;
-  border-left: 1px solid #3a3f46;
+  color: var(--text-muted);
+  border-left: 1px solid var(--border-default);
 
   font-size: 0.875rem;
   font-weight: 600;
@@ -599,9 +617,9 @@
   min-height: 36px;
   padding: 0 13px;
 
-  color: #d6d3d1;
-  background: transparent;
-  border: 1px solid #57534e;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 7px;
 
   cursor: pointer;
@@ -616,21 +634,21 @@
 }
 
 .collection-bulk-actions button:hover:not(:disabled) {
-  color: #ffffff;
-  background: #27272a;
-  border-color: #71717a;
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
 }
 
 .collection-bulk-actions .danger {
-  color: #fecaca;
-  background: rgb(127 29 29 / 18%);
-  border-color: #7f1d1d;
+  color: var(--color-danger-text);
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
 }
 
 .collection-bulk-actions .danger:hover:not(:disabled) {
   color: #ffffff;
-  background: #991b1b;
-  border-color: #b91c1c;
+  background: var(--color-danger);
+  border-color: var(--color-danger);
 }
 
 .collection-bulk-actions button:disabled {
@@ -652,13 +670,13 @@
   width: 32px;
   height: 32px;
 
-  background: rgb(17 24 39 / 88%);
-  border: 1px solid rgb(255 255 255 / 35%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
 
   cursor: pointer;
 
-  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+  box-shadow: var(--shadow-sm);
 
   transition:
     transform 0.15s ease,
@@ -667,7 +685,7 @@
 
 .collection-card-select:hover {
   transform: scale(1.06);
-  border-color: #60a5fa;
+  border-color: var(--color-primary);
 }
 
 .collection-card-select input {
@@ -676,7 +694,7 @@
   margin: 0;
 
   cursor: pointer;
-  accent-color: #2563eb;
+  accent-color: var(--color-primary);
 }
 
 .collection-bulk-delete-confirmation {
@@ -688,6 +706,7 @@
 .collection-bulk-delete-confirmation p {
   margin: 0;
   line-height: 1.5;
+  color: var(--text-secondary);
 }
 
 .collection-bulk-delete-actions {
@@ -707,20 +726,21 @@
 }
 
 .collection-bulk-delete-actions .secondary {
-  color: #d6d3d1;
+  color: var(--text-secondary);
   background: transparent;
-  border: 1px solid #57534e;
+  border: 1px solid var(--border-default);
 }
 
 .collection-bulk-delete-actions .secondary:hover:not(:disabled) {
-  background: #292524;
-  border-color: #78716c;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .collection-bulk-delete-actions .danger {
   color: #ffffff;
-  background: #b91c1c;
-  border: 1px solid #b91c1c;
+  background: var(--color-danger);
+  border: 1px solid var(--color-danger);
 }
 
 .collection-bulk-delete-actions .danger:hover:not(:disabled) {

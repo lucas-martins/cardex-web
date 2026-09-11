@@ -9,7 +9,7 @@
   flex-direction: column;
   gap: 7px;
 
-  color: #374151;
+  color: var(--text-secondary);
 
   font-size: 0.875rem;
   font-weight: 600;
@@ -21,20 +21,21 @@
   min-height: 44px;
   padding: 0 12px;
 
-  color: #111827;
-  background: #ffffff;
+  color: var(--text-primary);
+  background: var(--bg-input);
 
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
 
   font: inherit;
   font-weight: 400;
+  transition: border-color 0.15s ease;
 }
 
 .collection-goal-form input:focus,
 .collection-goal-form select:focus {
-  outline: 2px solid #bfdbfe;
-  border-color: #2563eb;
+  outline: 2px solid var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .collection-goal-form input:disabled,
@@ -47,10 +48,10 @@
   margin: 0;
   padding: 10px 12px;
 
-  color: #b91c1c;
-  background: #fef2f2;
+  color: var(--color-danger-text);
+  background: var(--color-danger-bg);
 
-  border: 1px solid #fecaca;
+  border: 1px solid var(--color-danger-border);
   border-radius: 8px;
 
   font-size: 0.875rem;
@@ -74,29 +75,35 @@
 
   font: inherit;
   font-weight: 600;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .collection-goal-submit-button {
-  color: #ffffff;
-  background: #2563eb;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
 
-  border: 1px solid #2563eb;
+  border: 1px solid var(--color-primary);
 }
 
 .collection-goal-submit-button:hover:not(:disabled) {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .collection-goal-cancel-button {
-  color: #374151;
-  background: #ffffff;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
 
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-default);
 }
 
 .collection-goal-cancel-button:hover:not(:disabled) {
-  background: #f9fafb;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .collection-goal-form-actions button:disabled {

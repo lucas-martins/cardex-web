@@ -12,18 +12,32 @@
   font-weight: 600;
   cursor: pointer;
   border-radius: 8px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .delete-card-actions button:first-child {
-  color: #374151;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+.delete-card-actions button:first-child:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .delete-card-actions button:last-child {
   color: #ffffff;
-  background: #dc2626;
+  background: var(--color-danger);
   border: 0;
+}
+
+.delete-card-actions button:last-child:hover:not(:disabled) {
+  background: var(--color-danger-hover);
 }
 
 .delete-card-actions button:disabled {

@@ -96,14 +96,14 @@
 .collection-details-progress {
   height: 12px;
   overflow: hidden;
-  background: #e5e7eb;
+  background: var(--border-default);
   border-radius: 999px;
 }
 
 .collection-details-progress span {
   display: block;
   height: 100%;
-  background: #2563eb;
+  background: var(--color-primary);
   border-radius: inherit;
 }
 
@@ -117,19 +117,21 @@
   min-width: 0;
   overflow: hidden;
   color: inherit;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 5%);
+  box-shadow: var(--shadow-card);
   text-decoration: none;
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .collection-details-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgb(0 0 0 / 10%);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
 }
 
 .collection-details-image-wrapper {
@@ -137,7 +139,7 @@
   padding: 18px;
   display: flex;
   justify-content: center;
-  background: #f9fafb;
+  background: var(--bg-surface-muted);
 }
 
 .collection-details-image-wrapper img,
@@ -156,8 +158,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
-  background: #f3f4f6;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
   border-radius: 8px;
 }
 
@@ -168,7 +170,7 @@
   min-width: 34px;
   padding: 5px 9px;
   color: #ffffff;
-  background: #2563eb;
+  background: var(--color-primary);
   border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
@@ -184,10 +186,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #f59e0b;
-  background: rgb(255 255 255 / 92%);
+  color: var(--color-warning);
+  background: var(--bg-surface);
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+  box-shadow: var(--shadow-sm);
   font-size: 21px;
 }
 
@@ -204,7 +206,7 @@
 .collection-details-card-content h2 {
   margin: 0;
   overflow: hidden;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 17px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -212,14 +214,14 @@
 
 .collection-details-card-content > div:first-child > span {
   flex-shrink: 0;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 700;
 }
 
 .collection-details-card-content > p {
   margin: 10px 0;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -231,15 +233,15 @@
 
 .collection-details-badges span {
   padding: 5px 8px;
-  color: #374151;
-  background: #f3f4f6;
+  color: var(--text-secondary);
+  background: var(--bg-subtle);
   border-radius: 999px;
   font-size: 12px;
   text-transform: capitalize;
 }
 
 .collection-details-error {
-  color: #b91c1c;
+  color: var(--color-danger);
 }
 
 .collection-checklist-filter-groups {
@@ -256,7 +258,7 @@
 }
 
 .collection-checklist-filter-label {
-  color: #d6d3d1;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   font-weight: 700;
 }
@@ -270,9 +272,9 @@
 .collection-checklist-filters button {
   min-height: 40px;
   padding: 0 16px;
-  color: #a8a29e;
-  background: #181a1b;
-  border: 1px solid #343739;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   cursor: pointer;
   font: inherit;
@@ -284,14 +286,15 @@
 }
 
 .collection-checklist-filters button:hover {
-  color: #f3f4f6;
-  border-color: #52575b;
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
 }
 
 .collection-checklist-filters button.active {
   color: #ffffff;
-  background: #2563eb;
-  border-color: #2563eb;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .collection-checklist-status {
@@ -305,13 +308,14 @@
 }
 
 .collection-checklist-status.owned {
-  color: #bbf7d0;
-  background: #166534;
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
 }
 
 .collection-checklist-status.missing {
-  color: #d6d3d1;
-  background: #44403c;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
 }
 
 .collection-checklist-actions {
@@ -333,24 +337,25 @@
 
 .collection-checklist-add-button {
   color: #ffffff;
-  background: #2563eb;
-  border: 1px solid #2563eb;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
 }
 
 .collection-checklist-add-button:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .collection-checklist-wishlist-button {
-  color: #d6d3d1;
+  color: var(--text-secondary);
   background: transparent;
-  border: 1px solid #57534e;
+  border: 1px solid var(--border-default);
 }
 
 .collection-checklist-wishlist-button:hover:not(:disabled) {
-  background: #292524;
-  border-color: #78716c;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .collection-checklist-wishlist-button:disabled {
@@ -365,9 +370,9 @@
   gap: 10px;
   min-height: 40px;
   padding: 6px 8px 6px 12px;
-  color: #bbf7d0;
-  background: rgb(22 101 52 / 18%);
-  border: 1px solid #166534;
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 700;
@@ -376,9 +381,9 @@
 .collection-checklist-in-wishlist select {
   min-height: 30px;
   padding: 0 8px;
-  color: #f3f4f6;
-  background: #181a1b;
-  border: 1px solid #57534e;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
   cursor: pointer;
   font: inherit;
@@ -388,7 +393,7 @@
 
 .collection-checklist-in-wishlist select:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--color-primary);
 }
 
 .collection-checklist-in-wishlist select:disabled {
@@ -397,7 +402,7 @@
 }
 
 .collection-checklist-in-wishlist strong {
-  color: #d6d3d1;
+  color: var(--text-secondary);
   font-size: 0.75rem;
   text-transform: capitalize;
 }
@@ -411,9 +416,9 @@
 .collection-checklist-remove-wishlist {
   min-height: 30px;
   padding: 0 9px;
-  color: #fecaca;
-  background: transparent;
-  border: 1px solid #7f1d1d;
+  color: var(--color-danger-text);
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
   border-radius: 6px;
   cursor: pointer;
   font: inherit;
@@ -422,8 +427,9 @@
 }
 
 .collection-checklist-remove-wishlist:hover:not(:disabled) {
-  background: rgb(127 29 29 / 25%);
-  border-color: #b91c1c;
+  background: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
 }
 
 .collection-checklist-remove-wishlist:disabled {
@@ -454,6 +460,7 @@
 .collection-details-rarity label,
 .collection-details-sort label {
   font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .collection-details-search input,
@@ -462,17 +469,18 @@
   width: 100%;
   min-height: 44px;
   padding: 0.75rem 0.875rem;
-  border: 1px solid #3a3f44;
+  border: 1px solid var(--border-default);
   border-radius: 0.5rem;
-  background: transparent;
-  color: inherit;
+  background: var(--bg-input);
+  color: var(--text-primary);
   font: inherit;
 }
 
 .collection-details-search input:focus,
 .collection-details-rarity select:focus,
 .collection-details-sort select:focus {
-  outline: 2px solid currentColor;
+  outline: 2px solid var(--color-primary);
+  border-color: var(--color-primary);
   outline-offset: 2px;
 }
 

@@ -10,9 +10,10 @@
   align-items: end;
   gap: 16px;
 
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 12px;
+  box-shadow: var(--shadow-card);
 }
 
 .collection-filter-actions {
@@ -27,7 +28,7 @@
   min-width: 0;
   display: grid;
   gap: 7px;
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -38,16 +39,17 @@
   min-height: 42px;
   padding: 0 12px;
   font: inherit;
-  color: #111827;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
+  transition: border-color 0.15s ease;
 }
 
 .collection-filters input:focus,
 .collection-filters select:focus {
-  outline: 2px solid #bfdbfe;
-  border-color: #2563eb;
+  outline: 2px solid var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .collection-filter-actions {
@@ -62,18 +64,32 @@
   font-weight: 600;
   cursor: pointer;
   border-radius: 8px;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .collection-filter-actions button:first-child {
-  color: #ffffff;
-  background: #2563eb;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
   border: 0;
 }
 
+.collection-filter-actions button:first-child:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
 .collection-filter-actions button:last-child {
-  color: #374151;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+.collection-filter-actions button:last-child:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .collection-filter-actions button:disabled {
@@ -89,11 +105,13 @@
   margin-top: 25px;
   font-weight: 600;
   cursor: pointer;
+  color: var(--text-primary);
 }
 
 .favorite-filter input {
   width: 18px;
   height: 18px;
+  accent-color: var(--color-primary);
 }
 
 @media (max-width: 950px) {

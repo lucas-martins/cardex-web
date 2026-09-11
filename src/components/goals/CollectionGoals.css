@@ -13,14 +13,14 @@
 
 .collection-goals-header h2 {
   margin: 0 0 5px;
-
+  color: var(--text-primary);
   font-size: 1.5rem;
 }
 
 .collection-goals-header p {
   margin: 0;
 
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .collection-goals-new-button,
@@ -29,7 +29,7 @@
   padding: 0 16px;
 
   color: #ffffff;
-  background: #2563eb;
+  background: var(--color-primary);
 
   border: 0;
   border-radius: 8px;
@@ -38,17 +38,18 @@
 
   font: inherit;
   font-weight: 600;
+  transition: background-color 0.15s ease;
 }
 
 .collection-goals-new-button:hover,
 .collection-goals-empty button:hover {
-  background: #1d4ed8;
+  background: var(--color-primary-hover);
 }
 
 .collection-goals-message {
   padding: 24px 0;
 
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .collection-goals-empty {
@@ -56,9 +57,9 @@
 
   text-align: center;
 
-  background: #ffffff;
+  background: var(--bg-surface);
 
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
 }
 
@@ -67,7 +68,7 @@
 
   margin-bottom: 6px;
 
-  color: #111827;
+  color: var(--text-primary);
 
   font-size: 1.05rem;
 }
@@ -75,7 +76,7 @@
 .collection-goals-empty p {
   margin: 0 0 18px;
 
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .collection-goals-grid {
@@ -91,16 +92,16 @@
 
   padding: 20px;
 
-  background: #ffffff;
+  background: var(--bg-surface);
 
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
 
-  box-shadow: 0 3px 10px rgb(0 0 0 / 5%);
+  box-shadow: var(--shadow-card);
 }
 
 .collection-goal-card.completed {
-  border-color: #86efac;
+  border-color: var(--color-success);
 }
 
 .collection-goal-card-header {
@@ -115,13 +116,13 @@
 .collection-goal-card h3 {
   margin: 4px 0 0;
 
-  color: #111827;
+  color: var(--text-primary);
 
   font-size: 1.05rem;
 }
 
 .collection-goal-type {
-  color: #6b7280;
+  color: var(--text-muted);
 
   font-size: 0.75rem;
   font-weight: 700;
@@ -135,8 +136,8 @@
 
   padding: 5px 8px;
 
-  color: #166534;
-  background: #dcfce7;
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
 
   border-radius: 999px;
 
@@ -147,7 +148,7 @@
 .collection-goal-detail {
   margin: 0 0 16px;
 
-  color: #6b7280;
+  color: var(--text-secondary);
 
   font-size: 0.875rem;
 }
@@ -159,13 +160,13 @@
   margin-top: auto;
   margin-bottom: 7px;
 
-  color: #6b7280;
+  color: var(--text-muted);
 
   font-size: 0.875rem;
 }
 
 .collection-goal-progress-header strong {
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .collection-goal-progress {
@@ -174,7 +175,7 @@
 
   overflow: hidden;
 
-  background: #e5e7eb;
+  background: var(--border-default);
 
   border-radius: 999px;
 }
@@ -182,7 +183,7 @@
 .collection-goal-progress-value {
   height: 100%;
 
-  background: #2563eb;
+  background: var(--color-primary);
 
   border-radius: inherit;
 
@@ -191,7 +192,7 @@
 
 .collection-goal-card.completed
   .collection-goal-progress-value {
-  background: #16a34a;
+  background: var(--color-success);
 }
 
 .collection-goal-actions {
@@ -202,17 +203,17 @@
   margin-top: 18px;
   padding-top: 14px;
 
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .collection-goal-actions button {
   min-height: 36px;
   padding: 0 12px;
 
-  color: #374151;
-  background: #ffffff;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
 
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-default);
   border-radius: 7px;
 
   cursor: pointer;
@@ -220,24 +221,31 @@
   font: inherit;
   font-size: 0.875rem;
   font-weight: 600;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .collection-goal-actions button:hover:not(:disabled) {
-  background: #f9fafb;
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .collection-goal-actions
   .collection-goal-delete-button {
-  color: #b91c1c;
+  color: var(--color-danger);
 
-  border-color: #fecaca;
+  border-color: var(--color-danger-border);
 }
 
 .collection-goal-actions
   .collection-goal-delete-button:hover:not(
     :disabled
   ) {
-  background: #fef2f2;
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
 }
 
 .collection-goal-actions button:disabled {

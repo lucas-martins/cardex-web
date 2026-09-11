@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import "./MainLayout.css";
 import { useAuth } from "../context/useAuth";
+import { ThemeToggle } from "../components/theme/ThemeToggle";
 
 export function MainLayout() {
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ export function MainLayout() {
         </nav>
 
         <div className="header-user">
+          <ThemeToggle />
           <NavLink className="header-username" to="/profile">
             {user?.name}
           </NavLink>

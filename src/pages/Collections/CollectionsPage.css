@@ -72,10 +72,10 @@
     minmax(180px, 240px)
     minmax(200px, 260px);
   gap: 18px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 5%);
+  box-shadow: var(--shadow-card);
 }
 
 .collections-search,
@@ -88,7 +88,7 @@
 .collections-search label,
 .collections-series-filter label,
 .collections-sort label {
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -99,17 +99,19 @@
   width: 100%;
   min-height: 44px;
   padding: 0 13px;
-  color: #111827;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   font: inherit;
+  transition: border-color 0.15s ease;
 }
 
 .collections-search input:focus,
 .collections-series-filter select:focus,
 .collections-sort select:focus {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--color-primary);
+  border-color: var(--color-primary);
   outline-offset: 1px;
 }
 
@@ -119,7 +121,7 @@
 }
 
 .collections-progress-filter-label {
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -133,9 +135,9 @@
 .collections-progress-filter-buttons button {
   min-height: 40px;
   padding: 0 16px;
-  color: #4b5563;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   cursor: pointer;
   font: inherit;
@@ -147,14 +149,15 @@
 }
 
 .collections-progress-filter-buttons button:hover {
-  color: #1d4ed8;
-  border-color: #93c5fd;
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
 }
 
 .collections-progress-filter-buttons button.active {
   color: #ffffff;
-  background: #2563eb;
-  border-color: #2563eb;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .collections-results-header {
@@ -164,7 +167,7 @@
 }
 
 .collections-results-header span {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
   font-weight: 600;
 }
@@ -182,10 +185,10 @@
   display: flex;
   flex-direction: column;
   color: inherit;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 5%);
+  box-shadow: var(--shadow-card);
   text-decoration: none;
   transition:
     transform 0.2s ease,
@@ -195,8 +198,8 @@
 
 .collections-card:hover {
   transform: translateY(-3px);
-  border-color: #bfdbfe;
-  box-shadow: 0 12px 28px rgb(0 0 0 / 10%);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .collections-card-header {
@@ -213,7 +216,7 @@
 .collections-card-series {
   display: block;
   margin-bottom: 6px;
-  color: #2563eb;
+  color: var(--color-primary);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -223,7 +226,7 @@
 .collections-card h2 {
   margin: 0;
   overflow: hidden;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 20px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -232,8 +235,8 @@
 .collections-card-id {
   flex-shrink: 0;
   padding: 5px 8px;
-  color: #6b7280;
-  background: #f3f4f6;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
@@ -248,12 +251,12 @@
 }
 
 .collections-card-progress-header span {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .collections-card-progress-header strong {
-  color: #111827;
+  color: var(--text-primary);
   font-size: 15px;
 }
 
@@ -261,20 +264,20 @@
   height: 9px;
   margin-top: 10px;
   overflow: hidden;
-  background: #e5e7eb;
+  background: var(--border-default);
   border-radius: 999px;
 }
 
 .collections-progress span {
   display: block;
   height: 100%;
-  background: #2563eb;
+  background: var(--color-primary);
   border-radius: inherit;
 }
 
 .collections-card-total {
   margin: 12px 0 0;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
@@ -282,7 +285,7 @@
   margin-top: auto;
   padding-top: 22px;
   display: block;
-  color: #2563eb;
+  color: var(--color-primary);
   font-size: 14px;
   font-weight: 700;
 }
@@ -290,24 +293,24 @@
 .collections-empty {
   padding: 56px 24px;
   text-align: center;
-  background: #ffffff;
-  border: 1px dashed #d1d5db;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
   border-radius: 14px;
 }
 
 .collections-empty h2 {
   margin: 0 0 8px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 20px;
 }
 
 .collections-empty p {
   margin: 0;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .collections-error {
-  color: #b91c1c;
+  color: var(--color-danger);
 }
 
 @media (max-width: 1000px) {
