@@ -12,6 +12,7 @@ import {
 import { EditCardForm } from "../../components/cards/EditCardForm";
 import { DeleteCardConfirmation } from "../../components/cards/DeleteCardConfirmation";
 import { Modal } from "../../components/ui/Modal";
+import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./CardDetailsPage.css";
 
@@ -221,6 +222,23 @@ export function CardDetailsPage() {
             <div>
               <dt>Condition</dt>
               <dd>{card.condition}</dd>
+            </div>
+
+            <div>
+              <dt>Market price</dt>
+              <dd>
+                {formatMarketPrices(card.marketPriceUsd, card.marketPriceEur)}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Estimated value</dt>
+              <dd>
+                {formatMarketPrices(
+                  card.estimatedValueUsd,
+                  card.estimatedValueEur,
+                )}
+              </dd>
             </div>
           </dl>
 

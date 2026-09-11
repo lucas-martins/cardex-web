@@ -16,6 +16,8 @@ export interface CollectionChecklistCard {
   wishlistId: number | null;
   wishlistPriority: WishlistPriority | null;
   section: CardCollectionSection;
+  marketPriceUsd?: number | null;
+  marketPriceEur?: number | null;
 }
 
 export interface CollectionChecklist {
@@ -28,5 +30,9 @@ export interface CollectionChecklist {
   numberedCards: number;
   ownedAdditionalCards: number;
   additionalCards: number;
+  estimatedOwnedValueUsd?: number;
+  estimatedOwnedValueEur?: number;
+  estimatedMissingValueUsd?: number;
+  estimatedMissingValueEur?: number;
   cards: CollectionChecklistCard[];
 }

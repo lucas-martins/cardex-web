@@ -144,6 +144,10 @@ describe("CardDetailsPage", () => {
     expect(screen.getByText("Rare Holo GX")).toBeInTheDocument();
 
     expect(screen.getByText("My card")).toBeInTheDocument();
+
+    expect(screen.getByText("Market price")).toBeInTheDocument();
+
+    expect(screen.getByText("Estimated value")).toBeInTheDocument();
   });
 
   it("should update favorite", async () => {

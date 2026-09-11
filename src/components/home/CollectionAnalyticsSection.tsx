@@ -1,4 +1,5 @@
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
+import { formatMarketPrices } from "../../utils/formatMoney";
 import { TopCollectionsChart } from "./TopCollectionsChart";
 import { DistributionDonutChart } from "./DistributionDonutChart";
 import { RaritiesChart } from "./RaritiesChart";
@@ -57,6 +58,30 @@ export function CollectionAnalyticsSection({
           <h3>Rarities</h3>
 
           <RaritiesChart rarities={analytics.rarities} />
+        </article>
+
+        <article className="home-analytics-card home-analytics-values">
+          <h3>Most valuable collections</h3>
+
+          {analytics.collectionValues && analytics.collectionValues.length > 0 ? (
+            <ul className="home-value-list">
+              {analytics.collectionValues.slice(0, 8).map((collection) => (
+                <li key={collection.name}>
+                  <span>{collection.name}</span>
+                  <strong>
+                    {formatMarketPrices(
+                      collection.estimatedValueUsd,
+                      collection.estimatedValueEur,
+                    )}
+                  </strong>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="home-value-empty">
+              Market prices will appear here as your catalog is updated.
+            </p>
+          )}
         </article>
       </div>
     </section>

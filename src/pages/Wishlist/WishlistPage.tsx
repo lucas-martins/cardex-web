@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 import type { WishlistCard, WishlistPriority } from "../../types/wishlistCard";
+import { formatMarketPrices } from "../../utils/formatMoney";
 import {
   deleteWishlistCard,
   findWishlistCards,
@@ -117,6 +118,29 @@ export function WishlistPage() {
   const hasActiveFilter =
     priorityFilter !== "ALL" || searchTerm.trim().length > 0;
 
+  const hasUsdPrice = visibleCards.some(
+    (card) => card.marketPriceUsd != null,
+  );
+
+  const hasEurPrice = visibleCards.some(
+    (card) => card.marketPriceEur != null,
+  );
+
+  const wishlistValueLabel = formatMarketPrices(
+    hasUsdPrice
+      ? visibleCards.reduce(
+          (total, card) => total + (Number(card.marketPriceUsd) || 0),
+          0,
+        )
+      : null,
+    hasEurPrice
+      ? visibleCards.reduce(
+          (total, card) => total + (Number(card.marketPriceEur) || 0),
+          0,
+        )
+      : null,
+  );
+
   async function handleDelete() {
     if (!cardToRemove || deletingId !== null) {
       return;
@@ -194,11 +218,17 @@ export function WishlistPage() {
         </div>
 
         {!loading && (
-          <span className="wishlist-count">
-            {hasActiveFilter
-              ? `${visibleCards.length} of ${cards.length} cards`
-              : `${cards.length} ${cards.length === 1 ? "card" : "cards"}`}
-          </span>
+          <div className="wishlist-header-meta">
+            <span className="wishlist-count">
+              {hasActiveFilter
+                ? `${visibleCards.length} of ${cards.length} cards`
+                : `${cards.length} ${cards.length === 1 ? "card" : "cards"}`}
+            </span>
+
+            {cards.length > 0 && (
+              <span className="wishlist-value">{wishlistValueLabel}</span>
+            )}
+          </div>
         )}
       </div>
 
@@ -329,6 +359,13 @@ export function WishlistPage() {
                     </span>
 
                     <span>{card.rarity || "Rarity not informed"}</span>
+
+                    <p className="wishlist-card-price">
+                      {formatMarketPrices(
+                        card.marketPriceUsd,
+                        card.marketPriceEur,
+                      )}
+                    </p>
 
                     <label className="wishlist-priority">
                       <span>Priority</span>

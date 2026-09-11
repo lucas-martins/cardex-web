@@ -16,6 +16,7 @@ import type {
   CollectionChecklistCard,
 } from "../../types/collectionChecklist";
 import type { WishlistPriority } from "../../types/wishlistCard";
+import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./CollectionDetailsPage.css";
 
@@ -398,6 +399,28 @@ export function CollectionDetailsPage() {
               %
             </small>
           </div>
+
+          <div className="collection-details-section-stat">
+            <span>Owned value</span>
+
+            <strong>
+              {formatMarketPrices(
+                checklist.estimatedOwnedValueUsd,
+                checklist.estimatedOwnedValueEur,
+              )}
+            </strong>
+          </div>
+
+          <div className="collection-details-section-stat">
+            <span>Missing value</span>
+
+            <strong>
+              {formatMarketPrices(
+                checklist.estimatedMissingValueUsd,
+                checklist.estimatedMissingValueEur,
+              )}
+            </strong>
+          </div>
         </div>
       </header>
 
@@ -563,6 +586,13 @@ export function CollectionDetailsPage() {
                 </div>
 
                 <p>{card.rarity ?? "Rarity unavailable"}</p>
+
+                <p className="collection-details-card-price">
+                  {formatMarketPrices(
+                    card.marketPriceUsd,
+                    card.marketPriceEur,
+                  )}
+                </p>
 
                 {!card.owned && (
                   <div className="collection-checklist-actions">

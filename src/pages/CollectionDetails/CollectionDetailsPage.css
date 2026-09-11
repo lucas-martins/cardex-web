@@ -57,7 +57,7 @@
 
 .collection-details-section-progress {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -186,11 +186,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-warning);
-  background: var(--bg-surface);
+  color: #eab308;
+  background: rgb(255 255 255 / 92%);
   border-radius: 50%;
   box-shadow: var(--shadow-sm);
   font-size: 21px;
+}
+
+[data-theme="dark"] .collection-details-favorite {
+  background: rgb(58 58 58 / 92%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .collection-details-favorite {
+    background: rgb(58 58 58 / 92%);
+  }
 }
 
 .collection-details-card-content {
@@ -223,6 +233,11 @@
   margin: 10px 0;
   color: var(--text-muted);
   font-size: 14px;
+}
+
+.collection-details-card-price {
+  color: var(--text-primary) !important;
+  font-weight: 700;
 }
 
 .collection-details-badges {
@@ -491,6 +506,10 @@
 
 @media (max-width: 1000px) {
   .collection-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .collection-details-section-progress {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -24,6 +24,7 @@ import type {
   CardImportPreview,
   CardImportResult,
 } from "../../types/cardImport";
+import { formatMarketPrices } from "../../utils/formatMoney";
 
 const INITIAL_FILTERS: CardCollectionFilterValues = {
   name: "",
@@ -758,6 +759,13 @@ export function CollectionPage() {
 
                     {card.rarity && <span>{card.rarity}</span>}
                   </div>
+
+                  <p className="collection-card-price">
+                    {formatMarketPrices(
+                      card.estimatedValueUsd,
+                      card.estimatedValueEur,
+                    )}
+                  </p>
 
                   {card.notes && (
                     <p className="collection-card-notes">{card.notes}</p>

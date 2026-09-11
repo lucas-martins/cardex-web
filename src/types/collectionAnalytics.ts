@@ -8,4 +8,11 @@ export interface CollectionAnalytics {
   languages: CollectionAnalyticsItem[];
   conditions: CollectionAnalyticsItem[];
   rarities: CollectionAnalyticsItem[];
+  collectionValues?: CollectionValueItem[];
+}
+
+export interface CollectionValueItem {
+  name: string;
+  estimatedValueUsd: number;
+  estimatedValueEur: number;
 }

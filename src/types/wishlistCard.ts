@@ -16,4 +16,6 @@ export interface WishlistCard {
   priority: WishlistPriority;
   createdAt: string;
   updatedAt: string;
+  marketPriceUsd?: number | null;
+  marketPriceEur?: number | null;
 }

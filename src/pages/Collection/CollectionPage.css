@@ -212,6 +212,13 @@
   border-radius: 999px;
 }
 
+.collection-card-price {
+  margin: 14px 0 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .collection-card-notes {
   margin-top: 16px;
   color: var(--text-secondary);
@@ -326,6 +333,7 @@
   border: none;
   border-radius: 50%;
 
+  color: #eab308;
   background: rgb(255 255 255 / 92%);
   box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
 
@@ -334,6 +342,16 @@
   font-size: 24px;
 
   transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .favorite-button {
+  background: rgb(58 58 58 / 92%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .favorite-button {
+    background: rgb(58 58 58 / 92%);
+  }
 }
 
 .favorite-button:hover {

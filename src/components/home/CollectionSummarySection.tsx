@@ -1,4 +1,5 @@
 import type { CollectionSummary } from "../../types/collectionSummary";
+import { formatMarketPrices } from "../../utils/formatMoney";
 
 interface CollectionSummarySectionProps {
   summary: CollectionSummary;
@@ -7,9 +8,32 @@ interface CollectionSummarySectionProps {
 export function CollectionSummarySection({
   summary,
 }: CollectionSummarySectionProps) {
+  const pricedCopies = summary.pricedCopies ?? 0;
+  const unpricedCopies = summary.unpricedCopies ?? 0;
+  const totalCopies = pricedCopies + unpricedCopies;
+
   return (
     <section className="home-summary">
       <h2>Collection summary</h2>
+
+      <article className="home-collection-value">
+        <div>
+          <span>Estimated collection value</span>
+          <strong>
+            {formatMarketPrices(
+              summary.estimatedValueUsd,
+              summary.estimatedValueEur,
+            )}
+          </strong>
+          <p>
+            {totalCopies === 0
+              ? "Add cards to start estimating your collection value."
+              : unpricedCopies > 0
+                ? `Based on ${pricedCopies} of ${totalCopies} copies with known market prices.`
+                : `Based on ${pricedCopies} ${pricedCopies === 1 ? "copy" : "copies"} with known market prices.`}
+          </p>
+        </div>
+      </article>
 
       <div className="home-summary-grid">
         <article className="home-summary-card">

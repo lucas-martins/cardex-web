@@ -137,6 +137,11 @@
   color: var(--text-muted);
 }
 
+.search-card-price {
+  color: var(--text-primary) !important;
+  font-weight: 700;
+}
+
 .search-card-actions {
   display: flex;
   flex-direction: column;

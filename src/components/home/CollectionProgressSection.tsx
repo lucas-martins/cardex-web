@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 import type { CollectionProgress } from "../../types/collectionProgress";
+import { formatMarketPrices } from "../../utils/formatMoney";
 
 interface CollectionProgressSectionProps {
   progress: CollectionProgress[];
@@ -50,6 +51,13 @@ export function CollectionProgressSection({
 
               <p>
                 {collection.ownedCards} of {collection.totalCards} cards
+              </p>
+
+              <p className="home-progress-value">
+                {formatMarketPrices(
+                  collection.estimatedValueUsd,
+                  collection.estimatedValueEur,
+                )}
               </p>
             </Link>
           ))}

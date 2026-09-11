@@ -93,7 +93,7 @@
   border: 1px solid var(--border-default);
   border-radius: 50%;
   background: var(--bg-surface);
-  color: var(--color-warning);
+  color: #eab308;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   font-size: 30px;

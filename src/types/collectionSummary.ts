@@ -9,4 +9,8 @@ export interface CollectionSummary {
   differentLanguages: number;
   differentCollections: number;
   mostOwnedCard: MostOwnedCard | null;
+  estimatedValueUsd?: number;
+  estimatedValueEur?: number;
+  pricedCopies?: number;
+  unpricedCopies?: number;
 }

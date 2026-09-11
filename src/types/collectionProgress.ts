@@ -4,4 +4,6 @@ export interface CollectionProgress {
   ownedCards: number;
   totalCards: number;
   completionPercentage: number;
+  estimatedValueUsd?: number;
+  estimatedValueEur?: number;
 }

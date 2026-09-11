@@ -11,6 +11,7 @@ import {
   updateWishlistPriority,
 } from "../../services/wishlist/wishlistService";
 import type { PokemonCardSearchResult } from "../../types/pokemonCard";
+import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./SearchPage.css";
 
@@ -315,6 +316,13 @@ export function SearchPage() {
               <p>#{card.cardNumber}</p>
 
               <p>{card.rarity ?? "Rarity not available"}</p>
+
+              <p className="search-card-price">
+                {formatMarketPrices(
+                  card.marketPriceUsd,
+                  card.marketPriceEur,
+                )}
+              </p>
 
               <div className="search-card-actions">
                 {card.owned ? (

@@ -34,4 +34,8 @@ export interface Card {
   createdAt: string;
   updatedAt: string;
   favorite: boolean;
+  marketPriceUsd?: number | null;
+  marketPriceEur?: number | null;
+  estimatedValueUsd?: number | null;
+  estimatedValueEur?: number | null;
 }

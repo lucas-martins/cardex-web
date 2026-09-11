@@ -28,6 +28,17 @@
   font-weight: 600;
 }
 
+.wishlist-header-meta {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+}
+
+.wishlist-value {
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
 .wishlist-toolbar {
   display: flex;
   align-items: flex-end;
@@ -197,6 +208,11 @@
 .wishlist-card-content p {
   margin: 0;
   color: var(--text-secondary);
+}
+
+.wishlist-card-price {
+  color: var(--text-primary) !important;
+  font-weight: 700;
 }
 
 .wishlist-card-content span {
@@ -470,6 +486,10 @@
   .wishlist-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .wishlist-header-meta {
+    text-align: left;
   }
 
   .wishlist-filter-buttons {
