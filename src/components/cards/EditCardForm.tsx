@@ -5,8 +5,10 @@ import type {
   CardCondition,
   CardFinish,
   CardLanguage,
+  CardStamp,
 } from "../../types/card";
 import { CARD_CONDITION_OPTIONS } from "../../utils/formatCondition";
+import { CARD_STAMP_OPTIONS } from "../../utils/formatStamp";
 import "./EditCardForm.css";
 
 interface EditCardFormProps {
@@ -18,6 +20,7 @@ interface EditCardFormProps {
     language: CardLanguage;
     condition: CardCondition;
     finish?: CardFinish;
+    stamp?: CardStamp;
     gradingCompany?: string | null;
     grade?: string | null;
     notes?: string;
@@ -36,6 +39,7 @@ export function EditCardForm({
   const [condition, setCondition] =
     useState<CardCondition>(card.condition);
   const [finish, setFinish] = useState<CardFinish>(card.finish ?? "NORMAL");
+  const [stamp, setStamp] = useState<CardStamp>(card.stamp ?? "NONE");
   const [gradingCompany, setGradingCompany] = useState(
     card.gradingCompany ?? "",
   );
@@ -50,6 +54,7 @@ export function EditCardForm({
       language,
       condition,
       finish,
+      stamp,
       gradingCompany: gradingCompany.trim() || null,
       grade: grade.trim() || null,
       notes: notes.trim() || undefined,
@@ -118,6 +123,20 @@ export function EditCardForm({
           <option value="REVERSE_HOLO">Reverse Holo</option>
           <option value="FIRST_EDITION">First Edition</option>
           <option value="OTHER">Other</option>
+        </select>
+      </label>
+
+      <label>
+        Stamp
+        <select
+          value={stamp}
+          onChange={(event) => setStamp(event.target.value as CardStamp)}
+        >
+          {CARD_STAMP_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </label>
 

@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import type { Card, CardCondition, CardFinish, CardLanguage } from "../../types/card";
+import type {
+  Card,
+  CardCondition,
+  CardFinish,
+  CardLanguage,
+  CardStamp,
+} from "../../types/card";
+import { formatStamp } from "../../utils/formatStamp";
 import {
   deleteCard,
   findCardById,
@@ -61,6 +68,7 @@ export function CardDetailsPage() {
     language: CardLanguage;
     condition: CardCondition;
     finish?: CardFinish;
+    stamp?: CardStamp;
     gradingCompany?: string | null;
     grade?: string | null;
     notes?: string;
@@ -243,6 +251,11 @@ export function CardDetailsPage() {
             <div>
               <dt>Finish</dt>
               <dd>{formatFinish(card.finish)}</dd>
+            </div>
+
+            <div>
+              <dt>Stamp</dt>
+              <dd>{formatStamp(card.stamp)}</dd>
             </div>
 
             <div>

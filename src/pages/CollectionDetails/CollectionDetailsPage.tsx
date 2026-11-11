@@ -16,6 +16,8 @@ import type {
   CollectionChecklistCard,
 } from "../../types/collectionChecklist";
 import type { WishlistPriority } from "../../types/wishlistCard";
+import { TypeFilterSelect } from "../../components/pokemon/TypeFilterSelect";
+import { cardHasType } from "../../constants/pokemonTypes";
 import { formatFinish } from "../../utils/formatFinish";
 import { formatMarketPrices } from "../../utils/formatMoney";
 
@@ -41,6 +43,8 @@ export function CollectionDetailsPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [rarityFilter, setRarityFilter] = useState("ALL");
+
+  const [typeFilter, setTypeFilter] = useState("ALL");
 
   const [sort, setSort] = useState<ChecklistSort>("CARD_NUMBER");
 
@@ -141,6 +145,13 @@ export function CollectionDetailsPage() {
         rarityFilter === "ALL" || card.rarity === rarityFilter;
 
       if (!matchesRarityFilter) {
+        return false;
+      }
+
+      const matchesTypeFilter =
+        typeFilter === "ALL" || cardHasType(card.types, typeFilter);
+
+      if (!matchesTypeFilter) {
         return false;
       }
 
@@ -464,6 +475,18 @@ export function CollectionDetailsPage() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="collection-details-rarity">
+          <label htmlFor="collection-card-type">Type</label>
+
+          <TypeFilterSelect
+            id="collection-card-type"
+            value={typeFilter}
+            emptyValue="ALL"
+            emptyLabel="All types"
+            onChange={setTypeFilter}
+          />
         </div>
 
         <div className="collection-details-sort">

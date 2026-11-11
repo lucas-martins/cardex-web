@@ -60,8 +60,8 @@
   gap: 12px;
 }
 
-.search-form button,
-.search-card-content button {
+.search-form > .search-form-actions > button,
+.search-card-content > .search-card-actions > button {
   min-height: 44px;
   padding: 0 18px;
   font: inherit;
@@ -104,13 +104,13 @@
   }
 }
 
-.search-form button:hover:not(:disabled),
-.search-card-content button:hover:not(:disabled) {
+.search-form > .search-form-actions > button:hover:not(:disabled),
+.search-card-content > .search-card-actions > button:hover:not(:disabled) {
   background: var(--color-primary-hover);
 }
 
-.search-form button:disabled,
-.search-card-content button:disabled {
+.search-form > .search-form-actions > button:disabled,
+.search-card-content > .search-card-actions > button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }

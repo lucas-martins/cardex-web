@@ -10,6 +10,7 @@ export interface CollectionChecklistCard {
   name: string;
   cardNumber: string;
   rarity: string | null;
+  types?: string[];
   imageUrl: string | null;
   owned: boolean;
   cardId: number | null;

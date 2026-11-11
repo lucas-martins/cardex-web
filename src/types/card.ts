@@ -24,6 +24,17 @@ export type CardFinish =
   | "FIRST_EDITION"
   | "OTHER";
 
+export type CardStamp =
+  | "NONE"
+  | "LEAGUE"
+  | "POKEMON_CENTER"
+  | "STAFF"
+  | "PRE_RELEASE"
+  | "W_PROMO"
+  | "WORLDS"
+  | "SET_LOGO"
+  | "OTHER";
+
 export interface Card {
   id: number;
   externalId: string;
@@ -36,6 +47,7 @@ export interface Card {
   language: CardLanguage;
   condition: CardCondition;
   finish?: CardFinish;
+  stamp?: CardStamp;
   gradingCompany?: string | null;
   grade?: string | null;
   imageUrl: string | null;

@@ -7,6 +7,7 @@ export interface PokemonCardSearchResult {
   collectionName: string;
   cardNumber: string;
   rarity: string | null;
+  types?: string[];
   imageUrl: string | null;
 
   owned: boolean;

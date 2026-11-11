@@ -4,6 +4,7 @@ import type {
   CardCondition,
   CardFinish,
   CardLanguage,
+  CardStamp,
 } from "../../types/card";
 import type { PageResponse } from "../../types/page";
 import type { CollectionSummary } from "../../types/collectionSummary";
@@ -24,6 +25,7 @@ export interface FindCardsParams {
   number?: string;
   collection?: string;
   rarity?: string;
+  type?: string;
   language?: CardLanguage;
   condition?: CardCondition;
   favorite?: boolean;
@@ -36,6 +38,7 @@ export interface CreateCardRequest {
   language: CardLanguage;
   condition: CardCondition;
   finish?: CardFinish;
+  stamp?: CardStamp;
   gradingCompany?: string;
   grade?: string;
   notes?: string;
@@ -46,6 +49,7 @@ export interface UpdateCardRequest {
   language: CardLanguage;
   condition: CardCondition;
   finish?: CardFinish;
+  stamp?: CardStamp;
   gradingCompany?: string | null;
   grade?: string | null;
   notes?: string;
@@ -66,6 +70,7 @@ export async function findCards(
       number: params.number || undefined,
       collection: params.collection || undefined,
       rarity: params.rarity || undefined,
+      type: params.type || undefined,
       language: params.language || undefined,
       condition: params.condition || undefined,
       favorite: params.favorite,

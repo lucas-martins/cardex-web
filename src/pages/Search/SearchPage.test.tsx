@@ -44,7 +44,7 @@ vi.mock("../../components/cards/AddCardForm", () => ({
 
       <button
         type="button"
-        onClick={() => onSuccess({ finish: "NORMAL", quantity: 1 })}
+        onClick={() => onSuccess({ finish: "NORMAL", stamp: "NONE", quantity: 1 })}
       >
         Confirm add
       </button>
@@ -140,7 +140,7 @@ describe("SearchPage", () => {
     );
 
     expect(
-      screen.getByText("Enter a name, set, number, or rarity to search."),
+      screen.getByText("Enter a name, set, number, rarity, or type to search."),
     ).toBeInTheDocument();
 
     expect(mockSearchPokemonCards).not.toHaveBeenCalled();
@@ -169,6 +169,7 @@ describe("SearchPage", () => {
         setId: "",
         number: "",
         rarity: "",
+        type: "",
         page: 1,
         size: 20,
       });
@@ -255,6 +256,7 @@ describe("SearchPage", () => {
         setId: "",
         number: "",
         rarity: "",
+        type: "",
         page: 2,
         size: 20,
       });

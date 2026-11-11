@@ -6,6 +6,7 @@ export interface SearchPokemonCardsParams {
   setId?: string;
   number?: string;
   rarity?: string;
+  type?: string;
   page?: number;
   size?: number;
 }
@@ -15,6 +16,7 @@ export async function searchPokemonCards({
   setId,
   number,
   rarity,
+  type,
   page = 1,
   size = 20,
 }: SearchPokemonCardsParams): Promise<PokemonCardSearchPage> {
@@ -26,6 +28,7 @@ export async function searchPokemonCards({
         setId: setId || undefined,
         number: number || undefined,
         rarity: rarity || undefined,
+        type: type || undefined,
         page,
         size,
       },

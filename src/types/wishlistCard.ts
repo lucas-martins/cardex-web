@@ -12,6 +12,7 @@ export interface WishlistCard {
   collectionName: string | null;
   series: string | null;
   rarity: string | null;
+  types?: string[];
   imageUrl: string | null;
   priority: WishlistPriority;
   notes?: string | null;

@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 
 import { getPublicShareChecklist } from "../../services/share/shareService";
 import type { CollectionChecklist } from "../../types/collectionChecklist";
+import { TypeFilterSelect } from "../../components/pokemon/TypeFilterSelect";
+import { cardHasType } from "../../constants/pokemonTypes";
 import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./PublicShareChecklistPage.css";
@@ -17,6 +19,7 @@ export function PublicShareChecklistPage() {
 
   const [checklist, setChecklist] = useState<CollectionChecklist | null>(null);
   const [filter, setFilter] = useState<ChecklistFilter>("ALL");
+  const [typeFilter, setTypeFilter] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +83,10 @@ export function PublicShareChecklistPage() {
         return false;
       }
 
+      if (typeFilter !== "ALL" && !cardHasType(card.types, typeFilter)) {
+        return false;
+      }
+
       if (!normalizedSearch) {
         return true;
       }
@@ -90,7 +97,7 @@ export function PublicShareChecklistPage() {
         (card.rarity?.toLowerCase().includes(normalizedSearch) ?? false)
       );
     });
-  }, [checklist, filter, searchTerm]);
+  }, [checklist, filter, typeFilter, searchTerm]);
 
   if (loading) {
     return (
@@ -181,6 +188,17 @@ export function PublicShareChecklistPage() {
             Missing
           </button>
         </div>
+
+        <label className="public-share-checklist-search">
+          <span>Type</span>
+
+          <TypeFilterSelect
+            value={typeFilter}
+            emptyValue="ALL"
+            emptyLabel="All types"
+            onChange={setTypeFilter}
+          />
+        </label>
       </div>
 
       {visibleCards.length === 0 ? (

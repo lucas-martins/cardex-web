@@ -1,12 +1,19 @@
 import { type FormEvent, useState } from "react";
 import { createCard } from "../../services/cards/cardService";
-import type { CardCondition, CardFinish, CardLanguage } from "../../types/card";
+import type {
+  CardCondition,
+  CardFinish,
+  CardLanguage,
+  CardStamp,
+} from "../../types/card";
 import { CARD_CONDITION_OPTIONS } from "../../utils/formatCondition";
+import { CARD_STAMP_OPTIONS } from "../../utils/formatStamp";
 import "./AddCardForm.css";
 import toast from "react-hot-toast";
 
 export interface AddCardFormResult {
   finish: CardFinish;
+  stamp: CardStamp;
   quantity: number;
 }
 
@@ -25,6 +32,7 @@ export function AddCardForm({
   const [language, setLanguage] = useState<CardLanguage>("ENGLISH");
   const [condition, setCondition] = useState<CardCondition>("NEAR_MINT");
   const [finish, setFinish] = useState<CardFinish>("NORMAL");
+  const [stamp, setStamp] = useState<CardStamp>("NONE");
   const [gradingCompany, setGradingCompany] = useState("");
   const [grade, setGrade] = useState("");
   const [notes, setNotes] = useState("");
@@ -42,12 +50,13 @@ export function AddCardForm({
         language,
         condition,
         finish,
+        stamp,
         gradingCompany: gradingCompany.trim() || undefined,
         grade: grade.trim() || undefined,
         notes: notes.trim() || undefined,
       });
 
-      await onSuccess({ finish, quantity });
+      await onSuccess({ finish, stamp, quantity });
     } catch {
       toast.error("Could not add the card to your collection.");
     } finally {
@@ -113,6 +122,20 @@ export function AddCardForm({
           <option value="REVERSE_HOLO">Reverse Holo</option>
           <option value="FIRST_EDITION">First Edition</option>
           <option value="OTHER">Other</option>
+        </select>
+      </label>
+
+      <label>
+        Stamp
+        <select
+          value={stamp}
+          onChange={(event) => setStamp(event.target.value as CardStamp)}
+        >
+          {CARD_STAMP_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </label>
 

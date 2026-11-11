@@ -10,7 +10,14 @@ import {
   previewCollectionCsv,
   importCollectionCsv,
 } from "../../services/cards/cardService";
-import type { Card, CardCondition, CardFinish, CardLanguage } from "../../types/card";
+import type {
+  Card,
+  CardCondition,
+  CardFinish,
+  CardLanguage,
+  CardStamp,
+} from "../../types/card";
+import { formatStamp } from "../../utils/formatStamp";
 import { formatCondition } from "../../utils/formatCondition";
 import "./CollectionPage.css";
 import toast from "react-hot-toast";
@@ -32,6 +39,7 @@ const INITIAL_FILTERS: CardCollectionFilterValues = {
   number: "",
   collection: "",
   rarity: "",
+  type: "",
   language: "",
   condition: "",
   favorite: false,
@@ -56,7 +64,16 @@ function loadCollectionState(): CollectionPageState {
   }
 
   try {
-    return JSON.parse(savedState) as CollectionPageState;
+    const parsed = JSON.parse(savedState) as CollectionPageState;
+
+    return {
+      page: parsed.page ?? 0,
+      filters: {
+        ...INITIAL_FILTERS,
+        ...parsed.filters,
+        type: parsed.filters?.type ?? "",
+      },
+    };
   } catch {
     return {
       filters: INITIAL_FILTERS,
@@ -160,6 +177,7 @@ export function CollectionPage() {
         number: currentFilters.number || undefined,
         collection: currentFilters.collection || undefined,
         rarity: currentFilters.rarity || undefined,
+        type: currentFilters.type || undefined,
         language: currentFilters.language || undefined,
         condition: currentFilters.condition || undefined,
         favorite: currentFilters.favorite ? true : undefined,
@@ -199,6 +217,7 @@ export function CollectionPage() {
           number: initialState.filters.number || undefined,
           collection: initialState.filters.collection || undefined,
           rarity: initialState.filters.rarity || undefined,
+          type: initialState.filters.type || undefined,
           language: initialState.filters.language || undefined,
           condition: initialState.filters.condition || undefined,
           favorite: initialState.filters.favorite ? true : undefined,
@@ -387,6 +406,7 @@ export function CollectionPage() {
     language: CardLanguage;
     condition: CardCondition;
     finish?: CardFinish;
+    stamp?: CardStamp;
     gradingCompany?: string | null;
     grade?: string | null;
     notes?: string;
@@ -759,6 +779,9 @@ export function CollectionPage() {
                     <span>{formatLanguage(card.language)}</span>
                     <span>{formatCondition(card.condition)}</span>
                     <span>{formatFinish(card.finish)}</span>
+                    {card.stamp && card.stamp !== "NONE" && (
+                      <span>{formatStamp(card.stamp)}</span>
+                    )}
 
                     {card.grade?.trim() && (
                       <span>

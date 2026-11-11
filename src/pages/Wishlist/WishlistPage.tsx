@@ -3,6 +3,8 @@ import type { FormEvent } from "react";
 import toast from "react-hot-toast";
 
 import type { WishlistCard, WishlistPriority } from "../../types/wishlistCard";
+import { TypeFilterSelect } from "../../components/pokemon/TypeFilterSelect";
+import { cardHasType } from "../../constants/pokemonTypes";
 import { formatMarketPrices, formatUsd } from "../../utils/formatMoney";
 import {
   deleteWishlistCard,
@@ -50,6 +52,8 @@ export function WishlistPage() {
 
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("ALL");
 
+  const [typeFilter, setTypeFilter] = useState("ALL");
+
   const [sort, setSort] = useState<WishlistSort>("PRIORITY_DESC");
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,6 +85,13 @@ export function WishlistPage() {
           priorityFilter === "ALL" || card.priority === priorityFilter;
 
         if (!matchesPriority) {
+          return false;
+        }
+
+        const matchesType =
+          typeFilter === "ALL" || cardHasType(card.types, typeFilter);
+
+        if (!matchesType) {
           return false;
         }
 
@@ -123,10 +134,12 @@ export function WishlistPage() {
           new Date(first.createdAt).getTime()
         );
       });
-  }, [cards, priorityFilter, searchTerm, sort]);
+  }, [cards, priorityFilter, typeFilter, searchTerm, sort]);
 
   const hasActiveFilter =
-    priorityFilter !== "ALL" || searchTerm.trim().length > 0;
+    priorityFilter !== "ALL" ||
+    typeFilter !== "ALL" ||
+    searchTerm.trim().length > 0;
 
   const hasUsdPrice = visibleCards.some(
     (card) => card.marketPriceUsd != null,
@@ -376,6 +389,17 @@ export function WishlistPage() {
             </div>
 
             <label className="wishlist-sort">
+              <span>Type</span>
+
+              <TypeFilterSelect
+                value={typeFilter}
+                emptyValue="ALL"
+                emptyLabel="All types"
+                onChange={setTypeFilter}
+              />
+            </label>
+
+            <label className="wishlist-sort">
               <span>Sort by</span>
 
               <select
@@ -404,6 +428,7 @@ export function WishlistPage() {
                 onClick={() => {
                   setSearchTerm("");
                   setPriorityFilter("ALL");
+                  setTypeFilter("ALL");
                 }}
               >
                 Clear filters

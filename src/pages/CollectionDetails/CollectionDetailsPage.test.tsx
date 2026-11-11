@@ -59,7 +59,7 @@ vi.mock("../../components/cards/AddCardForm", () => ({
       <button
         type="button"
         onClick={() => {
-          void onSuccess({ finish: "NORMAL", quantity: 1 });
+          void onSuccess({ finish: "NORMAL", stamp: "NONE", quantity: 1 });
         }}
       >
         Confirm add

@@ -18,6 +18,7 @@ import type {
   PokemonCardSearchResult,
   PokemonCollection,
 } from "../../types/pokemonCard";
+import { TypeFilterSelect } from "../../components/pokemon/TypeFilterSelect";
 import { formatFinish } from "../../utils/formatFinish";
 import { formatMarketPrices } from "../../utils/formatMoney";
 
@@ -47,6 +48,7 @@ interface SearchFilters {
   setId: string;
   number: string;
   rarity: string;
+  type: string;
 }
 
 const EMPTY_FILTERS: SearchFilters = {
@@ -54,6 +56,7 @@ const EMPTY_FILTERS: SearchFilters = {
   setId: "",
   number: "",
   rarity: "",
+  type: "",
 };
 
 export function SearchPage() {
@@ -99,7 +102,8 @@ export function SearchPage() {
       value.name.trim() ||
         value.setId.trim() ||
         value.number.trim() ||
-        value.rarity.trim(),
+        value.rarity.trim() ||
+        value.type.trim(),
     );
   }
 
@@ -107,7 +111,7 @@ export function SearchPage() {
     event.preventDefault();
 
     if (!hasAnyFilter(filters)) {
-      setError("Enter a name, set, number, or rarity to search.");
+      setError("Enter a name, set, number, rarity, or type to search.");
       setCards([]);
       setSearched(false);
       return;
@@ -120,6 +124,7 @@ export function SearchPage() {
       setId: filters.setId.trim(),
       number: filters.number.trim(),
       rarity: filters.rarity.trim(),
+      type: filters.type.trim(),
     };
 
     try {
@@ -131,6 +136,7 @@ export function SearchPage() {
         setId: nextFilters.setId,
         number: nextFilters.number,
         rarity: nextFilters.rarity,
+        type: nextFilters.type,
         page: 1,
         size: PAGE_SIZE,
       });
@@ -175,6 +181,7 @@ export function SearchPage() {
         setId: appliedFilters.setId,
         number: appliedFilters.number,
         rarity: appliedFilters.rarity,
+        type: appliedFilters.type,
         page: currentPage + 1,
         size: PAGE_SIZE,
       });
@@ -339,8 +346,8 @@ export function SearchPage() {
       <div className="search-header">
         <h1>Search Cards</h1>
         <p>
-          Find a Pokémon card by name, set, number, or rarity and add it to your
-          collection.
+          Find a Pokémon card by name, set, number, rarity, or type and add it
+          to your collection.
         </p>
       </div>
 
@@ -418,6 +425,21 @@ export function SearchPage() {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label>
+            <span>Type</span>
+            <TypeFilterSelect
+              value={filters.type}
+              emptyValue=""
+              emptyLabel="Any type"
+              onChange={(type) =>
+                setFilters((current) => ({
+                  ...current,
+                  type,
+                }))
+              }
+            />
           </label>
         </div>
 

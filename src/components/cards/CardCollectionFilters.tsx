@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from "react";
 
+import { TypeFilterSelect } from "../pokemon/TypeFilterSelect";
 import type { CardCondition, CardLanguage } from "../../types/card";
 import { CARD_CONDITION_OPTIONS } from "../../utils/formatCondition";
 import "./CardCollectionFilters.css";
@@ -17,6 +18,7 @@ export interface CardCollectionFilterValues {
   number: string;
   collection: string;
   rarity: string;
+  type: string;
   language: CardLanguage | "";
   condition: CardCondition | "";
   favorite: boolean;
@@ -48,6 +50,7 @@ export function CardCollectionFilters({
   const [collection, setCollection] = useState(initialValues.collection);
 
   const [rarity, setRarity] = useState(initialValues.rarity);
+  const [type, setType] = useState(initialValues.type);
   const [number, setNumber] = useState(initialValues.number);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -57,6 +60,7 @@ export function CardCollectionFilters({
       number: number.trim(),
       collection: collection.trim(),
       rarity: rarity.trim(),
+      type: type.trim(),
       language,
       condition,
       favorite,
@@ -69,6 +73,7 @@ export function CardCollectionFilters({
     setNumber("");
     setCollection("");
     setRarity("");
+    setType("");
     setLanguage("");
     setCondition("");
     setSort("name,asc");
@@ -116,6 +121,16 @@ export function CardCollectionFilters({
           value={rarity}
           onChange={(event) => setRarity(event.target.value)}
           placeholder="Example: Rare Holo"
+        />
+      </label>
+
+      <label>
+        Type
+        <TypeFilterSelect
+          value={type}
+          emptyValue=""
+          emptyLabel="All types"
+          onChange={setType}
         />
       </label>
 
