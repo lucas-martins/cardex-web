@@ -1,4 +1,6 @@
+import type { CardCondition } from "../../types/card";
 import type { CollectionAnalytics } from "../../types/collectionAnalytics";
+import { formatCondition } from "../../utils/formatCondition";
 import { formatMarketPrices } from "../../utils/formatMoney";
 import { TopCollectionsChart } from "./TopCollectionsChart";
 import { DistributionDonutChart } from "./DistributionDonutChart";
@@ -14,6 +16,10 @@ function formatAnalyticsName(name: string) {
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+function formatConditionAnalyticsName(name: string) {
+  return formatCondition(name as CardCondition);
 }
 
 export function CollectionAnalyticsSection({
@@ -50,7 +56,7 @@ export function CollectionAnalyticsSection({
 
           <DistributionDonutChart
             items={analytics.conditions}
-            formatName={formatAnalyticsName}
+            formatName={formatConditionAnalyticsName}
           />
         </article>
 

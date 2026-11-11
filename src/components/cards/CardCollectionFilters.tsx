@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 
 import type { CardCondition, CardLanguage } from "../../types/card";
+import { CARD_CONDITION_OPTIONS } from "../../utils/formatCondition";
 import "./CardCollectionFilters.css";
 
 export type CardCollectionSort =
@@ -148,13 +149,11 @@ export function CardCollectionFilters({
           }
         >
           <option value="">All conditions</option>
-          <option value="MINT">Mint</option>
-          <option value="NEAR_MINT">Near Mint</option>
-          <option value="EXCELLENT">Excellent</option>
-          <option value="GOOD">Good</option>
-          <option value="LIGHTLY_PLAYED">Lightly Played</option>
-          <option value="PLAYED">Played</option>
-          <option value="POOR">Poor</option>
+          {CARD_CONDITION_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </label>
 

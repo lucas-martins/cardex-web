@@ -12,6 +12,7 @@ import {
 import { EditCardForm } from "../../components/cards/EditCardForm";
 import { DeleteCardConfirmation } from "../../components/cards/DeleteCardConfirmation";
 import { Modal } from "../../components/ui/Modal";
+import { formatCondition } from "../../utils/formatCondition";
 import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./CardDetailsPage.css";
@@ -236,7 +237,7 @@ export function CardDetailsPage() {
 
             <div>
               <dt>Condition</dt>
-              <dd>{card.condition}</dd>
+              <dd>{formatCondition(card.condition)}</dd>
             </div>
 
             <div>

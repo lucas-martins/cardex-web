@@ -11,6 +11,7 @@ import {
   importCollectionCsv,
 } from "../../services/cards/cardService";
 import type { Card, CardCondition, CardFinish, CardLanguage } from "../../types/card";
+import { formatCondition } from "../../utils/formatCondition";
 import "./CollectionPage.css";
 import toast from "react-hot-toast";
 import { DeleteCardConfirmation } from "../../components/cards/DeleteCardConfirmation";
@@ -91,20 +92,6 @@ function formatLanguage(language: CardLanguage) {
   };
 
   return labels[language];
-}
-
-function formatCondition(condition: CardCondition) {
-  const labels: Record<CardCondition, string> = {
-    MINT: "Mint",
-    NEAR_MINT: "Near Mint",
-    EXCELLENT: "Excellent",
-    GOOD: "Good",
-    LIGHTLY_PLAYED: "Lightly Played",
-    PLAYED: "Played",
-    POOR: "Poor",
-  };
-
-  return labels[condition];
 }
 
 function formatFinish(finish?: CardFinish) {
