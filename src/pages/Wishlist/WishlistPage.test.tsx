@@ -36,7 +36,10 @@ vi.mock("../../components/cards/AddCardForm", () => ({
   }: {
     externalId: string;
     onCancel: () => void;
-    onSuccess: () => void | Promise<void>;
+    onSuccess: (result: {
+      finish: string;
+      quantity: number;
+    }) => void | Promise<void>;
   }) => (
     <div>
       <button type="button" onClick={onCancel}>
@@ -46,7 +49,7 @@ vi.mock("../../components/cards/AddCardForm", () => ({
       <button
         type="button"
         onClick={() => {
-          void onSuccess();
+          void onSuccess({ finish: "NORMAL", quantity: 1 });
         }}
       >
         Confirm add

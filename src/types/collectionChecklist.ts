@@ -1,3 +1,4 @@
+import type { CardFinish } from "./card";
 import type { WishlistPriority } from "./wishlistCard";
 
 export type CardCollectionSection =
@@ -12,6 +13,8 @@ export interface CollectionChecklistCard {
   imageUrl: string | null;
   owned: boolean;
   cardId: number | null;
+  ownedFinishes?: CardFinish[];
+  ownedQuantity?: number;
   inWishlist: boolean;
   wishlistId: number | null;
   wishlistPriority: WishlistPriority | null;

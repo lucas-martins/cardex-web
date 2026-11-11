@@ -35,14 +35,17 @@ vi.mock("../../components/cards/AddCardForm", () => ({
   }: {
     externalId: string;
     onCancel: () => void;
-    onSuccess: () => void;
+    onSuccess: (result: { finish: string; quantity: number }) => void;
   }) => (
     <div>
       <button type="button" onClick={onCancel}>
         Cancel add
       </button>
 
-      <button type="button" onClick={onSuccess}>
+      <button
+        type="button"
+        onClick={() => onSuccess({ finish: "NORMAL", quantity: 1 })}
+      >
         Confirm add
       </button>
     </div>
@@ -284,10 +287,10 @@ describe("SearchPage", () => {
     expect(await screen.findByText("✓ In collection")).toBeInTheDocument();
 
     expect(
-      screen.queryByRole("button", {
-        name: "Add to collection",
+      screen.getByRole("button", {
+        name: "Add another",
       }),
-    ).not.toBeInTheDocument();
+    ).toBeInTheDocument();
   });
 
   it("should show card as already in wishlist", async () => {
@@ -481,10 +484,10 @@ describe("SearchPage", () => {
     expect(screen.queryByText("High")).not.toBeInTheDocument();
 
     expect(
-      screen.queryByRole("button", {
-        name: "Add to collection",
+      screen.getByRole("button", {
+        name: "Add another",
       }),
-    ).not.toBeInTheDocument();
+    ).toBeInTheDocument();
 
     expect(mockToastSuccess).toHaveBeenCalledWith(
       "Charizard was added to your collection.",

@@ -1,3 +1,4 @@
+import type { CardFinish } from "./card";
 import type { WishlistPriority } from "./wishlistCard";
 
 export interface PokemonCardSearchResult {
@@ -10,6 +11,8 @@ export interface PokemonCardSearchResult {
 
   owned: boolean;
   cardId: number | null;
+  ownedFinishes?: CardFinish[];
+  ownedQuantity?: number;
 
   inWishlist: boolean;
   wishlistId: number | null;

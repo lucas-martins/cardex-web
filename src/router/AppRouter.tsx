@@ -18,6 +18,9 @@ import { HistoryPage } from "../pages/History/HistoryPage";
 import { CollectionsPage } from "../pages/Collections/CollectionsPage";
 import { PublicSharePage } from "../pages/PublicShare/PublicSharePage";
 import { PublicShareChecklistPage } from "../pages/PublicShare/PublicShareChecklistPage";
+import { DecksPage } from "../pages/Decks/DecksPage";
+import { DeckNewPage } from "../pages/Decks/DeckNewPage";
+import { DeckDetailsPage } from "../pages/Decks/DeckDetailsPage";
 
 export function AppRouter() {
   return (
@@ -51,6 +54,9 @@ export function AppRouter() {
           <Route path="/collection/:id" element={<CardDetailsPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/decks" element={<DecksPage />} />
+          <Route path="/decks/new" element={<DeckNewPage />} />
+          <Route path="/decks/:id" element={<DeckDetailsPage />} />
           <Route path="/history" element={<HistoryPage />} />
 
           <Route

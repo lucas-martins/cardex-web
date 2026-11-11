@@ -13,10 +13,12 @@ import {
   deleteWishlistCard,
   updateWishlistPriority,
 } from "../../services/wishlist/wishlistService";
+import type { CardFinish } from "../../types/card";
 import type {
   PokemonCardSearchResult,
   PokemonCollection,
 } from "../../types/pokemonCard";
+import { formatFinish } from "../../utils/formatFinish";
 import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./SearchPage.css";
@@ -300,19 +302,32 @@ export function SearchPage() {
     }
   }
 
-  function handleAddedToCollection(card: PokemonCardSearchResult) {
+  function handleAddedToCollection(
+    card: PokemonCardSearchResult,
+    finish: CardFinish,
+    quantity: number,
+  ) {
     setCards((currentCards) =>
-      currentCards.map((currentCard) =>
-        currentCard.externalId === card.externalId
-          ? {
-              ...currentCard,
-              owned: true,
-              inWishlist: false,
-              wishlistId: null,
-              wishlistPriority: null,
-            }
-          : currentCard,
-      ),
+      currentCards.map((currentCard) => {
+        if (currentCard.externalId !== card.externalId) {
+          return currentCard;
+        }
+
+        const existingFinishes = currentCard.ownedFinishes ?? [];
+        const ownedFinishes = existingFinishes.includes(finish)
+          ? existingFinishes
+          : [...existingFinishes, finish];
+
+        return {
+          ...currentCard,
+          owned: true,
+          ownedFinishes,
+          ownedQuantity: (currentCard.ownedQuantity ?? 0) + quantity,
+          inWishlist: false,
+          wishlistId: null,
+          wishlistPriority: null,
+        };
+      }),
     );
 
     toast.success(`${card.name} was added to your collection.`);
@@ -464,13 +479,25 @@ export function SearchPage() {
               </p>
 
               <div className="search-card-actions">
-                {card.owned ? (
-                  <div className="search-card-owned">✓ In collection</div>
-                ) : (
-                  <button type="button" onClick={() => setSelectedCard(card)}>
-                    Add to collection
-                  </button>
+                {card.owned && (
+                  <div className="search-card-owned">
+                    <span>✓ In collection</span>
+                    {(card.ownedFinishes?.length ?? 0) > 0 && (
+                      <span className="search-card-owned-finishes">
+                        {card.ownedFinishes!
+                          .map((finish) => formatFinish(finish))
+                          .join(" · ")}
+                        {(card.ownedQuantity ?? 0) > 0
+                          ? ` · qty ${card.ownedQuantity}`
+                          : ""}
+                      </span>
+                    )}
+                  </div>
                 )}
+
+                <button type="button" onClick={() => setSelectedCard(card)}>
+                  {card.owned ? "Add another" : "Add to collection"}
+                </button>
 
                 {card.inWishlist ? (
                   <div className="search-card-in-wishlist">
@@ -554,7 +581,13 @@ export function SearchPage() {
           <AddCardForm
             externalId={selectedCard.externalId}
             onCancel={() => setSelectedCard(null)}
-            onSuccess={() => handleAddedToCollection(selectedCard)}
+            onSuccess={(result) =>
+              handleAddedToCollection(
+                selectedCard,
+                result.finish,
+                result.quantity,
+              )
+            }
           />
         </Modal>
       )}

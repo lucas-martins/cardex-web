@@ -46,7 +46,10 @@ vi.mock("../../components/cards/AddCardForm", () => ({
   }: {
     externalId: string;
     onCancel: () => void;
-    onSuccess: () => void | Promise<void>;
+    onSuccess: (result: {
+      finish: string;
+      quantity: number;
+    }) => void | Promise<void>;
   }) => (
     <div>
       <button type="button" onClick={onCancel}>
@@ -56,7 +59,7 @@ vi.mock("../../components/cards/AddCardForm", () => ({
       <button
         type="button"
         onClick={() => {
-          void onSuccess();
+          void onSuccess({ finish: "NORMAL", quantity: 1 });
         }}
       >
         Confirm add
@@ -239,7 +242,11 @@ describe("CollectionDetailsPage", () => {
 
     await screen.findByText("Decidueye-GX");
 
-    fireEvent.click(screen.getByText("Decidueye-GX"));
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "View in collection",
+      }),
+    );
 
     expect(await screen.findByText("Card details")).toBeInTheDocument();
   });

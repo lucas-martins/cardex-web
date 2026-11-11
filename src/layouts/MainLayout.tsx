@@ -100,6 +100,16 @@ export function MainLayout() {
             className={({ isActive }) =>
               isActive ? "navigation-link active" : "navigation-link"
             }
+            to="/decks"
+            onClick={closeNav}
+          >
+            Decks
+          </NavLink>
+
+          <NavLink
+            className={({ isActive }) =>
+              isActive ? "navigation-link active" : "navigation-link"
+            }
             to="/history"
             onClick={closeNav}
           >

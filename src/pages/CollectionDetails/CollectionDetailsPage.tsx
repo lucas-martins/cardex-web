@@ -16,6 +16,7 @@ import type {
   CollectionChecklistCard,
 } from "../../types/collectionChecklist";
 import type { WishlistPriority } from "../../types/wishlistCard";
+import { formatFinish } from "../../utils/formatFinish";
 import { formatMarketPrices } from "../../utils/formatMoney";
 
 import "./CollectionDetailsPage.css";
@@ -597,19 +598,39 @@ export function CollectionDetailsPage() {
                   )}
                 </p>
 
-                {!card.owned && (
-                  <div className="collection-checklist-actions">
-                    <button
-                      type="button"
-                      className="collection-checklist-add-button"
-                      onClick={() => {
-                        setSelectedCard(card);
-                      }}
-                    >
-                      Add to collection
-                    </button>
+                {card.owned && (card.ownedFinishes?.length ?? 0) > 0 && (
+                  <p className="collection-details-owned-finishes">
+                    {card.ownedFinishes!
+                      .map((finish) => formatFinish(finish))
+                      .join(" · ")}
+                    {(card.ownedQuantity ?? 0) > 0
+                      ? ` · qty ${card.ownedQuantity}`
+                      : ""}
+                  </p>
+                )}
 
-                    {card.inWishlist ? (
+                <div className="collection-checklist-actions">
+                  <button
+                    type="button"
+                    className="collection-checklist-add-button"
+                    onClick={() => {
+                      setSelectedCard(card);
+                    }}
+                  >
+                    {card.owned ? "Add another" : "Add to collection"}
+                  </button>
+
+                  {card.owned && card.cardId !== null && (
+                    <Link
+                      className="collection-checklist-view-button"
+                      to={`/collection/${card.cardId}`}
+                    >
+                      View in collection
+                    </Link>
+                  )}
+
+                  {!card.owned &&
+                    (card.inWishlist ? (
                       <div className="collection-checklist-in-wishlist">
                         <span>✓ In wishlist</span>
 
@@ -665,28 +686,17 @@ export function CollectionDetailsPage() {
                           ? "Adding..."
                           : "Add to wishlist"}
                       </button>
-                    )}
-                  </div>
-                )}
+                    ))}
+                </div>
               </div>
             </>
           );
 
-          if (card.owned && card.cardId !== null) {
-            return (
-              <Link
-                className="collection-details-card"
-                key={card.externalId}
-                to={`/collection/${card.cardId}`}
-              >
-                {content}
-              </Link>
-            );
-          }
-
           return (
             <article
-              className="collection-details-card missing"
+              className={`collection-details-card${
+                card.owned ? "" : " missing"
+              }`}
               key={card.externalId}
             >
               {content}

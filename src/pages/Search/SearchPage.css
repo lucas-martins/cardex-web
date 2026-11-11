@@ -234,16 +234,25 @@
 
 .search-card-owned {
   min-height: 42px;
-  padding: 0 12px;
+  padding: 8px 12px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   color: var(--color-success-text);
   background: var(--color-success-bg);
   border: 1px solid var(--color-success-border);
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 700;
+  text-align: center;
+}
+
+.search-card-owned-finishes {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
 }
 
 .search-card-in-wishlist {
@@ -326,13 +335,13 @@
   opacity: 0.6;
 }
 
-.load-more-container {
+.search-load-more {
   display: flex;
   justify-content: center;
   margin-top: 32px;
 }
 
-.load-more-button {
+.search-load-more button {
   min-height: 44px;
   padding: 0 24px;
   font: inherit;
@@ -345,11 +354,11 @@
   transition: background-color 0.15s ease;
 }
 
-.load-more-button:hover:not(:disabled) {
+.search-load-more button:hover:not(:disabled) {
   background: var(--color-primary-hover);
 }
 
-.load-more-button:disabled {
+.search-load-more button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }

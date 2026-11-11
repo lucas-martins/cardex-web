@@ -4,10 +4,15 @@ import type { CardCondition, CardFinish, CardLanguage } from "../../types/card";
 import "./AddCardForm.css";
 import toast from "react-hot-toast";
 
+export interface AddCardFormResult {
+  finish: CardFinish;
+  quantity: number;
+}
+
 interface AddCardFormProps {
   externalId: string;
   onCancel: () => void;
-  onSuccess: () => void | Promise<void>;
+  onSuccess: (result: AddCardFormResult) => void | Promise<void>;
 }
 
 export function AddCardForm({
@@ -41,7 +46,7 @@ export function AddCardForm({
         notes: notes.trim() || undefined,
       });
 
-      await onSuccess();
+      await onSuccess({ finish, quantity });
     } catch {
       toast.error("Could not add the card to your collection.");
     } finally {
